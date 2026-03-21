@@ -1853,7 +1853,7 @@
 
         /* Make quadrant content scrollable */
         .quadrant-content {
-            overflow-x: auto;
+            overflow-x: visible;
             overflow-y: visible;
         }
 
@@ -2069,7 +2069,9 @@
             background: linear-gradient(135deg, #9b59b6, #8e44ad);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 0;
+            width: 180px;
+            text-align: center;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 500;
@@ -2125,8 +2127,8 @@
         }
 
         .quadrant-content {
+            position: relative;
             display: flex;
-            gap: 20px;
             align-items: flex-start;
             justify-content: center;
         }
@@ -2264,17 +2266,27 @@
             font-weight: bold;
         }
 
+        .quadrant-chart-wrapper {
+            position: relative;
+            display: inline-block;
+            overflow: visible;
+            /* width = chart margin-left + chart width = 80 + 600 = 680px */
+            width: 680px;
+        }
+
         .quad-legend {
+            position: absolute;
+            top: 0;
+            left: 696px; /* wrapper width(680) + gap(16) */
             background: white;
             border: 2px solid #bbb;
             border-radius: 8px;
             padding: 15px;
-            width: 250px;
-            min-width: 250px;
-            flex-shrink: 0;
+            width: 220px;
             max-height: 500px;
             overflow-y: auto;
             transition: visibility 0.2s, opacity 0.2s;
+            z-index: 10;
         }
 
         .quad-legend.hidden {
@@ -3354,6 +3366,7 @@
                     </div>
 
                     <div class="quadrant-content">
+                        <div class="quadrant-chart-wrapper">
                         <div class="quadrant-chart-enhanced" id="quadrantChartContainer">
                             <div class="quadrant-bg reduce">REDUCE</div>
                             <div class="quadrant-bg avoid">AVOID</div>
@@ -3386,7 +3399,6 @@
                             
                             <!-- Risk points will be added here dynamically -->
                         </div>
-
                         <div class="quad-legend" id="quadLegend">
                             <h3>QUAD CHART LEGEND</h3>
                             
@@ -3463,6 +3475,9 @@
                                     </div>
                                 </div>
                             </div>
+                        </div><!-- /#quadLegend -->
+                        </div><!-- /.quadrant-chart-wrapper -->
+                    </div><!-- /.quadrant-content -->
                         </div><!-- /.content -->
                     </div><!-- /.container -->
                 </div><!-- /#appContainer -->
