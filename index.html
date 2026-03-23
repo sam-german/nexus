@@ -858,6 +858,13 @@
             pointer-events: none;
         }
 
+        /* Filler rows on short pages */
+        .filler-row td {
+            border-bottom: 1px solid #f0f0f0 !important;
+            height: 41px; /* matches normal row height */
+            pointer-events: none;
+        }
+
         /* Pagination */
         .pagination-container {
             display: flex;
@@ -2575,7 +2582,9 @@
                 <h1>TARA Risk Management System</h1>
                 <p>Threat Assessment &amp; Risk Analysis Platform</p>
             </div>
-            <div style="width:90px;"></div><!-- spacer to balance logo -->
+            <button id="loginBtn" title="Login / Account" style="background:none;border:none;color:white;cursor:pointer;padding:8px;border-radius:6px;display:flex;align-items:center;gap:8px;font-size:13px;font-family:inherit;transition:background 0.2s;width:90px;justify-content:flex-end;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='none'">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+            </button>
         </div>
 
         <!-- APP BODY -->
@@ -5600,6 +5609,15 @@
                 `;
                 tbody.appendChild(row);
             });
+
+            // Filler rows to keep table height constant on short final pages
+            const fillerCount = PAGE_SIZE - pageRisks.length;
+            for (let i = 0; i < fillerCount; i++) {
+                const filler = document.createElement('tr');
+                filler.className = 'filler-row';
+                filler.innerHTML = '<td colspan="11">&nbsp;</td>';
+                tbody.appendChild(filler);
+            }
 
             // Update pagination info
             const info = document.getElementById('paginationInfo');
