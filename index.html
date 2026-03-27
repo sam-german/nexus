@@ -2309,13 +2309,13 @@
         }
 
         .axis-label.x-axis {
-            bottom: -60px;
+            bottom: -32px;
             left: 50%;
             transform: translateX(-50%);
         }
 
         .axis-label.y-axis {
-            left: -85px;
+            left: -62px;
             top: 50%;
             transform: translateY(-50%) rotate(-90deg);
         }
@@ -2328,7 +2328,7 @@
         }
 
         .scale-numbers.x-scale {
-            bottom: -25px;
+            bottom: -20px;
             width: 100%;
         }
 
@@ -2338,7 +2338,7 @@
         }
 
         .scale-numbers.y-scale {
-            left: -40px;
+            left: -20px;
             height: 100%;
         }
 
@@ -5987,16 +5987,16 @@
         // ==================== QUADRANT CHART FUNCTIONS ====================
 
         function getMitigationSVGSymbol(status) {
-            // Returns a crisp SVG path + colour for the mitigation status
+            // Symbols exactly match the legend: ✘ 👁 ! ✓ ✓✓ 💯 🏆
             const s = (status || '').toLowerCase();
-            if (s.includes('none'))           return { symbol: '✕', bg: '#e74c3c', fg: 'white' };
-            if (s.includes('identified'))     return { symbol: '◉', bg: '#9b59b6', fg: 'white' };
-            if (s.includes('planned'))        return { symbol: '!',  bg: '#3498db', fg: 'white' };
-            if (s.includes('fully'))          return { symbol: '💯', bg: '#ffffff', fg: '#333'  };
-            if (s.includes('validated'))      return { symbol: '✓✓', bg: '#1e8449', fg: 'white' };
-            if (s.includes('implemented'))    return { symbol: '✓',  bg: '#27ae60', fg: 'white' };
-            if (s.includes('eliminated'))     return { symbol: '★',  bg: '#34495e', fg: 'white' };
-            return { symbol: '✕', bg: '#e74c3c', fg: 'white' };
+            if (s.includes('fully'))          return { type:'text', symbol: '💯', bg: '#ffffff', fg: '#333',    size: 11 };
+            if (s.includes('eliminated'))     return { type:'text', symbol: '🏆', bg: '#0d2b6e', fg: '#FFD700', size: 11 };
+            if (s.includes('validated'))      return { type:'text', symbol: '✓✓', bg: '#1e8449', fg: 'white',   size: 9  };
+            if (s.includes('implemented'))    return { type:'text', symbol: '✓',  bg: '#27ae60', fg: 'white',   size: 12 };
+            if (s.includes('planned'))        return { type:'text', symbol: '!',  bg: '#3498db', fg: 'white',   size: 13 };
+            if (s.includes('identified'))     return { type:'eye',  symbol: '👁', bg: '#9b59b6', fg: 'white',   size: 10 };
+            if (s.includes('none'))           return { type:'text', symbol: '✘',  bg: '#e74c3c', fg: 'white',   size: 11 };
+            return { type:'text', symbol: '✘', bg: '#e74c3c', fg: 'white', size: 11 };
         }
 
         function getProximityGradient(proximity) {
@@ -6015,126 +6015,132 @@
         }
 
         function createDualDisplayPoint(risk, isOverlapped) {
-            const point = document.createElement('div');
-            point.className = 'enhanced-risk-point';
+            // Wrapper: RAG dot to the left + SVG rectangle to the right
+            const wrapper = document.createElement('div');
+            wrapper.className = 'enhanced-risk-point';
+            wrapper.style.cssText = 'display:flex;align-items:center;gap:3px;background:transparent;border:none;width:auto;height:auto;';
 
             if (isOverlapped) {
-                // Crisp overlap marker
-                point.style.cssText = 'width:22px;height:22px;border-radius:4px;background:#f39c12;border:1.5px solid #d68910;display:flex;align-items:center;justify-content:center;font-size:13px;color:#333;font-weight:bold;';
-                point.textContent = '⚠';
-                return point;
+                wrapper.style.cssText += 'width:22px;height:22px;';
+                const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+                svg.setAttribute('width','22'); svg.setAttribute('height','22');
+                svg.setAttribute('viewBox','0 0 22 22');
+                const bg = document.createElementNS('http://www.w3.org/2000/svg','rect');
+                bg.setAttribute('x','0'); bg.setAttribute('y','0');
+                bg.setAttribute('width','22'); bg.setAttribute('height','22');
+                bg.setAttribute('rx','3'); bg.setAttribute('fill','#f39c12');
+                bg.setAttribute('stroke','#d68910'); bg.setAttribute('stroke-width','1.5');
+                svg.appendChild(bg);
+                const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+                t.setAttribute('x','11'); t.setAttribute('y','12');
+                t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','middle');
+                t.setAttribute('font-size','13'); t.setAttribute('font-weight','bold'); t.setAttribute('fill','#333');
+                t.textContent = '⚠'; svg.appendChild(t);
+                wrapper.appendChild(svg);
+                return wrapper;
             }
 
             const mit = getMitigationSVGSymbol(risk.mitigationStatus);
 
-            // Build as a single crisp SVG — no nested divs, no blurriness
-            const W = 68, H = 20, SPLIT = 52; // total width, height, proximity width
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('width', W);
-            svg.setAttribute('height', H);
-            svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-            svg.style.display = 'block';
-            svg.style.shapeRendering = 'crispEdges';
-
-            // Proximity gradient zones
-            const proxPct = (() => {
-                switch(Number(risk.proximity)) {
-                    case 0: return [0, 100];   // all red
-                    case 1: return [20, 80];
-                    case 2: return [40, 60];
-                    case 3: return [65, 35];
-                    case 4: return [100, 0];   // all black
-                    case 5: return [-50, 150]; // red|black (special: red left half, black right)
-                    default: return [0, 100];
-                }
-            })();
-
-            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-            const gradId = 'pg' + Math.random().toString(36).slice(2,7);
-            const grad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
-            grad.setAttribute('id', gradId);
-            grad.setAttribute('x1', '0'); grad.setAttribute('x2', '1');
-            grad.setAttribute('y1', '0'); grad.setAttribute('y2', '0');
-
-            if (Number(risk.proximity) === 5) {
-                // SA Review: red left, black right
-                [['0','#cc2200'],['50%','#cc2200'],['50%','#111111'],['100%','#111111']].forEach(([o,c]) => {
-                    const stop = document.createElementNS('http://www.w3.org/2000/svg','stop');
-                    stop.setAttribute('offset', o); stop.setAttribute('stop-color', c); grad.appendChild(stop);
-                });
-            } else {
-                const blackPct = proxPct[0] + '%';
-                [['0','#111111'],[blackPct,'#111111'],[blackPct,'#cc2200'],['100%','#cc2200']].forEach(([o,c]) => {
-                    const stop = document.createElementNS('http://www.w3.org/2000/svg','stop');
-                    stop.setAttribute('offset', o); stop.setAttribute('stop-color', c); grad.appendChild(stop);
-                });
-            }
-            defs.appendChild(grad);
-            svg.appendChild(defs);
-
-            // Outer border
-            const border = document.createElementNS('http://www.w3.org/2000/svg','rect');
-            border.setAttribute('x','0'); border.setAttribute('y','0');
-            border.setAttribute('width', W); border.setAttribute('height', H);
-            border.setAttribute('rx','2'); border.setAttribute('ry','2');
-            border.setAttribute('fill', 'none');
-            border.setAttribute('stroke','#333'); border.setAttribute('stroke-width','1');
-            svg.appendChild(border);
-
-            // Proximity fill (left section)
-            const proxRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
-            proxRect.setAttribute('x','0.5'); proxRect.setAttribute('y','0.5');
-            proxRect.setAttribute('width', SPLIT-1); proxRect.setAttribute('height', H-1);
-            proxRect.setAttribute('fill', `url(#${gradId})`);
-            svg.appendChild(proxRect);
-
-            // Divider between prox and mit
-            const div = document.createElementNS('http://www.w3.org/2000/svg','line');
-            div.setAttribute('x1', SPLIT); div.setAttribute('y1', '0');
-            div.setAttribute('x2', SPLIT); div.setAttribute('y2', H);
-            div.setAttribute('stroke','#333'); div.setAttribute('stroke-width','1');
-            svg.appendChild(div);
-
-            // Mitigation background (right section)
-            const mitRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
-            mitRect.setAttribute('x', SPLIT+0.5); mitRect.setAttribute('y','0.5');
-            mitRect.setAttribute('width', W-SPLIT-1); mitRect.setAttribute('height', H-1);
-            mitRect.setAttribute('fill', mit.bg);
-            svg.appendChild(mitRect);
-
-            // Mitigation symbol text
-            const mitText = document.createElementNS('http://www.w3.org/2000/svg','text');
-            mitText.setAttribute('x', SPLIT + (W-SPLIT)/2);
-            mitText.setAttribute('y', H/2 + 1);
-            mitText.setAttribute('text-anchor','middle');
-            mitText.setAttribute('dominant-baseline','middle');
-            mitText.setAttribute('font-size','9');
-            mitText.setAttribute('font-weight','bold');
-            mitText.setAttribute('font-family','monospace');
-            mitText.setAttribute('fill', mit.fg);
-            mitText.textContent = mit.symbol;
-            svg.appendChild(mitText);
-
-            // RAG dot on proximity bar (small coloured circle)
+            // ── RAG dot (left of rectangle) ──
             const ragColors = { red:'#e74c3c', amber:'#f39c12', green:'#27ae60' };
             const ragC = ragColors[risk.rag] || '#aaa';
-            const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
-            dot.setAttribute('cx', SPLIT/2); dot.setAttribute('cy', H/2);
-            dot.setAttribute('r','4');
-            dot.setAttribute('fill', ragC);
-            dot.setAttribute('stroke','white'); dot.setAttribute('stroke-width','0.8');
-            svg.appendChild(dot);
+            const dotSvg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+            dotSvg.setAttribute('width','10'); dotSvg.setAttribute('height','10');
+            dotSvg.setAttribute('viewBox','0 0 10 10');
+            dotSvg.style.flexShrink = '0';
+            const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+            circle.setAttribute('cx','5'); circle.setAttribute('cy','5'); circle.setAttribute('r','4.5');
+            circle.setAttribute('fill', ragC);
+            circle.setAttribute('stroke','white'); circle.setAttribute('stroke-width','1');
+            dotSvg.appendChild(circle);
+            wrapper.appendChild(dotSvg);
 
-            // Replace the point's inner content
-            point.style.width = W + 'px';
-            point.style.height = H + 'px';
-            point.style.border = 'none';
-            point.style.background = 'transparent';
-            point.style.gap = '0';
-            point.appendChild(svg);
+            // ── Main rectangle SVG ──
+            const W = 64, H = 22, SPLIT = 46;
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', W); svg.setAttribute('height', H);
+            svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+            svg.style.cssText = 'display:block;shape-rendering:crispEdges;';
 
-            return point;
+            // Proximity gradient
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const gradId = 'pg' + Math.random().toString(36).slice(2,8);
+            const grad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+            grad.setAttribute('id', gradId);
+            grad.setAttribute('x1','0'); grad.setAttribute('x2','1');
+            grad.setAttribute('y1','0'); grad.setAttribute('y2','0');
+            const prox = Number(risk.proximity);
+            const stops = prox === 5
+                ? [['0','#cc2200'],['49.9%','#cc2200'],['50%','#111111'],['100%','#111111']]
+                : prox === 4 ? [['0','#111111'],['100%','#111111']]
+                : prox === 0 ? [['0','#cc2200'],['100%','#cc2200']]
+                : (()=>{ const b=[0,20,40,65,100][prox]+'%';
+                  return [['0','#111111'],[b,'#111111'],[b,'#cc2200'],['100%','#cc2200']]; })();
+            stops.forEach(([o,c]) => {
+                const s = document.createElementNS('http://www.w3.org/2000/svg','stop');
+                s.setAttribute('offset',o); s.setAttribute('stop-color',c); grad.appendChild(s);
+            });
+            defs.appendChild(grad); svg.appendChild(defs);
+
+            // Proximity fill
+            const pRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+            pRect.setAttribute('x','0.5'); pRect.setAttribute('y','0.5');
+            pRect.setAttribute('width', SPLIT-1); pRect.setAttribute('height', H-1);
+            pRect.setAttribute('fill', `url(#${gradId})`);
+            svg.appendChild(pRect);
+
+            // Mitigation fill
+            const mRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+            mRect.setAttribute('x', SPLIT+0.5); mRect.setAttribute('y','0.5');
+            mRect.setAttribute('width', W-SPLIT-1); mRect.setAttribute('height', H-1);
+            mRect.setAttribute('fill', mit.bg);
+            svg.appendChild(mRect);
+
+            // Divider
+            const divL = document.createElementNS('http://www.w3.org/2000/svg','line');
+            divL.setAttribute('x1',SPLIT); divL.setAttribute('y1','0');
+            divL.setAttribute('x2',SPLIT); divL.setAttribute('y2',H);
+            divL.setAttribute('stroke','#333'); divL.setAttribute('stroke-width','1');
+            svg.appendChild(divL);
+
+            // Outer border
+            const bdr = document.createElementNS('http://www.w3.org/2000/svg','rect');
+            bdr.setAttribute('x','0.5'); bdr.setAttribute('y','0.5');
+            bdr.setAttribute('width', W-1); bdr.setAttribute('height', H-1);
+            bdr.setAttribute('rx','1.5'); bdr.setAttribute('fill','none');
+            bdr.setAttribute('stroke','#333'); bdr.setAttribute('stroke-width','1');
+            svg.appendChild(bdr);
+
+            // Mitigation symbol
+            const cx = SPLIT + (W-SPLIT)/2, cy = H/2;
+            if (mit.type === 'eye') {
+                // Eye icon as SVG path — scaled to fit the cell
+                const eyeG = document.createElementNS('http://www.w3.org/2000/svg','g');
+                const scale = (H-4)/24;
+                const tx = cx - 12*scale, ty = cy - 12*scale;
+                eyeG.setAttribute('transform', `translate(${tx},${ty}) scale(${scale})`);
+                const ep = document.createElementNS('http://www.w3.org/2000/svg','path');
+                ep.setAttribute('d','M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z');
+                ep.setAttribute('fill','white');
+                eyeG.appendChild(ep);
+                svg.appendChild(eyeG);
+            } else {
+                const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+                t.setAttribute('x', cx); t.setAttribute('y', cy+0.5);
+                t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','middle');
+                t.setAttribute('font-size', mit.size || 11);
+                t.setAttribute('font-weight','bold');
+                t.setAttribute('font-family', mit.symbol.length > 1 ? 'monospace' : 'sans-serif');
+                t.setAttribute('fill', mit.fg);
+                t.textContent = mit.symbol;
+                svg.appendChild(t);
+            }
+
+            wrapper.appendChild(svg);
+            return wrapper;
         }
+
 
         function updateQuadrantChart() {
             const container = document.getElementById('quadrantChartContainer');
