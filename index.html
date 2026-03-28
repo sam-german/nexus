@@ -2309,7 +2309,7 @@
         }
 
         .axis-label.x-axis {
-            bottom: -32px;
+            bottom: -52px;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -3658,7 +3658,7 @@
                                         <span>= None</span>
                                     </div>
                                     <div class="legend-item">
-                                        <span class="legend-symbol mitigation-identified">👁</span>
+                                        <span class="legend-symbol mitigation-identified" style="display:inline-flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" style="display:block;"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="white"/></svg></span>
                                         <span>= Identified</span>
                                     </div>
                                     <div class="legend-item">
@@ -6115,7 +6115,7 @@
             const dash = document.createElementNS('http://www.w3.org/2000/svg','line');
             dash.setAttribute('x1','0'); dash.setAttribute('y1','10');
             dash.setAttribute('x2','6'); dash.setAttribute('y2','10');
-            dash.setAttribute('stroke','#bbb'); dash.setAttribute('stroke-width','1');
+            dash.setAttribute('stroke','#888'); dash.setAttribute('stroke-width','1');
             dash.setAttribute('stroke-dasharray','2,1.5');
             connSvg.appendChild(dash);
             wrapper.appendChild(connSvg);
@@ -6179,14 +6179,16 @@
             // Mitigation symbol
             const cx = SPLIT + (W-SPLIT)/2, cy = H/2;
             if (mit.type === 'eye') {
-                // Eye icon as SVG path — scaled to fit the cell
+                // Eye icon — slightly smaller than cell height for clean appearance
                 const eyeG = document.createElementNS('http://www.w3.org/2000/svg','g');
-                const scale = (H-4)/24;
+                const scale = (H-7)/24;  // slightly smaller: H-7 instead of H-4
                 const tx = cx - 12*scale, ty = cy - 12*scale;
                 eyeG.setAttribute('transform', `translate(${tx},${ty}) scale(${scale})`);
                 const ep = document.createElementNS('http://www.w3.org/2000/svg','path');
                 ep.setAttribute('d','M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z');
                 ep.setAttribute('fill','white');
+                ep.setAttribute('stroke','rgba(255,255,255,0.3)');
+                ep.setAttribute('stroke-width','0.3');
                 eyeG.appendChild(ep);
                 svg.appendChild(eyeG);
             } else {
