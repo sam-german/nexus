@@ -859,6 +859,196 @@
         }
 
 
+
+        /* ===== MEETING MODE 3-WINDOW VIEW ===== */
+        .meeting-view {
+            display: none;
+            gap: 0;
+            height: calc(100vh - 220px);
+            min-height: 500px;
+            overflow-x: auto;
+        }
+
+        .meeting-view.active {
+            display: flex;
+        }
+
+        .meeting-window {
+            flex: 1 1 33.33%;
+            min-width: 320px;
+            display: flex;
+            flex-direction: column;
+            border: 3px solid transparent;
+        }
+
+        .meeting-window.red-window   { border-color: #c0392b; }
+        .meeting-window.amber-window { border-color: #d68910; }
+        .meeting-window.green-window { border-color: #1e8449; }
+
+        .meeting-window-header {
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .red-window   .meeting-window-header { background: #c0392b; }
+        .amber-window .meeting-window-header { background: #d68910; }
+        .green-window .meeting-window-header { background: #1e8449; }
+
+        .meeting-window-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            flex: 1;
+        }
+
+        .meeting-window-count {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        .meeting-window-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .meeting-card {
+            background: white;
+            border-radius: 8px;
+            padding: 12px 14px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            border-left: 4px solid #bbb;
+            cursor: default;
+        }
+
+        .meeting-card.red-card   { border-left-color: #c0392b; }
+        .meeting-card.amber-card { border-left-color: #d68910; }
+        .meeting-card.green-card { border-left-color: #1e8449; }
+
+        .meeting-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 7px;
+            flex-wrap: wrap;
+        }
+
+        .meeting-card-section {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: white;
+            padding: 2px 7px;
+            border-radius: 3px;
+        }
+
+        .section-badge-customer    { background: #5a7fa3; }
+        .section-badge-investor    { background: #6c5ce7; }
+        .section-badge-finance     { background: #74b49b; }
+        .section-badge-technology  { background: #636e72; }
+        .section-badge-operations  { background: #0984e3; }
+
+        .meeting-card-age {
+            font-size: 10px;
+            color: #888;
+            margin-left: auto;
+        }
+
+        .meeting-card-age.old   { color: #c0392b; font-weight: 600; }
+        .meeting-card-age.mid   { color: #d68910; font-weight: 600; }
+
+        .meeting-card-status {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 3px;
+            background: #e9ecef;
+            color: #555;
+        }
+
+        .meeting-card-issue {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .meeting-card-actions {
+            font-size: 11.5px;
+            color: #666;
+            line-height: 1.4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .meeting-scope-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 6px 12px;
+            background: #2c3e50;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .meeting-scope-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .meeting-scope-btn {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 12px;
+            border: 1.5px solid rgba(255,255,255,0.4);
+            background: transparent;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .meeting-scope-btn.active {
+            background: white;
+            color: #2c3e50;
+            border-color: white;
+        }
+
+        .meeting-scope-btn:hover:not(.active) {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .meeting-empty {
+            text-align: center;
+            color: #aaa;
+            font-size: 13px;
+            padding: 40px 20px;
+            font-style: italic;
+        }
+
+        /* Normal BPR sections hidden in meeting mode */
+        .bpr-sections-wrapper.meeting-active {
+            display: none;
+        }
+        /* ===== END MEETING MODE ===== */
+
         /* ===== STRATEGIC OBJECTIVES PANEL ===== */
         .obj-toggle-btn {
             display: none; /* hidden when section collapsed */
@@ -3295,6 +3485,42 @@
                 <!-- Read-only indicator (hidden - replaced by warning icon) -->
                 <div class="readonly-indicator hidden" id="readonlyIndicator"></div>
 
+                <!-- Meeting Mode 3-Window View -->
+                <div class="meeting-view" id="meetingView">
+                    <!-- Scope toggle bar -->
+                    <div class="meeting-scope-bar" style="position:sticky;top:0;z-index:5;">
+                        <span class="meeting-scope-label">Showing:</span>
+                        <button class="meeting-scope-btn active" id="meetingScopeCurrentBtn" onclick="setMeetingScope('current')">Current Week</button>
+                        <button class="meeting-scope-btn" id="meetingScopeAllBtn" onclick="setMeetingScope('all')">All Weeks</button>
+                    </div>
+                    <div style="display:flex;flex:1;overflow:hidden;">
+                    <div class="meeting-window red-window">
+                        <div class="meeting-window-header">
+                            <div class="meeting-window-title">🔴 Red Items</div>
+                            <div class="meeting-window-count" id="meetingRedCount">0</div>
+                        </div>
+                        <div class="meeting-window-body" id="meetingRedBody"></div>
+                    </div>
+                    <div class="meeting-window amber-window">
+                        <div class="meeting-window-header">
+                            <div class="meeting-window-title">🟡 Amber Items</div>
+                            <div class="meeting-window-count" id="meetingAmberCount">0</div>
+                        </div>
+                        <div class="meeting-window-body" id="meetingAmberBody"></div>
+                    </div>
+                    <div class="meeting-window green-window">
+                        <div class="meeting-window-header">
+                            <div class="meeting-window-title">🟢 Green Items</div>
+                            <div class="meeting-window-count" id="meetingGreenCount">0</div>
+                        </div>
+                        <div class="meeting-window-body" id="meetingGreenBody"></div>
+                    </div>
+                    </div><!-- /inner flex -->
+                </div>
+
+                <!-- Normal BPR Sections (hidden in meeting mode) -->
+                <div class="bpr-sections-wrapper" id="bprSectionsWrapper">
+
                 <!-- Customer Section -->
                 <div class="bpr-section customer">
                     <div class="bpr-section-header" data-section="customer">
@@ -3726,7 +3952,8 @@
                         </div><!-- /#quadLegend -->
                         </div><!-- /.quadrant-chart-wrapper -->
                     </div><!-- /.quadrant-content -->
-                        </div><!-- /.content -->
+                            </div><!-- /#bprSectionsWrapper -->
+            </div><!-- /.content -->
                     </div><!-- /.container -->
                 </div><!-- /#appContainer -->
             </div><!-- /#appMain -->
@@ -3881,9 +4108,14 @@
             if (meetingMode) {
                 btn.classList.add('active');
                 statusSpan.textContent = 'ON';
+                renderMeetingView();
+                document.getElementById('meetingView').classList.add('active');
+                document.getElementById('bprSectionsWrapper').classList.add('meeting-active');
             } else {
                 btn.classList.remove('active');
                 statusSpan.textContent = 'OFF';
+                document.getElementById('meetingView').classList.remove('active');
+                document.getElementById('bprSectionsWrapper').classList.remove('meeting-active');
             }
             
             updateWeekDisplay();
@@ -6520,6 +6752,118 @@
             });
         });
 
+
+
+        // ==================== MEETING MODE VIEW ====================
+
+        let _meetingScope = 'current'; // 'current' or 'all'
+
+        function setMeetingScope(scope) {
+            _meetingScope = scope;
+            document.getElementById('meetingScopeCurrentBtn').classList.toggle('active', scope === 'current');
+            document.getElementById('meetingScopeAllBtn').classList.toggle('active', scope === 'all');
+            renderMeetingView();
+        }
+
+        function renderMeetingView() {
+            const TRUNCATE = 80;
+            const sections = ['customer', 'investor', 'finance', 'technology', 'operations'];
+            const sectionLabels = {
+                customer: 'Customer', investor: 'Investor', finance: 'Finance',
+                technology: 'Technology', operations: 'Operations'
+            };
+
+            // Collect items — current week or all weeks
+            const allItems = [];
+            const weeksToShow = _meetingScope === 'all'
+                ? Object.keys(businessPlanData.weeks).sort()
+                : [currentWeek];
+
+            weeksToShow.forEach(weekStr => {
+                const weekData = businessPlanData.weeks[weekStr];
+                if (!weekData) return;
+                sections.forEach(section => {
+                    (weekData[section] || []).forEach(row => {
+                        if (!row || (!row.issues && !row.actions)) return;
+                        allItems.push({ ...row, section, weekStr });
+                    });
+                });
+            });
+
+            // Sort oldest → newest by dateLogged
+            allItems.sort((a, b) => {
+                const da = a.dateLogged ? new Date(a.dateLogged) : new Date(0);
+                const db = b.dateLogged ? new Date(b.dateLogged) : new Date(0);
+                return da - db;
+            });
+
+            // Split by RAG
+            const buckets = { red: [], amber: [], green: [], '': [] };
+            allItems.forEach(item => {
+                const rag = (item.rag || '').toLowerCase();
+                if (buckets[rag] !== undefined) buckets[rag].push(item);
+                else buckets[''].push(item);
+            });
+
+            // Include unset in amber as fallback
+            buckets.amber = [...buckets.amber, ...buckets['']];
+
+            function ageClass(days) {
+                if (days > 60) return 'old';
+                if (days > 21) return 'mid';
+                return '';
+            }
+
+            function ageDays(dateStr) {
+                if (!dateStr) return null;
+                const d = new Date(dateStr);
+                if (isNaN(d)) return null;
+                return Math.floor((Date.now() - d) / 86400000);
+            }
+
+            function trunc(str, len) {
+                if (!str) return '';
+                return str.length > len ? str.slice(0, len) + '…' : str;
+            }
+
+            function buildCards(items, ragClass) {
+                if (items.length === 0) {
+                    return '<div class="meeting-empty">No items</div>';
+                }
+                return items.map(item => {
+                    const days = ageDays(item.dateLogged);
+                    const ageStr = days !== null ? days + 'd' : '';
+                    const ac = days !== null ? ageClass(days) : '';
+                    const issue = trunc(item.issues || '', TRUNCATE);
+                    const actions = trunc(item.actions || '', TRUNCATE);
+                    const status = item.status || '';
+                    const sec = item.section;
+                    const weekLabel = _meetingScope === 'all' && item.weekStr
+                        ? `<span style="font-size:10px;color:#aaa;margin-left:4px;">W${item.weekStr.split('-W')[1]||''}</span>`
+                        : '';
+                    return `<div class="meeting-card ${ragClass}-card">
+                        <div class="meeting-card-meta">
+                            <span class="meeting-card-section section-badge-${sec}">${sectionLabels[sec] || sec}</span>
+                            ${status ? `<span class="meeting-card-status">${status}</span>` : ''}
+                            ${weekLabel}
+                            ${ageStr ? `<span class="meeting-card-age ${ac}" title="Age: ${days} days">${ageStr}</span>` : ''}
+                        </div>
+                        <div class="meeting-card-issue" title="${(item.issues||'').replace(/"/g,'&quot;')}">${issue || '<em>No issue text</em>'}</div>
+                        ${actions ? `<div class="meeting-card-actions" title="${(item.actions||'').replace(/"/g,'&quot;')}">${actions}</div>` : ''}
+                    </div>`;
+                }).join('');
+            }
+
+            document.getElementById('meetingRedBody').innerHTML   = buildCards(buckets.red,   'red');
+            document.getElementById('meetingAmberBody').innerHTML = buildCards(buckets.amber, 'amber');
+            document.getElementById('meetingGreenBody').innerHTML = buildCards(buckets.green, 'green');
+
+            document.getElementById('meetingRedCount').textContent   = buckets.red.length;
+            document.getElementById('meetingAmberCount').textContent = buckets.amber.length;
+            document.getElementById('meetingGreenCount').textContent = buckets.green.length;
+        }
+
+        // ==================== END MEETING MODE VIEW ====================
 
         // ==================== STRATEGIC OBJECTIVES ====================
 
