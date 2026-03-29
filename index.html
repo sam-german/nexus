@@ -510,40 +510,34 @@
         }
 
         .bpr-action-btn {
-            background: white;
-            border: 2px solid #27ae60;
-            color: #27ae60;
-            padding: 10px 20px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #27ae60, #1e8449);
+            color: white;
+            border: none;
+            padding: 10px 0;
+            width: 180px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 10px;
-            min-width: 180px;
+            gap: 6px;
             justify-content: center;
         }
 
-        .bpr-action-btn:hover {
-            background: #f0fff4;
-            transform: translateY(-1px);
-        }
+        .bpr-action-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+        .bpr-action-btn:active { transform: translateY(0); }
 
         .bpr-action-btn:disabled {
-            opacity: 0.5;
+            opacity: 0.45;
             cursor: not-allowed;
             transform: none !important;
+            filter: none !important;
         }
 
         .bpr-action-btn.clear {
-            border-color: #e74c3c;
-            color: #e74c3c;
-        }
-
-        .bpr-action-btn.clear:hover {
-            background: #fff5f5;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
         }
 
         .toggle-label {
@@ -729,53 +723,49 @@
             flex-wrap: wrap;
         }
 
+        /* ── Unified button system ── */
         .excel-btn {
-            padding: 10px 20px;
+            padding: 10px 0;
+            width: 180px;
+            text-align: center;
+            justify-content: center;
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
+        .excel-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+        .excel-btn:active { transform: translateY(0); filter: brightness(0.95); }
+        .excel-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; filter: none !important; }
+
+        /* Primary — blue (load/refresh data) */
         .excel-btn.primary {
-            background: #3498db;
+            background: linear-gradient(135deg, #2471a3, #1a5276);
             color: white;
         }
 
-        .excel-btn.primary:hover {
-            background: #2980b9;
-        }
-
+        /* Secondary — slate (export/neutral) */
         .excel-btn.secondary {
-            background: #95a5a6;
+            background: linear-gradient(135deg, #7f8c8d, #5d6d7e);
             color: white;
         }
 
-        .excel-btn.secondary:hover {
-            background: #7f8c8d;
-        }
-
+        /* Success — green (add/positive) */
         .excel-btn.success {
-            background: #27ae60;
+            background: linear-gradient(135deg, #27ae60, #1e8449);
             color: white;
         }
 
-        .excel-btn.success:hover {
-            background: #229954;
-        }
-
+        /* Danger — red (clear/delete) */
         .excel-btn.danger {
-            background: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
-        }
-
-        .excel-btn.danger:hover {
-            background: #c0392b;
         }
 
         /* Conflict Resolution Modal */
@@ -1998,18 +1988,20 @@
         }
 
         .radar-toggle-btn {
-            background: #4a90e2;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 10px 0;
+            width: 180px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 500;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(74, 144, 226, 0.3);
+            transition: all 0.2s ease;
         }
+
+        .radar-toggle-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+        .radar-toggle-btn:active { transform: translateY(0); }
 
         .radar-toggle-btn:hover {
             background: #357abd;
@@ -2179,81 +2171,57 @@
 
         .risk-table th,
         .risk-table td {
-            padding: 8px 10px;
+            padding: 5px 6px;
             text-align: left;
             border-bottom: 1px solid #e9ecef;
+            font-size: 11px;
         }
 
         .risk-table th {
             background: #f8f9fa;
             font-weight: 600;
             color: #2c3e50;
-            font-size: 13px;
-        }
-
-        /* Optimize column widths for desktop without scrolling */
-        .risk-table td:nth-child(1), /* Risk ID */
-        .risk-table th:nth-child(1) {
+            font-size: 11px;
             white-space: nowrap;
-            width: 10%;
         }
 
-        .risk-table td:nth-child(2), /* Description */
-        .risk-table th:nth-child(2) {
-            width: 18%;
-            max-width: 200px;
-        }
-
-        .risk-table td:nth-child(3), /* Category */
-        .risk-table th:nth-child(3) {
+        /* Truncated cell style for new columns */
+        .risk-table .trunc-cell {
+            max-width: 120px;
             white-space: nowrap;
-            width: 10%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: default;
         }
 
-        .risk-table td:nth-child(4), /* Likelihood */
-        .risk-table td:nth-child(5), /* Impact */
-        .risk-table th:nth-child(4),
-        .risk-table th:nth-child(5) {
-            text-align: center;
-            width: 5%;
-        }
-
-        .risk-table td:nth-child(6), /* Proximity */
-        .risk-table th:nth-child(6) {
-            white-space: nowrap;
-            width: 9%;
-            font-size: 12px;
-        }
-
-        .risk-table td:nth-child(7), /* RAG */
-        .risk-table th:nth-child(7) {
-            text-align: center;
-            width: 6%;
-        }
-
-        .risk-table td:nth-child(8), /* Risk Score */
-        .risk-table th:nth-child(8) {
-            text-align: center;
-            width: 7%;
-        }
-
-        .risk-table td:nth-child(9), /* Mitigation Status */
-        .risk-table th:nth-child(9) {
-            white-space: nowrap;
-            width: 11%;
-            font-size: 12px;
-        }
-
-        .risk-table td:nth-child(10), /* Owner */
-        .risk-table th:nth-child(10) {
-            width: 10%;
-        }
-
-        .risk-table td:nth-child(11), /* Strategic Priority */
-        .risk-table th:nth-child(11) {
-            white-space: nowrap;
-            width: 9%;
-        }
+        /* Col 1: Risk ID */
+        .risk-table td:nth-child(1), .risk-table th:nth-child(1) { width:7%; white-space:nowrap; }
+        /* Col 2: Description */
+        .risk-table td:nth-child(2), .risk-table th:nth-child(2) { width:11%; max-width:130px; }
+        /* Col 3: Category */
+        .risk-table td:nth-child(3), .risk-table th:nth-child(3) { width:9%; }
+        /* Col 4: Likelihood */
+        .risk-table td:nth-child(4), .risk-table th:nth-child(4) { width:5%; text-align:center; }
+        /* Col 5: Impact */
+        .risk-table td:nth-child(5), .risk-table th:nth-child(5) { width:5%; text-align:center; }
+        /* Col 6: Proximity */
+        .risk-table td:nth-child(6), .risk-table th:nth-child(6) { width:6%; white-space:nowrap; }
+        /* Col 7: RAG */
+        .risk-table td:nth-child(7), .risk-table th:nth-child(7) { width:4%; text-align:center; }
+        /* Col 8: Risk Score */
+        .risk-table td:nth-child(8), .risk-table th:nth-child(8) { width:5%; text-align:center; }
+        /* Col 9: TARA Threat (new) */
+        .risk-table td:nth-child(9), .risk-table th:nth-child(9) { width:8%; }
+        /* Col 10: Vulnerability (new) */
+        .risk-table td:nth-child(10), .risk-table th:nth-child(10) { width:8%; }
+        /* Col 11: Proposed Mitigation (new) */
+        .risk-table td:nth-child(11), .risk-table th:nth-child(11) { width:9%; }
+        /* Col 12: Mitigation Status */
+        .risk-table td:nth-child(12), .risk-table th:nth-child(12) { width:8%; white-space:nowrap; }
+        /* Col 13: Owner */
+        .risk-table td:nth-child(13), .risk-table th:nth-child(13) { width:8%; }
+        /* Col 14: Strategic Priority */
+        .risk-table td:nth-child(14), .risk-table th:nth-child(14) { width:7%; white-space:nowrap; }
 
         .risk-table tr:hover {
             background: #f8f9fa;
@@ -2384,13 +2352,12 @@
             text-align: center;
             border-radius: 6px;
             cursor: pointer;
+            font-size: 13px;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
-        .toggle-btn:hover {
-            transform: translateY(-2px);
-        }
+        .toggle-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
 
         .toggle-btn.active {
             background: linear-gradient(135deg, #e67e22, #d35400);
@@ -2423,6 +2390,53 @@
             text-align: center;
             font-size: 18px;
             color: #333333;
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Wrapper to allow centering the inline subtitle */
+        .quadrant-subtitle-wrapper {
+            text-align: center;
+        }
+
+        .quadrant-subtitle.filterable {
+            cursor: help;
+            border-bottom: 1px dashed #999;
+            padding-bottom: 1px;
+        }
+
+        .quadrant-subtitle.filterable:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: white;
+            font-size: 12px;
+            font-weight: normal;
+            padding: 8px 12px;
+            border-radius: 6px;
+            white-space: pre-line;
+            min-width: 180px;
+            max-width: 280px;
+            text-align: left;
+            line-height: 1.6;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .quadrant-subtitle.filterable:hover::before {
+            content: '';
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-bottom-color: #2c3e50;
+            z-index: 101;
+            pointer-events: none;
         }
 
         .quadrant-main-container {
@@ -2577,18 +2591,98 @@
         }
 
 
+
+        /* ===== MINI QUADRANT SUMMARY GRID ===== */
+        .mini-quad-grid {
+            position: absolute;
+            left: -210px;
+            top: 348px; /* cat panel height(340) + gap(8) */
+            width: 220px;
+            height: 232px; /* remainder: 580 - 340 - 8 = 232px */
+            box-sizing: border-box;
+            background: white;
+            border: 2px solid #bbb;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.2s, opacity 0.2s;
+            z-index: 10;
+        }
+
+        .mini-quad-grid.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .mini-quad-title {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .mini-quad-cells {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 4px;
+            flex: 1;
+            height: calc(100% - 28px); /* fill box minus title height */
+        }
+
+        .mini-quad-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            padding: 6px 4px;
+            min-height: 52px;
+        }
+
+        .mini-quad-cell.reduce  { background: rgba(255, 235, 156, 0.6); border: 1px solid rgba(200,170,50,0.3); }
+        .mini-quad-cell.avoid   { background: rgba(255, 199, 206, 0.6); border: 1px solid rgba(200,80,100,0.3); }
+        .mini-quad-cell.accept  { background: rgba(198, 235, 156, 0.6); border: 1px solid rgba(80,160,80,0.3); }
+        .mini-quad-cell.transfer{ background: rgba(255, 235, 156, 0.6); border: 1px solid rgba(200,170,50,0.3); }
+
+        .mini-quad-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            color: #555;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .mini-quad-count {
+            font-size: 22px;
+            font-weight: 800;
+            color: #2c3e50;
+            line-height: 1;
+        }
+
+        .mini-quad-count.zero { color: #bbb; }
+        /* ===== END MINI QUADRANT SUMMARY GRID ===== */
+
         /* ===== CATEGORY FILTER PANEL (left of chart) ===== */
         .quad-cat-panel {
             position: absolute;
             top: 0;
-            left: -210px; /* clears y-axis label (-85px) and scale numbers (-40px) from chart edge */
+            left: -210px;
             background: white;
             border: 2px solid #bbb;
             border-radius: 8px;
             padding: 15px;
             width: 220px;
-            max-height: 500px;
+            height: 340px; /* top portion of left stack */
             overflow-y: auto;
+            box-sizing: border-box;
             transition: visibility 0.2s, opacity 0.2s;
             z-index: 10;
         }
@@ -2675,14 +2769,15 @@
         .quad-legend {
             position: absolute;
             top: 0;
-            left: 902px; /* symmetric with cat panel: same 60px extra clearance */
+            left: 902px;
             background: white;
             border: 2px solid #bbb;
             border-radius: 8px;
             padding: 15px;
             width: 220px;
-            max-height: 500px;
+            height: 580px; /* full wrapper visual height: chart(500) + margin-bottom(80) */
             overflow-y: auto;
+            box-sizing: border-box;
             transition: visibility 0.2s, opacity 0.2s;
             z-index: 10;
         }
@@ -3414,6 +3509,9 @@
                                 <th>Proximity</th>
                                 <th>RAG</th>
                                 <th>Risk Score</th>
+                                <th>TARA Threat</th>
+                                <th>Vulnerability</th>
+                                <th>Proposed Mitigation</th>
                                 <th>Mitigation Status</th>
                                 <th>Owner</th>
                                 <th>Strategic Priority</th>
@@ -3814,7 +3912,9 @@
                     <div class="quadrant-title-bar">
                         <h1 class="quadrant-title">Likelihood vs Impact</h1>
                     </div>
-                    <div class="quadrant-subtitle" id="quadrantSubtitle">All Categories (5)</div>
+                    <div class="quadrant-subtitle-wrapper">
+                        <span class="quadrant-subtitle" id="quadrantSubtitle">All Categories (5)</span>
+                    </div>
                 </div>
 
                 <div class="quadrant-main-container">
@@ -3865,6 +3965,29 @@
                             </div>
                             
                             <!-- Risk points will be added here dynamically -->
+                        </div>
+                        <div class="mini-quad-grid" id="miniQuadGrid">
+                            <div class="mini-quad-title">Risks by Quadrant</div>
+                            <div class="mini-quad-cells">
+                                <!-- Top row: Reduce (left) | Avoid (right) -->
+                                <div class="mini-quad-cell reduce">
+                                    <div class="mini-quad-label">Reduce</div>
+                                    <div class="mini-quad-count" id="mq-reduce">0</div>
+                                </div>
+                                <div class="mini-quad-cell avoid">
+                                    <div class="mini-quad-label">Avoid</div>
+                                    <div class="mini-quad-count" id="mq-avoid">0</div>
+                                </div>
+                                <!-- Bottom row: Accept (left) | Transfer (right) -->
+                                <div class="mini-quad-cell accept">
+                                    <div class="mini-quad-label">Accept</div>
+                                    <div class="mini-quad-count" id="mq-accept">0</div>
+                                </div>
+                                <div class="mini-quad-cell transfer">
+                                    <div class="mini-quad-label">Transfer</div>
+                                    <div class="mini-quad-count" id="mq-transfer">0</div>
+                                </div>
+                            </div>
                         </div>
                         <div class="quad-cat-panel hidden" id="quadCatPanel">
                             <h3>FILTER CATEGORIES</h3>
@@ -4087,6 +4210,12 @@
         if (savedRisks) {
             try {
                 risks = JSON.parse(savedRisks);
+                // Normalise numeric fields that may have been stored as "N - Label" strings
+                risks.forEach(risk => {
+                    risk.proximity = parseInt(String(risk.proximity)) || 0;
+                    risk.likelihood = parseInt(String(risk.likelihood)) || 1;
+                    risk.impact = parseInt(String(risk.impact)) || 1;
+                });
             } catch (error) {
                 console.error('Error loading risks from localStorage:', error);
             }
@@ -5674,7 +5803,7 @@
         }
 
         function getProximityLabel(proximity) {
-            switch(proximity) {
+            switch(parseInt(String(proximity))) {
                 case 0: return '0 - Unknown';
                 case 1: return '1 - Immediate';
                 case 2: return '2 - Imminent';
@@ -5686,7 +5815,7 @@
         }
 
         function getProximityText(proximity) {
-            switch(proximity) {
+            switch(parseInt(String(proximity)) ) {
                 case 0: return 'Unknown';
                 case 1: return 'Immediate';
                 case 2: return 'Imminent';
@@ -5813,6 +5942,7 @@
                 loadWeekData();
                 updateWeekDisplay();
             } else if (tabName === 'quadrant') {
+                applyRiskRegisterFilterToQuadrant();
                 updateQuadrantChart();
             }
         }
@@ -6129,17 +6259,26 @@
                 const riskScore = calculateRiskScore(risk.likelihood, risk.impact, risk.proximity, risk.mitigationStatus);
                 const proximityLabel = getProximityLabel(risk.proximity);
                 const row = document.createElement('tr');
+                function tc(val, len) {
+                    const s = val || '';
+                    return s.length > len
+                        ? `<span class="trunc-cell" title="${s.replace(/"/g,'&quot;')}">${s.slice(0,len)}…</span>`
+                        : `<span>${s}</span>`;
+                }
                 row.innerHTML = `
                     <td>${risk.id}</td>
-                    <td>${risk.description}</td>
-                    <td>${risk.category}</td>
+                    <td>${tc(risk.description, 30)}</td>
+                    <td>${tc(risk.category, 20)}</td>
                     <td>${getLikelihoodText(risk.likelihood)}</td>
                     <td>${getImpactText(risk.impact)}</td>
                     <td>${getProximityText(risk.proximity)}</td>
                     <td><span class="risk-badge ${risk.rag}" title="${risk.rag.toUpperCase()}"></span></td>
                     <td><strong>${riskScore}</strong></td>
-                    <td>${stripMitigationNumber(risk.mitigationStatus)}</td>
-                    <td>${risk.owner}</td>
+                    <td>${tc(risk.taraThreat || risk['TARA Threat'] || '', 30)}</td>
+                    <td>${tc(risk.vulnerability || '', 30)}</td>
+                    <td>${tc(risk.mitigation || risk.proposedMitigation || '', 30)}</td>
+                    <td>${tc(stripMitigationNumber(risk.mitigationStatus), 20)}</td>
+                    <td>${tc(risk.owner, 20)}</td>
                     <td>${risk.strategicPriority || 'Not Set'}</td>
                 `;
                 tbody.appendChild(row);
@@ -6150,7 +6289,7 @@
             for (let i = 0; i < fillerCount; i++) {
                 const filler = document.createElement('tr');
                 filler.className = 'filler-row';
-                filler.innerHTML = '<td colspan="11">&nbsp;</td>';
+                filler.innerHTML = '<td colspan="14">&nbsp;</td>';
                 tbody.appendChild(filler);
             }
 
@@ -6355,7 +6494,7 @@
             wrapper.appendChild(connSvg);
 
             // ── Main rectangle SVG ──
-            const W = 64, H = 22, SPLIT = 46;
+            const W = 73, H = 22, SPLIT = 53; // aspect ratio 3.32:1 matches legend (40:12)
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('width', W); svg.setAttribute('height', H);
             svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
@@ -6368,13 +6507,16 @@
             grad.setAttribute('id', gradId);
             grad.setAttribute('x1','0'); grad.setAttribute('x2','1');
             grad.setAttribute('y1','0'); grad.setAttribute('y2','0');
-            const prox = Number(risk.proximity);
+            const prox = parseInt(String(risk.proximity !== undefined ? risk.proximity : 0)) || 0;
+            // Colours exactly matching the legend
+            const PR = '#ff0000', PB = '#000000';
+            // Black percentage before red: Unknown=0, Immediate=25, Imminent=50, Midterm=75, Longterm=100
             const stops = prox === 5
-                ? [['0','#cc2200'],['49.9%','#cc2200'],['50%','#111111'],['100%','#111111']]
-                : prox === 4 ? [['0','#111111'],['100%','#111111']]
-                : prox === 0 ? [['0','#cc2200'],['100%','#cc2200']]
-                : (()=>{ const b=[0,20,40,65,100][prox]+'%';
-                  return [['0','#111111'],[b,'#111111'],[b,'#cc2200'],['100%','#cc2200']]; })();
+                ? [['0',PR],['49.9%',PR],['50%',PB],['100%',PB]]   // SA Review: red|black
+                : prox === 4 ? [['0',PB],['100%',PB]]               // Longterm: all black
+                : prox === 0 ? [['0',PR],['100%',PR]]               // Unknown: all red
+                : (()=>{ const b=[0,25,50,75][prox]+'%';           // 1=25%, 2=50%, 3=75%
+                  return [['0',PB],[b,PB],[b,PR],['100%',PR]]; })();
             stops.forEach(([o,c]) => {
                 const s = document.createElementNS('http://www.w3.org/2000/svg','stop');
                 s.setAttribute('offset',o); s.setAttribute('stop-color',c); grad.appendChild(s);
@@ -6442,25 +6584,85 @@
         }
 
 
+
+        function updateMiniGrid(risksToPlot) {
+            const counts = { reduce: 0, avoid: 0, accept: 0, transfer: 0 };
+            risksToPlot.forEach(risk => {
+                let x, y;
+                if (showPostMitigation) {
+                    const pm = calculatePostMitigationPosition(risk);
+                    x = pm.likelihood;
+                    y = pm.impact;
+                } else {
+                    x = parseInt(String(risk.likelihood)) || 1;
+                    y = parseInt(String(risk.impact))    || 1;
+                }
+                if (x <= 3 && y > 3)       counts.reduce++;
+                else if (x > 3 && y > 3)   counts.avoid++;
+                else if (x <= 3 && y <= 3) counts.accept++;
+                else                       counts.transfer++;
+            });
+
+            ['reduce','avoid','accept','transfer'].forEach(q => {
+                const el = document.getElementById('mq-' + q);
+                if (el) {
+                    el.textContent = counts[q];
+                    el.className = 'mini-quad-count' + (counts[q] === 0 ? ' zero' : '');
+                }
+            });
+        }
+
         function updateQuadrantChart() {
             const container = document.getElementById('quadrantChartContainer');
             
             // Clear existing risk points and tooltips
             container.querySelectorAll('.enhanced-risk-point, .enhanced-risk-label, .risk-tooltip').forEach(el => el.remove());
             
-            // Get selected categories from checkboxes (fall back to all if panel not yet initialised)
+            // Get selected categories from checkboxes
+            // If panel not yet initialised, treat as all selected
+            const allCheckboxes = document.querySelectorAll('.cat-checkbox');
             const checked = Array.from(document.querySelectorAll('.cat-checkbox:checked')).map(cb => cb.value);
-            let risksToPlot = risks;
-            if (checked.length > 0 && checked.length < QUAD_CATEGORIES.length) {
+            const panelInitialised = allCheckboxes.length > 0;
+
+            let risksToPlot;
+            if (!panelInitialised) {
+                // Panel not yet built — show all
+                risksToPlot = risks;
+            } else if (checked.length === 0) {
+                // Clear All was pressed — show nothing
+                risksToPlot = [];
+            } else if (checked.length === QUAD_CATEGORIES.length) {
+                // All selected — show everything
+                risksToPlot = risks;
+            } else {
+                // Partial selection
                 risksToPlot = risks.filter(risk => checked.includes(risk.category));
             }
 
+            // Update mini grid counts
+            updateMiniGrid(risksToPlot);
+
             // Update subtitle
-            const allSelected = checked.length === 0 || checked.length === QUAD_CATEGORIES.length;
-            const subtitle = allSelected
-                ? `All Categories (${risksToPlot.length})`
-                : `${checked.length} categor${checked.length === 1 ? 'y' : 'ies'} selected (${risksToPlot.length})`;
-            document.getElementById('quadrantSubtitle').textContent = subtitle;
+            const allSelected = !panelInitialised || checked.length === QUAD_CATEGORIES.length;
+            const noneSelected = panelInitialised && checked.length === 0;
+            const subtitle = noneSelected
+                ? 'No categories selected (0)'
+                : allSelected
+                    ? `All Categories (${risksToPlot.length})`
+                    : `${checked.length} categor${checked.length === 1 ? 'y' : 'ies'} selected (${risksToPlot.length})`;
+            const subtitleEl = document.getElementById('quadrantSubtitle');
+            subtitleEl.textContent = subtitle;
+
+            // Show tooltip on subtitle only when panel is hidden and categories are filtered
+            const panelHidden = document.getElementById('quadCatPanel').classList.contains('hidden');
+            if (!allSelected && panelHidden) {
+                const tooltipLines = 'Filtered categories:\n' + checked.map(c => '• ' + c).join('\n');
+                subtitleEl.setAttribute('data-tooltip', tooltipLines);
+                subtitleEl.classList.add('filterable');
+            } else {
+                subtitleEl.removeAttribute('data-tooltip');
+                subtitleEl.classList.remove('filterable');
+            }
             
             // Track positions for overlap detection
             const positionMap = new Map();
@@ -6979,6 +7181,40 @@
         // ==================== END STRATEGIC OBJECTIVES ====================
 
 
+
+        // ==================== QUADRANT CATEGORY SYNC ====================
+        function applyRiskRegisterFilterToQuadrant() {
+            // Ensure the panel is built before we try to set checkboxes
+            initCatPanel();
+
+            const rrFilter = document.getElementById('categoryFilter');
+            const selectedCategory = rrFilter ? rrFilter.value : '';
+
+            const checkboxes = document.querySelectorAll('.cat-checkbox');
+            if (checkboxes.length === 0) return;
+
+            if (selectedCategory) {
+                // A specific category is active on Risk Register — select only that one
+                checkboxes.forEach(cb => {
+                    cb.checked = cb.value === selectedCategory;
+                });
+                // Open the panel so user can see what's pre-selected
+                const panel = document.getElementById('quadCatPanel');
+                const btn = document.getElementById('catFilterToggle');
+                const mini = document.getElementById('miniQuadGrid');
+                if (panel && panel.classList.contains('hidden')) {
+                    panel.classList.remove('hidden');
+                    if (mini) mini.classList.add('visible');
+                    btn.textContent = 'Hide Categories';
+                    _catPanelOpen = true;
+                }
+            } else {
+                // No filter active — select all
+                checkboxes.forEach(cb => { cb.checked = true; });
+            }
+        }
+        // ==================== END QUADRANT CATEGORY SYNC ====================
+
         // ==================== CATEGORY FILTER PANEL ====================
 
         const QUAD_CATEGORIES = [
@@ -7015,15 +7251,20 @@
         function toggleCatPanel() {
             const panel = document.getElementById('quadCatPanel');
             const btn   = document.getElementById('catFilterToggle');
+            const mini  = document.getElementById('miniQuadGrid');
             initCatPanel();
             _catPanelOpen = !_catPanelOpen;
             if (_catPanelOpen) {
                 panel.classList.remove('hidden');
+                if (mini) mini.classList.add('visible');
                 btn.textContent = 'Hide Categories';
             } else {
                 panel.classList.add('hidden');
+                if (mini) mini.classList.remove('visible');
                 btn.textContent = 'Select Categories';
             }
+            // Refresh subtitle tooltip state after panel toggle
+            updateQuadrantChart();
         }
 
         function setCatFilterAll(checked) {
