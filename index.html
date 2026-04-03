@@ -210,7 +210,6 @@
 
         .home-ai-box {
             width: 100%;
-            max-width: 540px;
             background: #f5f5f5;
             border: 1.5px solid #d0d0d0;
             border-radius: 12px;
@@ -231,7 +230,7 @@
             box-sizing: border-box;
         }
 
-        .home-ai-box textarea::placeholder { color: #aaa; }
+        .home-ai-box textarea::placeholder { color: #aaa; font-size: 12px; }
 
         .home-ai-watermark {
             position: absolute;
@@ -1386,6 +1385,144 @@
         /* ===== END RIBBON MENU ===== */
 
 
+
+        /* ===== HOME AI INPUT FLOW ===== */
+
+        /* Submit button — hidden until text entered */
+        .home-ai-submit {
+            display: none;
+            width: 100%;
+            max-width: 540px;
+            margin-top: 12px;
+            padding: 11px 0;
+            background: linear-gradient(135deg, #700d19, #9b1a2e);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: all 0.2s;
+        }
+        .home-ai-submit:hover { filter: brightness(1.12); transform: translateY(-1px); }
+        .home-ai-submit.visible { display: block; animation: fadeIn 0.25s ease; }
+
+        /* Animated perimeter border */
+        .home-ai-box.analysing {
+            background: #f9f5f6;
+        }
+
+        .home-ai-box.analysing textarea {
+            opacity: 0.45;
+            pointer-events: none;
+        }
+
+        /* SVG border canvas — drawn on top of the box */
+        .ai-border-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            pointer-events: none;
+            z-index: 10;
+            display: none;
+        }
+        .home-ai-box.analysing .ai-border-canvas { display: block; }
+
+        /* Summary card — replaces textarea content */
+        .ai-summary-card {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .ai-summary-card.visible { display: block; }
+
+        .ai-summary-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #700d19;
+            margin-bottom: 10px;
+        }
+
+        .ai-summary-text {
+            font-size: 13px;
+            color: #2c3e50;
+            line-height: 1.55;
+            margin-bottom: 14px;
+            font-style: italic;
+        }
+
+        .ai-summary-chips {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .ai-chip {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px 14px;
+            min-width: 120px;
+            flex: 1;
+        }
+
+        .ai-chip-label {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .ai-chip-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .ai-chip.classification .ai-chip-value {
+            font-size: 12px;
+            text-align: center;
+            color: #700d19;
+        }
+
+        .ai-chip.alignment .ai-chip-value {
+            font-size: 20px;
+            color: #1e8449;
+        }
+
+        .ai-summary-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .ai-action-btn {
+            flex: 1;
+            padding: 9px 0;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.18s;
+        }
+        .ai-action-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+        .ai-btn-log    { background: linear-gradient(135deg,#27ae60,#1e8449); color:white; }
+        .ai-btn-reedit { background: linear-gradient(135deg,#2471a3,#1a5276); color:white; }
+        .ai-btn-cancel { background: #e9ecef; color: #555; }
+
+        /* ===== END HOME AI INPUT FLOW ===== */
+
         /* ===== RIBBON SEARCH BAR ===== */
         .ribbon-search-wrapper {
             display: flex;
@@ -2386,25 +2523,27 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 24px;
-            height: 24px;
+            min-width: 26px;
+            height: 26px;
             border-radius: 50%;
             font-size: 11px;
-            font-weight: bold;
-            padding: 0 6px;
+            font-weight: 700;
+            padding: 0 5px;
             color: white;
+            border: 2px solid rgba(0,0,0,0.08);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.25);
         }
 
         .rag-mini.red {
-            background: #e74c3c;
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #c0392b);
         }
 
         .rag-mini.amber {
-            background: #f39c12;
+            background: radial-gradient(circle at 30% 30%, #ffd93d, #d68910);
         }
 
         .rag-mini.green {
-            background: #27ae60;
+            background: radial-gradient(circle at 30% 30%, #6bcf7f, #1e8449);
         }
 
         .category-name {
@@ -2457,15 +2596,15 @@
         }
 
         .traffic-light {
-            width: 60px;
-            height: 60px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             border: 3px solid transparent;
         }
 
@@ -2484,7 +2623,7 @@
         }
 
         .light-count {
-            font-size: 18px;
+            font-size: 15px;
             font-weight: bold;
             color: white;
         }
@@ -2751,18 +2890,26 @@
         /* Col 15: Strategic Priority */
         .risk-table td:nth-child(15), .risk-table th:nth-child(15) { width:7%; white-space:nowrap; }
 
-        .risk-table tr:hover {
-            background: #f8f9fa;
+        .risk-table tbody tr:nth-child(odd):not(.filler-row) {
+            background: #f0f6fb;
+        }
+
+        .risk-table tbody tr:nth-child(even):not(.filler-row) {
+            background: #ffffff;
+        }
+
+        .risk-table tbody tr:hover:not(.filler-row) {
+            background: #dbeeff !important;
         }
 
         /* Traffic light style RAG indicators */
         .risk-badge {
-            width: 24px;
-            height: 24px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
             display: inline-block;
             border: 2px solid rgba(0,0,0,0.1);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .risk-badge.red { 
@@ -3954,6 +4101,12 @@
                     <span class="icon-label">Quadrant</span>
                 </button>
                 <div class="sidebar-divider"></div>
+                <!-- People (inert) -->
+                <button class="sidebar-icon-btn" id="sidebarPeople" title="People">
+                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    <span class="icon-label">People</span>
+                </button>
+                <div class="sidebar-divider"></div>
                 <!-- Settings (inert) -->
                 <button class="sidebar-icon-btn" id="sidebarSettings" title="Settings">
                     <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
@@ -3970,18 +4123,69 @@
                         <h2>Welcome to Nexus</h2>
                         <p>Active Infrastructure Governance</p>
                     </div>
-                    <div class="home-ai-box">
-                        <textarea placeholder="Describe a risk, threat or improvement idea…" id="homeAiInput"></textarea>
-                        <div class="home-ai-watermark">
-                            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="50" cy="50" r="30" fill="none" stroke="#700d19" stroke-width="4"/>
-                                <ellipse cx="50" cy="50" rx="30" ry="12" fill="none" stroke="#700d19" stroke-width="4" transform="rotate(40 50 50)"/>
-                                <ellipse cx="50" cy="50" rx="30" ry="12" fill="none" stroke="#700d19" stroke-width="4" transform="rotate(-40 50 50)"/>
-                                <circle cx="50" cy="50" r="5" fill="#700d19"/>
-                                <text x="50" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#700d19">AI</text>
-                            </svg>
+                    <div style="width:100%;max-width:540px;">
+                    <div class="home-ai-box" id="homeAiBox">
+                        <!-- Animated border canvas -->
+                        <svg class="ai-border-canvas" id="aiBorderCanvas"></svg>
+
+                        <!-- Input state -->
+                        <div id="homeAiInputArea">
+                            <textarea placeholder="Describe a risk, threat or improvement idea…"
+                                id="homeAiInput" oninput="onAiInputChange(this.value)"></textarea>
+                            <div class="home-ai-watermark">
+                                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="50" cy="50" r="30" fill="none" stroke="#700d19" stroke-width="4"/>
+                                    <ellipse cx="50" cy="50" rx="30" ry="12" fill="none" stroke="#700d19" stroke-width="4" transform="rotate(40 50 50)"/>
+                                    <ellipse cx="50" cy="50" rx="30" ry="12" fill="none" stroke="#700d19" stroke-width="4" transform="rotate(-40 50 50)"/>
+                                    <circle cx="50" cy="50" r="5" fill="#700d19"/>
+                                    <text x="50" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#700d19">AI</text>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Summary card (hidden until analysis done) -->
+                        <div class="ai-summary-card" id="aiSummaryCard">
+                            <div class="ai-summary-title">✦ Analysis Complete</div>
+                            <div class="ai-summary-text" id="aiSummaryText"></div>
+                            <div class="ai-summary-chips">
+                                <div class="ai-chip classification">
+                                    <div class="ai-chip-label">Classification</div>
+                                    <div class="ai-chip-value" id="aiClassification">—</div>
+                                </div>
+                                <div class="ai-chip alignment">
+                                    <div class="ai-chip-label">Strategic Alignment</div>
+                                    <div class="ai-chip-value" id="aiAlignment">—</div>
+                                </div>
+                            </div>
+                            <!-- Risk parameters — shown only when classification = Risk -->
+                            <div id="aiRiskParams" style="display:none;">
+                                <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#999;margin-bottom:6px;">Suggested Risk Parameters</div>
+                                <div class="ai-summary-chips" style="gap:6px;">
+                                    <div class="ai-chip" style="min-width:80px;">
+                                        <div class="ai-chip-label">Likelihood</div>
+                                        <div class="ai-chip-value" id="aiLikelihood" style="font-size:11px;color:#2471a3;">—</div>
+                                    </div>
+                                    <div class="ai-chip" style="min-width:80px;">
+                                        <div class="ai-chip-label">Impact</div>
+                                        <div class="ai-chip-value" id="aiImpact" style="font-size:11px;color:#c0392b;">—</div>
+                                    </div>
+                                    <div class="ai-chip" style="min-width:80px;">
+                                        <div class="ai-chip-label">Proximity</div>
+                                        <div class="ai-chip-value" id="aiProximity" style="font-size:11px;color:#d68910;">—</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ai-summary-actions">
+                                <button class="ai-action-btn ai-btn-log" onclick="aiLogItem()">📋 Log Item</button>
+                                <button class="ai-action-btn ai-btn-reedit" onclick="aiReEdit()">✏️ Re-edit</button>
+                                <button class="ai-action-btn ai-btn-cancel" onclick="aiCancel()">✕ Cancel</button>
+                            </div>
                         </div>
                     </div>
+                    <button class="home-ai-submit" id="homeAiSubmit" onclick="submitAiInput()">
+                        Analyse with AI  ✦
+                    </button>
+                    </div><!-- /max-width wrapper -->
                 </div>
 
                 <!-- EXISTING APP (hidden until a tab is selected) -->
@@ -6826,6 +7030,409 @@
         }
 
 
+
+        // ==================== HOME AI INPUT ====================
+        let _aiAnalysisResult = null;
+        let _aiBorderAnim = null;
+
+        function onAiInputChange(value) {
+            const btn = document.getElementById('homeAiSubmit');
+            btn.classList.toggle('visible', value.trim().length > 0);
+        }
+
+        async function submitAiInput() {
+            const text = document.getElementById('homeAiInput').value.trim();
+            if (!text) return;
+            window._lastAiInputText = text; // store for SIP comment field
+
+            // Start border animation
+            const box = document.getElementById('homeAiBox');
+            box.classList.add('analysing');
+            document.getElementById('homeAiSubmit').classList.remove('visible');
+            startBorderAnimation();
+
+            try {
+                const prompt = `You are a senior risk analyst for a technology company. Analyse the following input and classify it accurately.
+
+INPUT: "${text.replace(/"/g, '\\"')}"
+
+CLASSIFICATION RULES — apply strictly in order:
+1. Classify as "Risk" if the input describes: a threat, hazard, vulnerability, negative event, potential loss, cost increase, supply chain issue, geopolitical exposure, regulatory breach, security incident, financial exposure, reputational damage, disruption, delay, suspension, or ANY situation that could adversely affect the organisation. When in doubt, lean towards "Risk".
+2. Classify as "Operational Improvement" only if it clearly describes improving an internal process with no adverse consequence.
+3. Classify as "Service Improvement" only if it clearly describes improving customer-facing service delivery.
+4. Classify as "Product Improvement" only if it clearly describes a product feature or capability enhancement.
+5. Classify as "General Improvement" only if none of the above apply.
+
+CATEGORY — pick the BEST fit from exactly these options:
+- "Strategic & Commercial": market, competition, partnerships, revenue, geopolitical, supply chain, M&A
+- "Financial & Credit": costs, cash flow, credit, liquidity, pricing, financial reporting, budget
+- "Operational & Execution": delivery, operations, processes, staffing, vendors, logistics
+- "Technology & Platform": systems, software, infrastructure, tech debt, platforms
+- "Cybersecurity & Information Security": data breaches, cyber attacks, security, data privacy
+- "Legal, Regulatory & Compliance": laws, regulations, contracts, compliance, licensing
+
+SCALES:
+Likelihood 1-5: 1=Unlikely 2=Possible 3=Likely 4=Very Likely 5=Certain
+Impact 1-5: 1=Negligible 2=Light 3=Medium 4=Severe 5=Catastrophic
+Proximity 0-5: 0=Unknown 1=Immediate 2=Imminent(<3mo) 3=Midterm(3-12mo) 4=Longterm(>12mo) 5=SA Review
+
+Respond ONLY with a valid JSON object — no markdown, no preamble, no explanation:
+{
+  "summary": "One sentence max 120 chars — shown in the analysis panel as a plain-English summary of what was entered",
+  "description": "A self-contained, meaningful phrase of 4-7 words that reads as a complete concept — the Risk Register headline. Must make sense in isolation without reading the full input. Good examples: 'Closure of Veterans International Bridge', 'Middle East Supply Chain Cost Escalation', 'Critical Component Delivery Suspension'. Bad example: 'Prolonged closure of the Veterans' (incomplete). Do NOT start mid-thought.",
+  "classification": "<classification>",
+  "strategicAlignment": <integer 0-100>,
+  "category": "<category>",
+  "likelihood": <1-5>,
+  "impact": <1-5>,
+  "proximity": <0-5>,
+  "taraThreat": "If Risk: 2-3 analytical sentences describing the specific threat in detail — what it is, its origin, and how it directly impacts the organisation. Draw fully from the input text. If not a Risk, return exactly: Not Applicable",
+  "vulnerability": "If Risk: 2-3 analytical sentences describing the specific organisational vulnerability — the dependency, weakness or exposure that makes this risk material. Be concrete and specific to the situation. If not a Risk, return exactly: Not Applicable"
+}`;
+
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 1200,
+                        messages: [{ role: 'user', content: prompt }]
+                    })
+                });
+
+                const data = await response.json();
+                const raw = (data.content || []).map(b => b.text || '').join('').trim();
+                const clean = raw.replace(/^```json|^```|```$/gm, '').trim();
+                _aiAnalysisResult = JSON.parse(clean);
+
+            } catch(err) {
+                // Fallback: local rule-based analysis (API unavailable)
+                console.warn('AI API unavailable, using local analysis. Reason:', err.message || err);
+                _aiAnalysisResult = localAiAnalysis(text);
+            }
+
+            stopBorderAnimation();
+            box.classList.remove('analysing');
+            showAiSummary(_aiAnalysisResult);
+        }
+
+        function localAiAnalysis(text) {
+            const t = text.toLowerCase();
+            // Risk indicators — broad and inclusive (lean towards Risk)
+            const riskWords = ['risk','threat','breach','failure','vulnerability','exposure','incident',
+                'conflict','war','disruption','delay','suspend','cost','increase','shortage','loss',
+                'damage','attack','outage','crash','error','problem','issue','concern','impact',
+                'supply chain','inflation','sanction','geopolit','regulation','fine','penalty'];
+            const isRisk = riskWords.some(k => t.includes(k));
+
+            let classification = isRisk ? 'Risk' :
+                t.match(/process|workflow|efficiency|streamline|automate|waste/) ? 'Operational Improvement' :
+                t.match(/customer|client|service|support|experience|satisfaction/) ? 'Service Improvement' :
+                t.match(/product|feature|platform|capability|build|develop/) ? 'Product Improvement' :
+                'General Improvement';
+
+            const categories = [
+                { kw: ['cyber','security','data','hack','breach','phishing','malware'], cat: 'Cybersecurity & Information Security' },
+                { kw: ['financial','revenue','cost','budget','credit','cash','liquidity','price'], cat: 'Financial & Credit' },
+                { kw: ['legal','compliance','regulatory','gdpr','contract','licence','penalty'], cat: 'Legal, Regulatory & Compliance' },
+                { kw: ['technology','platform','system','software','infrastructure','tech'], cat: 'Technology & Platform' },
+                { kw: ['operations','process','delivery','supply','vendor','logistics','staffing','resource'], cat: 'Operational & Execution' },
+            ];
+            let category = 'Strategic & Commercial'; // default — covers geopolitical, market, commercial
+            for (const c of categories) {
+                if (c.kw.some(k => t.includes(k))) { category = c.cat; break; }
+            }
+
+            // Infer proximity from urgency language
+            const proximity = t.match(/immediate|urgent|now|today|already|current/) ? 1 :
+                              t.match(/suspend|indefinite|ongoing|significant/) ? 2 :
+                              t.match(/will|soon|expect|plan|upcoming/) ? 3 : 3;
+
+            // Infer impact from severity language
+            const impact = t.match(/catastrophic|critical|severe|major|80%|indefinite/) ? 4 :
+                           t.match(/significant|substantial|material|consider/) ? 3 : 3;
+
+            const likelihood = t.match(/has|have|already|confirmed|ongoing/) ? 4 :
+                               t.match(/likely|probable|expect/) ? 3 : 3;
+
+            // Generate a self-contained description from key phrases
+            const words = text.trim().split(/\s+/);
+            const descWords = words.slice(0, 7).join(' ');
+            const descClean = descWords.endsWith(',') || descWords.endsWith(' the') || descWords.endsWith(' of')
+                ? words.slice(0, 5).join(' ') : descWords;
+
+            // Build analytical tara/vuln from the full text
+            const taraThreat = isRisk
+                ? `${category} threat: ${text.trim()}`.slice(0, 400)
+                : 'Not Applicable';
+            const vulnerability = isRisk
+                ? `Organisational exposure: dependency on affected ${category.toLowerCase()} operations. ${
+                    t.includes('supply') ? 'Supply chain dependencies may leave the organisation unable to source critical components or services.' :
+                    t.includes('cost') || t.includes('price') ? 'Cost structure relies on stable pricing; significant increases may threaten margins and financial targets.' :
+                    t.includes('cyber') || t.includes('security') ? 'Current security posture may be insufficient to defend against the identified threat vector.' :
+                    'Further assessment required to identify specific organisational weaknesses related to this risk.'
+                  }`.slice(0, 400)
+                : 'Not Applicable';
+
+            return {
+                summary: text.slice(0, 120) + (text.length > 120 ? '…' : ''),
+                description: descClean,
+                classification,
+                strategicAlignment: isRisk ? Math.floor(Math.random() * 20) + 65 : Math.floor(Math.random() * 30) + 40,
+                category,
+                likelihood,
+                impact,
+                proximity,
+                taraThreat,
+                vulnerability,
+            };
+        }
+
+        function showAiSummary(result) {
+            document.getElementById('homeAiInputArea').style.display = 'none';
+            const card = document.getElementById('aiSummaryCard');
+            document.getElementById('aiSummaryText').textContent = result.summary;
+            document.getElementById('aiClassification').textContent = result.classification;
+            document.getElementById('aiAlignment').textContent = result.strategicAlignment + '%';
+
+            // Show risk parameters chip if classified as Risk
+            const riskParams = document.getElementById('aiRiskParams');
+            if (riskParams) {
+                if (result.classification === 'Risk') {
+                    const lLabels = ['','Unlikely','Possible','Likely','Very Likely','Certain'];
+                    const iLabels = ['','Negligible','Light','Medium','Severe','Catastrophic'];
+                    const pLabels = ['Unknown','Immediate','Imminent','Midterm','Longterm','SA Review'];
+                    riskParams.style.display = '';
+                    document.getElementById('aiLikelihood').textContent  = lLabels[result.likelihood]  || result.likelihood;
+                    document.getElementById('aiImpact').textContent      = iLabels[result.impact]       || result.impact;
+                    document.getElementById('aiProximity').textContent   = pLabels[result.proximity]    || 'Midterm';
+                } else {
+                    riskParams.style.display = 'none';
+                }
+            }
+            card.classList.add('visible');
+        }
+
+
+        function inferOwnerForCategory(category) {
+            // Find the most common owner for risks in this category
+            const catRisks = risks.filter(r => r.category === category && r.owner && r.owner !== '' && r.owner !== 'Unassigned');
+            if (catRisks.length === 0) return '';
+            const freq = {};
+            catRisks.forEach(r => { freq[r.owner] = (freq[r.owner] || 0) + 1; });
+            return Object.entries(freq).sort((a, b) => b[1] - a[1])[0][0];
+        }
+
+        function inferStratPriorityForCategory(category) {
+            // Find the most common strategic priority for risks in this category
+            const catRisks = risks.filter(r => r.category === category && r.strategicPriority && r.strategicPriority !== '');
+            if (catRisks.length === 0) return '';
+            const freq = {};
+            catRisks.forEach(r => { freq[r.strategicPriority] = (freq[r.strategicPriority] || 0) + 1; });
+            return Object.entries(freq).sort((a, b) => b[1] - a[1])[0][0];
+        }
+
+        function aiLogItem() {
+            if (!_aiAnalysisResult) return;
+            const r = _aiAnalysisResult;
+
+            // Generate Risk ID — use BP category prefix for Risks, SIP for improvements
+            const today = new Date();
+            const dateSuffix = today.getFullYear().toString()
+                + String(today.getMonth()+1).padStart(2,'0')
+                + String(today.getDate()).padStart(2,'0');
+            const serial = String(risks.length + 1).padStart(4, '0');
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let rand = '';
+            for (let i = 0; i < 4; i++) rand += chars[Math.floor(Math.random() * chars.length)];
+            const categoryPrefixMap = {
+                'Strategic & Commercial':               'STR',
+                'Financial & Credit':                   'FIN',
+                'Operational & Execution':              'OPS',
+                'Technology & Platform':                'TEC',
+                'Cybersecurity & Information Security': 'CYB',
+                'Legal, Regulatory & Compliance':       'LEG'
+            };
+            const prefix = r.classification === 'Risk'
+                ? (categoryPrefixMap[r.category] || 'STR')
+                : 'SIP';
+            const newId = prefix + '-' + serial + '-' + rand + '-' + dateSuffix;
+
+            const likelihood = parseInt(r.likelihood) || 3;
+            const impact     = parseInt(r.impact)     || 3;
+            const proximity  = parseInt(r.proximity) || 3;
+            const mitStatus  = '1 - None';
+
+            const newRisk = {
+                id:               newId,
+                description:      r.description || r.summary || '',
+                category:         r.category || 'Strategic & Commercial',
+                likelihood,
+                impact,
+                proximity,
+                mitigationStatus: mitStatus,
+                taraThreat:       r.taraThreat || (r.classification === 'Risk' ? 'Details required...' : 'Not Applicable'),
+                vulnerability:    r.vulnerability || (r.classification === 'Risk' ? 'Details required...' : 'Not Applicable'),
+                mitigation:       'Details required...',
+                owner:            inferOwnerForCategory(r.category),
+                strategicPriority: inferStratPriorityForCategory(r.category),
+                actioneeName:     '',
+                comments:         'AI-generated entry. Classification: ' + (r.classification||'') + '. Strategic Alignment: ' + (r.strategicAlignment||'') + '%.'
+                    + (r.classification !== 'Risk' ? ' Original input: ' + (_lastAiInputText||'') : ''),
+                lastModified:     today.toISOString(),
+                aiGenerated:      true,
+            };
+            newRisk.rag       = calculateRAG(likelihood, impact, proximity, mitStatus);
+            newRisk.riskScore = parseFloat(calculateRiskScore(likelihood, impact, proximity, mitStatus));
+
+            risks.push(newRisk);
+            localStorage.setItem('risks', JSON.stringify(risks));
+
+            aiCancel(); // reset home page UI
+
+            // Navigate to Register and highlight the new entry
+            sidebarNav('register');
+            updateRiskTable();
+            updateDashboard();
+            updateQuadrantChart();
+
+            // Flash the new row briefly to draw attention
+            setTimeout(() => {
+                const rows = document.querySelectorAll('#riskTableBody tr');
+                if (rows[0]) {
+                    rows[0].style.transition = 'background 0.3s';
+                    rows[0].style.background = '#fff3cd';
+                    setTimeout(() => { rows[0].style.background = ''; }, 2000);
+                }
+            }, 150);
+        }
+
+        function aiReEdit() {
+            _aiAnalysisResult = null;
+            document.getElementById('aiSummaryCard').classList.remove('visible');
+            const riskParams = document.getElementById('aiRiskParams');
+            if (riskParams) riskParams.style.display = 'none';
+            document.getElementById('homeAiInputArea').style.display = '';
+            const btn = document.getElementById('homeAiSubmit');
+            btn.style.display = ''; // clear any inline override
+            // Re-show submit only if there's still text in the field
+            const val = document.getElementById('homeAiInput').value.trim();
+            btn.classList.toggle('visible', val.length > 0);
+        }
+
+        function aiCancel() {
+            window._sipOverrideId = null;
+            resetAiInput();
+        }
+
+        // ── Border animation: 2 dots racing in opposite directions ────────────
+        function startBorderAnimation() {
+            const svg = document.getElementById('aiBorderCanvas');
+            const box = document.getElementById('homeAiBox');
+            const r = 12; // border-radius
+            let t1 = 0, t2 = 0.5; // offsets — start opposite
+            let flash = false;
+
+            function getPerimeterPoint(t, w, h) {
+                const perim = 2*(w+h) - 8*r;
+                const pos = ((t % 1) + 1) % 1 * perim;
+                // top edge (left→right)
+                if (pos < w - 2*r) return { x: r + pos, y: 0 };
+                let p = pos - (w - 2*r);
+                // top-right corner
+                if (p < Math.PI/2 * r) {
+                    const a = -Math.PI/2 + p/r;
+                    return { x: w - r + Math.cos(a)*r, y: r + Math.sin(a)*r };
+                }
+                p -= Math.PI/2 * r;
+                // right edge
+                if (p < h - 2*r) return { x: w, y: r + p };
+                p -= (h - 2*r);
+                // bottom-right corner
+                if (p < Math.PI/2 * r) {
+                    const a = p/r;
+                    return { x: w - r + Math.cos(a)*r, y: h - r + Math.sin(a)*r };
+                }
+                p -= Math.PI/2 * r;
+                // bottom edge (right→left)
+                if (p < w - 2*r) return { x: w - r - p, y: h };
+                p -= (w - 2*r);
+                // bottom-left corner
+                if (p < Math.PI/2 * r) {
+                    const a = Math.PI/2 + p/r;
+                    return { x: r + Math.cos(a)*r, y: h - r + Math.sin(a)*r };
+                }
+                p -= Math.PI/2 * r;
+                // left edge
+                if (p < h - 2*r) return { x: 0, y: h - r - p };
+                p -= (h - 2*r);
+                // top-left corner
+                const a = Math.PI + p/r;
+                return { x: r + Math.cos(a)*r, y: r + Math.sin(a)*r };
+            }
+
+            function frame() {
+                const w = box.offsetWidth;
+                const h = box.offsetHeight;
+                svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+                svg.innerHTML = '';
+
+                t1 = (t1 + 0.004) % 1;
+                t2 = (t2 - 0.004 + 1) % 1;
+
+                const dist = Math.abs(t1 - t2);
+                const near = dist < 0.04 || dist > 0.96;
+                if (near) flash = !flash;
+
+                const p1 = getPerimeterPoint(t1, w, h);
+                const p2 = getPerimeterPoint(t2, w, h);
+                const col1 = near && flash ? '#fff' : '#ff6b6b';
+                const col2 = near && flash ? '#fff' : '#4fc3f7';
+                const glow = near ? 12 : 6;
+
+                // Glow trail — draw the border path
+                const path = document.createElementNS('http://www.w3.org/2000/svg','rect');
+                path.setAttribute('x','2'); path.setAttribute('y','2');
+                path.setAttribute('width', w-4); path.setAttribute('height', h-4);
+                path.setAttribute('rx','10'); path.setAttribute('ry','10');
+                path.setAttribute('fill','none');
+                path.setAttribute('stroke', near ? 'rgba(255,255,255,0.15)' : 'rgba(112,13,25,0.12)');
+                path.setAttribute('stroke-width','2');
+                svg.appendChild(path);
+
+                [{ pt: p1, col: col1 }, { pt: p2, col: col2 }].forEach(({ pt, col }) => {
+                    const gEl = document.createElementNS('http://www.w3.org/2000/svg','circle');
+                    gEl.setAttribute('cx', pt.x); gEl.setAttribute('cy', pt.y); gEl.setAttribute('r', glow);
+                    gEl.setAttribute('fill', col); gEl.setAttribute('opacity','0.25');
+                    gEl.setAttribute('filter','url(#blur)');
+                    svg.appendChild(gEl);
+                    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+                    dot.setAttribute('cx', pt.x); dot.setAttribute('cy', pt.y); dot.setAttribute('r','5');
+                    dot.setAttribute('fill', col);
+                    svg.appendChild(dot);
+                });
+
+                // Blur filter
+                const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+                const filter = document.createElementNS('http://www.w3.org/2000/svg','filter');
+                filter.setAttribute('id','blur');
+                const fe = document.createElementNS('http://www.w3.org/2000/svg','feGaussianBlur');
+                fe.setAttribute('stdDeviation','4');
+                filter.appendChild(fe); defs.appendChild(filter); svg.appendChild(defs);
+
+                _aiBorderAnim = requestAnimationFrame(frame);
+            }
+            _aiBorderAnim = requestAnimationFrame(frame);
+        }
+
+        function stopBorderAnimation() {
+            if (_aiBorderAnim) { cancelAnimationFrame(_aiBorderAnim); _aiBorderAnim = null; }
+            const svg = document.getElementById('aiBorderCanvas');
+            if (svg) svg.innerHTML = '';
+        }
+
+        // ==================== END HOME AI INPUT ====================
+
         // ==================== DASHBOARD COMMENTARY ====================
         let _commentaryVisible = false;
         let _commentaryCache = { radar: null, summary: null };
@@ -7380,15 +7987,25 @@ Generate exactly 7 concise bullet points (no bullet symbols, one per line) that 
 
         function updateRiskTable(filteredRisks = null) {
             const base = filteredRisks || risks;
-            // Sort newest first using the DDDDDDDD date in the Risk ID
+
+            // Helper: extract YYYYMMDD date and NNNN serial from id (AAA-NNNN-ZZZZ-DDDDDDDD)
+            function idParts(id) {
+                const s = String(id || '');
+                const m = s.match(/^[A-Z]+-(\d{4})-[A-Z0-9]+-(\d{8})$/);
+                if (m) return { serial: parseInt(m[1]), date: m[2] };
+                // Fallback: just grab trailing date if present
+                const d = s.match(/(\d{8})$/);
+                return { serial: 0, date: d ? d[1] : '00000000' };
+            }
+
             _currentRisks = [...base].sort((a, b) => {
-                const da = (String(a.id || '').match(/(\d{8})$/) || ['0'])[0];
-                const db = (String(b.id || '').match(/(\d{8})$/) || ['0'])[0];
-                // If no date in ID, fall back to lastModified
-                if (da === '0' && db === '0') {
-                    return new Date(b.lastModified||0) - new Date(a.lastModified||0);
-                }
-                return db.localeCompare(da); // lexicographic descending works for YYYYMMDD
+                const pa = idParts(a.id), pb = idParts(b.id);
+                // Primary: date descending
+                if (pb.date !== pa.date) return pb.date.localeCompare(pa.date);
+                // Tiebreaker: serial descending (higher serial = added later)
+                if (pb.serial !== pa.serial) return pb.serial - pa.serial;
+                // Final fallback: lastModified
+                return new Date(b.lastModified||0) - new Date(a.lastModified||0);
             });
             _currentPage = 1;
             renderPage();
@@ -8717,6 +9334,25 @@ Generate exactly 7 concise bullet points (no bullet symbols, one per line) that 
             // Clear active from all sidebar buttons
             document.querySelectorAll('.sidebar-icon-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('sidebarHome').classList.add('active');
+            // Always fully reset AI input state when returning home
+            resetAiInput();
+        }
+
+        function resetAiInput() {
+            _aiAnalysisResult = null;
+            stopBorderAnimation();
+            const box = document.getElementById('homeAiBox');
+            if (box) box.classList.remove('analysing');
+            const input = document.getElementById('homeAiInput');
+            if (input) input.value = '';
+            const submitBtn = document.getElementById('homeAiSubmit');
+            if (submitBtn) { submitBtn.classList.remove('visible'); submitBtn.style.display = ''; }
+            const summaryCard = document.getElementById('aiSummaryCard');
+            if (summaryCard) summaryCard.classList.remove('visible');
+            const inputArea = document.getElementById('homeAiInputArea');
+            if (inputArea) inputArea.style.display = '';
+            const riskParams = document.getElementById('aiRiskParams');
+            if (riskParams) riskParams.style.display = 'none';
         }
 
         function sidebarNav(tabName) {
