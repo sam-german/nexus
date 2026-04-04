@@ -1565,6 +1565,295 @@
             letter-spacing: 4px;
         }
 
+
+        /* ═══════════════ OVERVIEW PAGE ═══════════════ */
+        .nexus-overview {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            background: linear-gradient(135deg, #020b18 0%, #04122a 40%, #071e3d 70%, #030e22 100%);
+            display: none;
+            flex-direction: column;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .nexus-overview.visible { display: flex; }
+        .nexus-overview.shown   { opacity: 1; }
+
+        /* Header bar */
+        .ov-header {
+            display: flex;
+            align-items: center;
+            padding: 18px 40px;
+            border-bottom: 1px solid rgba(0,212,200,0.12);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+        }
+        .ov-brand {
+            font-size: 1.7rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: #fff;
+            font-family: 'Arial Black', Arial, sans-serif;
+            text-shadow: 0 0 30px rgba(0,212,200,0.3);
+        }
+        .ov-brand .nx-x { color: #00d4c8; font-style: italic; }
+        .ov-brand-sub {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            margin-left: 14px;
+            padding-left: 14px;
+            border-left: 1px solid rgba(255,255,255,0.2);
+            align-self: center;
+        }
+        .ov-login-btn {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: 1px solid rgba(0,212,200,0.45);
+            color: #00d4c8;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.25s;
+        }
+        .ov-login-btn:hover {
+            background: rgba(0,212,200,0.1);
+            box-shadow: 0 0 20px rgba(0,212,200,0.25);
+        }
+        .ov-login-btn svg { width: 16px; height: 16px; fill: #00d4c8; }
+
+        /* Hero text */
+        .ov-hero {
+            text-align: center;
+            padding: 48px 20px 36px;
+            position: relative;
+            z-index: 2;
+        }
+        .ov-hero h1 {
+            font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 1px;
+            margin: 0 0 10px;
+            text-shadow: 0 0 40px rgba(0,212,200,0.2);
+        }
+        .ov-hero p {
+            font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+            font-weight: 300;
+            color: rgba(255,255,255,0.6);
+            letter-spacing: 0.4px;
+        }
+        .ov-divider {
+            width: clamp(80px,15vw,180px);
+            height: 1px;
+            background: linear-gradient(to right,transparent,#00d4c8,transparent);
+            margin: 14px auto 0;
+            opacity: 0.6;
+        }
+
+        /* 2-×-2 card grid */
+        .ov-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            padding: 0 60px 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 2;
+        }
+        @media (max-width: 700px) { .ov-grid { grid-template-columns: 1fr; padding: 0 20px 40px; } }
+
+        /* Card */
+        .ov-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(0,212,200,0.18);
+            border-radius: 10px;
+            padding: 32px 28px;
+            cursor: pointer;
+            transition: all 0.28s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+        .ov-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0,212,200,0.06) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .ov-card:hover { border-color: rgba(0,212,200,0.5); transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 30px rgba(0,212,200,0.1); }
+        .ov-card:hover::before { opacity: 1; }
+        .ov-card.amber-accent { border-color: rgba(245,158,11,0.22); }
+        .ov-card.amber-accent:hover { border-color: rgba(245,158,11,0.55); box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 30px rgba(245,158,11,0.1); }
+        .ov-card.amber-accent::before { background: linear-gradient(135deg, rgba(245,158,11,0.07) 0%, transparent 60%); }
+
+        .ov-card-icon {
+            width: 48px; height: 48px;
+            background: rgba(0,212,200,0.1);
+            border: 1px solid rgba(0,212,200,0.3);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .ov-card.amber-accent .ov-card-icon {
+            background: rgba(245,158,11,0.1);
+            border-color: rgba(245,158,11,0.3);
+        }
+        .ov-card-icon svg { width: 24px; height: 24px; }
+
+        .ov-card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.3;
+        }
+        .ov-card-desc {
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.62);
+            line-height: 1.6;
+            flex: 1;
+        }
+        .ov-card-cta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #00d4c8;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .ov-card.amber-accent .ov-card-cta { color: #f59e0b; }
+        .ov-card:hover .ov-card-cta { opacity: 1; }
+
+        /* Expanded detail panel */
+        .ov-panel-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(2,10,24,0.82);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        .ov-panel-backdrop.visible { display: block; }
+
+        .ov-panel {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -48%) scale(0.96);
+            z-index: 10001;
+            width: min(640px, 92vw);
+            background: linear-gradient(160deg, #071428 0%, #0a1e3d 100%);
+            border: 1px solid rgba(0,212,200,0.3);
+            border-radius: 14px;
+            padding: 36px 36px 32px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 60px rgba(0,212,200,0.08);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+        .ov-panel.amber-panel { border-color: rgba(245,158,11,0.3); box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 60px rgba(245,158,11,0.06); }
+        .ov-panel.visible { display: block; }
+        .ov-panel.shown { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+
+        .ov-panel-close {
+            position: absolute; top: 16px; right: 18px;
+            background: none; border: none; color: rgba(255,255,255,0.4);
+            font-size: 1.3rem; cursor: pointer; line-height: 1;
+            transition: color 0.2s;
+        }
+        .ov-panel-close:hover { color: #fff; }
+
+        .ov-panel-icon {
+            width: 56px; height: 56px;
+            background: rgba(0,212,200,0.1);
+            border: 1px solid rgba(0,212,200,0.3);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 18px;
+        }
+        .ov-panel.amber-panel .ov-panel-icon { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); }
+        .ov-panel-icon svg { width: 28px; height: 28px; }
+
+        .ov-panel-title {
+            font-size: 1.35rem; font-weight: 800; color: #fff;
+            margin-bottom: 10px; line-height: 1.3;
+        }
+        .ov-panel-desc {
+            font-size: 0.9rem; font-weight: 300; color: rgba(255,255,255,0.7);
+            line-height: 1.7; margin-bottom: 20px;
+        }
+        .ov-panel-features {
+            list-style: none; padding: 0; margin: 0 0 28px;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .ov-panel-features li {
+            font-size: 0.85rem; color: rgba(255,255,255,0.65);
+            display: flex; align-items: flex-start; gap: 10px; line-height: 1.5;
+        }
+        .ov-panel-features li::before {
+            content: '›'; color: #00d4c8; font-weight: 900;
+            font-size: 1rem; line-height: 1.4; flex-shrink: 0;
+        }
+        .ov-panel.amber-panel .ov-panel-features li::before { color: #f59e0b; }
+
+        .ov-panel-enter {
+            width: 100%;
+            padding: 13px 0;
+            background: rgba(0,212,200,0.1);
+            border: 1px solid #00d4c8;
+            color: #00d4c8;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.25s;
+        }
+        .ov-panel.amber-panel .ov-panel-enter {
+            background: rgba(245,158,11,0.1);
+            border-color: #f59e0b; color: #f59e0b;
+        }
+        .ov-panel-enter:hover {
+            background: rgba(0,212,200,0.2);
+            box-shadow: 0 0 24px rgba(0,212,200,0.3);
+        }
+        .ov-panel.amber-panel .ov-panel-enter:hover {
+            background: rgba(245,158,11,0.2);
+            box-shadow: 0 0 24px rgba(245,158,11,0.3);
+        }
+        .ov-panel-enter.coming-soon {
+            opacity: 0.45; cursor: default; pointer-events: none;
+        }
+        /* ═══════════════ END OVERVIEW PAGE ═══════════════ */
+
         /* ===== END NEXUS LANDING PAGE ===== */
 
         /* ===== HOME AI INPUT FLOW ===== */
@@ -4302,6 +4591,136 @@
             <button class="nexus-landing-btn" id="nexusExploreBtn"
                 onclick="enterApp()" title="Explore the Platform">Explore the Platform</button>
         </div>
+    </div>
+
+
+    <!-- ═══════════ NEXUS OVERVIEW PAGE ═══════════ -->
+    <div class="nexus-overview" id="nexusOverview">
+        <canvas class="nexus-bg-canvas" id="nexusOverviewCanvas" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;"></canvas>
+
+        <!-- Header -->
+        <div class="ov-header">
+            <div class="ov-brand">NE<span class="nx-x">X</span>US</div>
+            <div class="ov-brand-sub">Active Infrastructure Governance</div>
+            <button class="ov-login-btn" onclick="enterFullApp(null)">
+                <svg viewBox="0 0 24 24" fill="#00d4c8"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                Log In
+            </button>
+        </div>
+
+        <!-- Hero -->
+        <div class="ov-hero">
+            <h1>Platform Overview</h1>
+            <p>Your Governance Operating System for Critical Public Services</p>
+            <div class="ov-divider"></div>
+        </div>
+
+        <!-- 2×2 card grid -->
+        <div class="ov-grid">
+
+            <!-- Card 1: Risk Register -->
+            <div class="ov-card" onclick="openOverviewPanel('register')">
+                <div class="ov-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#00d4c8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+                <div class="ov-card-title">Risk Register</div>
+                <div class="ov-card-desc">A comprehensive, AI-assisted register that captures, classifies and scores risks across all governance domains — from Strategic &amp; Commercial to Cybersecurity &amp; Compliance.</div>
+                <div class="ov-card-cta">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+            </div>
+
+            <!-- Card 2: Business Review -->
+            <div class="ov-card amber-accent" onclick="openOverviewPanel('business')">
+                <div class="ov-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><line x1="12" y1="11" x2="16" y2="11"/><line x1="12" y1="16" x2="16" y2="16"/><line x1="8" y1="11" x2="8.01" y2="11"/><line x1="8" y1="16" x2="8.01" y2="16"/></svg></div>
+                <div class="ov-card-title">Business Review &amp; Action Planning</div>
+                <div class="ov-card-desc">Action planning and strategic review of tasks, progress and escalations — bridging governance intent with operational delivery in real time.</div>
+                <div class="ov-card-cta">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+            </div>
+
+            <!-- Card 3: Dashboard -->
+            <div class="ov-card" onclick="openOverviewPanel('dashboard')">
+                <div class="ov-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#00d4c8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg></div>
+                <div class="ov-card-title">Dashboard Summaries &amp; Pre/Post Mitigation</div>
+                <div class="ov-card-desc">Powerful visualisations and AI-generated summaries giving leaders an instant, evidence-based read on governance health across all risk domains.</div>
+                <div class="ov-card-cta">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+            </div>
+
+            <!-- Card 4: People -->
+            <div class="ov-card amber-accent" onclick="openOverviewPanel('people')">
+                <div class="ov-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                <div class="ov-card-title">People &amp; Accountability</div>
+                <div class="ov-card-desc">See who's contributing to the operational and strategic excellence of your governance framework — from board members to front-line operators.</div>
+                <div class="ov-card-cta">Coming Soon <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+            </div>
+
+        </div><!-- /ov-grid -->
+    </div><!-- /nexus-overview -->
+
+    <!-- ═══ Detail panel backdrop ═══ -->
+    <div class="ov-panel-backdrop" id="ovBackdrop" onclick="closeOverviewPanel()"></div>
+
+    <!-- ═══ Risk Register panel ═══ -->
+    <div class="ov-panel" id="ovPanel-register">
+        <button class="ov-panel-close" onclick="closeOverviewPanel()">✕</button>
+        <div class="ov-panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#00d4c8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+        <div class="ov-panel-title">Risk Register</div>
+        <div class="ov-panel-desc">A structured, AI-enhanced risk register built for the demands of critical public infrastructure governance. Capture, classify and score risks across six governance domains, with automated RAG status, real-time proximity tracking and full mitigation planning built in.</div>
+        <ul class="ov-panel-features">
+            <li>AI-powered input analysis and automatic risk classification</li>
+            <li>RAG status and composite risk scoring with live recalculation</li>
+            <li>Proximity tracking from Immediate to Long-term horizon</li>
+            <li>Quadrant visualisation across likelihood, impact and proximity</li>
+            <li>Pre- and post-mitigation scenario comparison</li>
+            <li>Full audit trail with owner and actionee assignment</li>
+        </ul>
+        <button class="ov-panel-enter" onclick="enterFullApp('register')">Enter Risk Register <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+    </div>
+
+    <!-- ═══ Business Review panel ═══ -->
+    <div class="ov-panel amber-panel" id="ovPanel-business">
+        <button class="ov-panel-close" onclick="closeOverviewPanel()">✕</button>
+        <div class="ov-panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><line x1="12" y1="11" x2="16" y2="11"/><line x1="12" y1="16" x2="16" y2="16"/><line x1="8" y1="11" x2="8.01" y2="11"/><line x1="8" y1="16" x2="8.01" y2="16"/></svg></div>
+        <div class="ov-panel-title">Business Review &amp; Action Planning</div>
+        <div class="ov-panel-desc">A live workspace that bridges strategic intent with operational delivery. Connect your business plan objectives to governance actions, track progress in real time, and surface escalations that demand leadership attention — all in one place.</div>
+        <ul class="ov-panel-features">
+            <li>Business plan objective tracking by period and owner</li>
+            <li>Action log with assignee management and due dates</li>
+            <li>Escalation and call-out management for board visibility</li>
+            <li>Progress dashboards aligned to strategic priorities</li>
+            <li>Direct linkage to risk register items for full traceability</li>
+            <li>AI-assisted action summarisation and prioritisation</li>
+        </ul>
+        <button class="ov-panel-enter amber-panel" onclick="enterFullApp('business-plan')" style="background:rgba(245,158,11,0.1);border-color:#f59e0b;color:#f59e0b;">Enter Business Review <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+    </div>
+
+    <!-- ═══ Dashboard panel ═══ -->
+    <div class="ov-panel" id="ovPanel-dashboard">
+        <button class="ov-panel-close" onclick="closeOverviewPanel()">✕</button>
+        <div class="ov-panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#00d4c8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg></div>
+        <div class="ov-panel-title">Dashboard Summaries &amp; Pre/Post Mitigation</div>
+        <div class="ov-panel-desc">Command-level visibility across your entire governance portfolio. AI-generated narrative summaries sit alongside interactive charts and heatmaps, giving decision-makers an instant, evidence-based read on organisational risk health and mitigation effectiveness.</div>
+        <ul class="ov-panel-features">
+            <li>Live risk distribution by category, RAG status and proximity</li>
+            <li>Pre- and post-mitigation risk score comparisons</li>
+            <li>Quadrant analysis across likelihood, impact and proximity</li>
+            <li>AI-generated governance health narrative for board reporting</li>
+            <li>Risk exposure trends and portfolio-level insights</li>
+            <li>Export-ready views for board and committee reporting</li>
+        </ul>
+        <button class="ov-panel-enter" onclick="enterFullApp('dashboard')">Enter Dashboard <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+    </div>
+
+    <!-- ═══ People panel ═══ -->
+    <div class="ov-panel amber-panel" id="ovPanel-people">
+        <button class="ov-panel-close" onclick="closeOverviewPanel()">✕</button>
+        <div class="ov-panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="ov-panel-title">People &amp; Accountability</div>
+        <div class="ov-panel-desc">Governance only works when accountability is clear. The People module will give you a real-time view of who owns, actions and stewards your risk and governance framework — from board members to front-line operators — closing the loop between strategy and execution.</div>
+        <ul class="ov-panel-features">
+            <li>Risk and action owner directory with role mapping</li>
+            <li>Accountability heat map by person and governance domain</li>
+            <li>Contribution tracking across the full governance cycle</li>
+            <li>Team and role-based views for operational clarity</li>
+            <li>Integration with organisational structure and reporting lines</li>
+        </ul>
+        <button class="ov-panel-enter coming-soon" style="background:rgba(245,158,11,0.05);border-color:rgba(245,158,11,0.4);color:rgba(245,158,11,0.5);">Coming Soon</button>
     </div>
 
     <div class="app-shell">
@@ -7315,8 +7734,8 @@
 
         // ==================== LANDING PAGE ====================
         // ── NEXUS animated background canvas ──
-        function initNexusCanvas() {
-            const canvas = document.getElementById('nexusBgCanvas');
+        function initNexusCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId || 'nexusBgCanvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             let W, H, nodes, animFrame;
@@ -7406,28 +7825,110 @@
             init();
             draw();
             window.addEventListener('resize', () => { resize(); });
-            // Stop when landing page is hidden
-            const observer = new MutationObserver(() => {
-                if (document.getElementById('nexusLanding').classList.contains('hidden')) {
-                    cancelAnimationFrame(animFrame);
-                    observer.disconnect();
-                }
-            });
-            const landing = document.getElementById('nexusLanding');
-            if (landing) observer.observe(landing, { attributes: true, attributeFilter: ['class'] });
+            // Stop animation when parent container is hidden
+            const parentEl = canvas.closest('.nexus-landing, .nexus-overview');
+            if (parentEl) {
+                const observer = new MutationObserver(() => {
+                    const isHidden = parentEl.classList.contains('hidden') ||
+                                     parentEl.style.display === 'none' ||
+                                     parentEl.style.opacity === '0';
+                    if (isHidden) { cancelAnimationFrame(animFrame); observer.disconnect(); }
+                });
+                observer.observe(parentEl, { attributes: true, attributeFilter: ['class','style'] });
+            }
         }
 
-        // Start on load
-        window.addEventListener('DOMContentLoaded', initNexusCanvas);
+        // Start landing canvas on load
+        window.addEventListener('DOMContentLoaded', () => initNexusCanvas('nexusBgCanvas'));
 
+        // ── Overview panel helpers ──
+        let _currentPanel = null;
+        let _panelCloseTimer = null;
+
+        function openOverviewPanel(id) {
+            // Cancel any pending close timers so they don't clobber the new panel
+            if (_panelCloseTimer) { clearTimeout(_panelCloseTimer); _panelCloseTimer = null; }
+            // Instantly hide any currently open panel
+            document.querySelectorAll('.ov-panel').forEach(p => {
+                p.style.opacity = '0';
+                p.style.transform = 'translate(-50%,-50%) scale(0.92)';
+                p.style.display = 'none';
+            });
+            const panel    = document.getElementById('ovPanel-' + id);
+            const backdrop = document.getElementById('ovBackdrop');
+            if (!panel || !backdrop) return;
+            // Show backdrop
+            backdrop.style.display = 'block';
+            setTimeout(() => { backdrop.style.opacity = '1'; }, 10);
+            // Show panel — set initial state then animate in
+            panel.style.display = 'block';
+            panel.style.opacity = '0';
+            panel.style.transform = 'translate(-50%,-50%) scale(0.92)';
+            panel.style.transition = '';
+            setTimeout(() => {
+                panel.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                panel.style.opacity = '1';
+                panel.style.transform = 'translate(-50%,-50%) scale(1)';
+            }, 20);
+            _currentPanel = id;
+        }
+
+        function closeOverviewPanel(silent) {
+            const backdrop = document.getElementById('ovBackdrop');
+            if (backdrop) {
+                backdrop.style.opacity = '0';
+                setTimeout(() => { backdrop.style.display = 'none'; }, 300);
+            }
+            document.querySelectorAll('.ov-panel').forEach(p => {
+                p.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                p.style.opacity = '0';
+                p.style.transform = 'translate(-50%,-50%) scale(0.92)';
+            });
+            _panelCloseTimer = setTimeout(() => {
+                document.querySelectorAll('.ov-panel').forEach(p => { p.style.display = 'none'; });
+                _panelCloseTimer = null;
+            }, 280);
+            _currentPanel = null;
+        }
+
+        // ── Enter the full app (from overview panel CTA) ──
+        function enterFullApp(section) {
+            closeOverviewPanel(true);
+            const ov = document.getElementById('nexusOverview');
+            if (ov) {
+                ov.style.transition = 'opacity 0.4s ease';
+                ov.style.opacity = '0';
+                setTimeout(() => {
+                    ov.style.display = 'none';
+                    ov.style.cssText = '';
+                }, 400);
+            }
+            // Navigate to the requested section after a brief delay
+            if (section) {
+                setTimeout(() => sidebarNav(section), 450);
+            }
+        }
+
+        // ── From landing page: show overview instead of app directly ──
         function enterApp() {
             const landing = document.getElementById('nexusLanding');
-            landing.style.transition = 'opacity 0.6s ease';
+            const ov = document.getElementById('nexusOverview');
+            // Fade landing out
+            landing.style.transition = 'opacity 0.5s ease';
             landing.style.opacity = '0';
             setTimeout(() => {
                 landing.classList.add('hidden');
-                landing.style.opacity = '';
-            }, 600);
+                landing.style.cssText = '';
+                // Show overview with direct style control (avoids MutationObserver race)
+                ov.style.display = 'flex';
+                ov.style.opacity = '0';
+                ov.style.transition = '';
+                setTimeout(() => {
+                    ov.style.transition = 'opacity 0.5s ease';
+                    ov.style.opacity = '1';
+                    initNexusCanvas('nexusOverviewCanvas');
+                }, 30);
+            }, 500);
         }
         // ==================== END LANDING PAGE ====================
 
@@ -9771,7 +10272,19 @@ Generate exactly 7 concise bullet points (no bullet symbols, one per line) that 
         }
 
         function navigateHome() {
-            // Show home page, hide app container
+            // Show overview page over the app shell
+            const ov = document.getElementById('nexusOverview');
+            if (ov) {
+                ov.style.display = 'flex';
+                ov.style.opacity = '0';
+                ov.style.transition = '';
+                setTimeout(() => {
+                    ov.style.transition = 'opacity 0.5s ease';
+                    ov.style.opacity = '1';
+                    initNexusCanvas('nexusOverviewCanvas');
+                }, 30);
+            }
+            // Also keep internal home state tidy
             document.getElementById('homePage').style.display = 'flex';
             document.getElementById('appContainer').style.display = 'none';
             // Clear active from all sidebar buttons
