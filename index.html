@@ -5542,7 +5542,7 @@
                 risks = JSON.parse(savedRisks);
                 // Normalise all numeric fields and recalculate derived values
                 risks.forEach(risk => {
-                    risk.proximity   = parseInt(String(risk.proximity))   || 0;
+                    risk.proximity   = normalizeProximity(risk.proximity);
                     risk.likelihood  = parseInt(String(risk.likelihood))  || 1;
                     risk.impact      = parseInt(String(risk.impact))      || 1;
                     // Recalculate riskScore — handles missing, NaN, or stale values
@@ -6438,7 +6438,7 @@
                 processedRow.id = processedRow.id || generateRiskId(processedRow.category);
                 processedRow.likelihood = parseInt(processedRow.likelihood) || 1;
                 processedRow.impact = parseInt(processedRow.impact) || 1;
-                processedRow.proximity = parseInt(processedRow.proximity) || 0;
+                processedRow.proximity = normalizeProximity(processedRow.proximity);
                 processedRow.mitigationStatus = processedRow.mitigationStatus || '1 - None';
                 processedRow.lastModified = new Date().toISOString();
 
@@ -7149,6 +7149,25 @@
                 case 5: return 1.50;
                 default: return 1.20;
             }
+        }
+
+        // Normalise any proximity value (number, numeric string, or text label) to integer 0-5
+        function normalizeProximity(value) {
+            if (value === undefined || value === null || value === '') return 3;
+            const textMap = {
+                'unknown': 0, 'immediate': 1, 'imminent': 2,
+                'midterm': 3, 'mid-term': 3, 'mid term': 3,
+                'longterm': 4, 'long-term': 4, 'long term': 4,
+                'sa review': 5, 'sareview': 5, 'strategic': 5
+            };
+            const parsed = parseInt(String(value));
+            if (!isNaN(parsed) && parsed >= 0 && parsed <= 5) return parsed;
+            const key = String(value).trim().toLowerCase();
+            if (textMap[key] !== undefined) return textMap[key];
+            // Handle "3 - Midterm" style strings
+            const leadingNum = parseInt(String(value));
+            if (!isNaN(leadingNum) && leadingNum >= 0 && leadingNum <= 5) return leadingNum;
+            return 3; // default: Midterm (matches form defaults)
         }
 
         function getProximityLabel(proximity) {
@@ -8760,7 +8779,7 @@ Generate exactly 7 concise bullet points (no bullet symbols, one per line) that 
             grad.setAttribute('id', gradId);
             grad.setAttribute('x1','0'); grad.setAttribute('x2','1');
             grad.setAttribute('y1','0'); grad.setAttribute('y2','0');
-            const prox = parseInt(String(risk.proximity !== undefined ? risk.proximity : 0)) || 0;
+            const prox = normalizeProximity(risk.proximity);
             // Colours exactly matching the legend
             const PR = '#ff0000', PB = '#000000';
             // Black percentage before red: Unknown=0, Immediate=25, Imminent=50, Midterm=75, Longterm=100
