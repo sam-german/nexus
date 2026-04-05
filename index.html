@@ -4981,7 +4981,7 @@
         <!-- TOP BAR -->
         <div class="app-topbar">
             <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle menu">&#9776;</button>
-            <div class="app-topbar-logo" onclick="navigateHome()" title="Go to Home">
+            <div class="app-topbar-logo" onclick="navigateToAiInput()" title="Go to AI Input">
                 <span class="nexus-logo">NE<span class="nx-x">X</span>US</span>
             </div>
             <div class="app-topbar-title">
@@ -6535,6 +6535,14 @@
         }
 
         /**
+         * Format date as "D Mon" e.g. "30 Mar"
+         */
+        function formatDateShort(date) {
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return date.getUTCDate() + ' ' + months[date.getUTCMonth()];
+        }
+
+        /**
          * Navigate to previous week
          */
         function navigateToPreviousWeek() {
@@ -6612,7 +6620,7 @@
             const dates = getWeekDates(currentWeek);
             
             document.getElementById('weekNumber').textContent = `Week ${week}`;
-            document.getElementById('weekDateRange').textContent = `${dates.mondayStr}-${dates.sundayStr}`;
+            document.getElementById('weekDateRange').textContent = formatDateShort(dates.monday) + ' – ' + formatDateShort(dates.sunday);
             
             const isEditable = isCurrentWeekEditable() && !meetingMode; // Check both current week AND meeting mode
             const readonlyIndicator = document.getElementById('readonlyIndicator');
@@ -9887,8 +9895,9 @@ Generate exactly 7 concise bullet points (no bullet symbols, one per line) that 
             
             // Calculate risk score for display
             const riskScore = calculateRiskScore(risk.likelihood, risk.impact, risk.proximity, risk.mitigationStatus);
-            const proximityLabel = getProximityLabel(risk.proximity);
-            
+            const proximityLabel = getProximityText(risk.proximity);
+            const mitigationLabel = String(risk.mitigationStatus || '').replace(/^\d+\s*-\s*/, '');
+
             tooltip.innerHTML = `
                 <strong>${risk.id}</strong><br>
                 ${risk.description}<br>
@@ -9897,7 +9906,7 @@ Generate exactly 7 concise bullet points (no bullet symbols, one per line) that 
                 <strong>Impact:</strong> ${risk.impact}<br>
                 <strong>Proximity:</strong> ${proximityLabel}<br>
                 <strong>Risk Score:</strong> ${riskScore}<br>
-                <strong>Mitigation Status:</strong> ${risk.mitigationStatus}<br>
+                <strong>Mitigation Status:</strong> ${mitigationLabel}<br>
                 <strong>Owner:</strong> ${risk.owner}
             `;
             
@@ -10669,6 +10678,24 @@ Generate exactly 7 concise bullet points (no bullet symbols, one per line) that 
             document.querySelectorAll('.sidebar-icon-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('sidebarHome').classList.add('active');
             // Always fully reset AI input state when returning home
+            resetAiInput();
+        }
+
+        function navigateToAiInput() {
+            // Fade out the overview if it is visible
+            const ov = document.getElementById('nexusOverview');
+            if (ov && ov.style.display !== 'none' && ov.style.display !== '') {
+                ov.style.transition = 'opacity 0.35s ease';
+                ov.style.opacity = '0';
+                setTimeout(() => { ov.style.display = 'none'; ov.style.cssText = ''; }, 350);
+            }
+            // Show the AI input home page (not the overview)
+            document.getElementById('homePage').style.display = 'flex';
+            document.getElementById('appContainer').style.display = 'none';
+            // Activate home in sidebar
+            document.querySelectorAll('.sidebar-icon-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('sidebarHome').classList.add('active');
+            // Reset AI input state
             resetAiInput();
         }
 
