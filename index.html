@@ -9902,8 +9902,8 @@ Generate exactly 7 concise bullet points (no bullet symbols, one per line) that 
                 <strong>${risk.id}</strong><br>
                 ${risk.description}<br>
                 <strong>Category:</strong> ${risk.category}<br>
-                <strong>Likelihood:</strong> ${risk.likelihood}<br>
-                <strong>Impact:</strong> ${risk.impact}<br>
+                <strong>Likelihood:</strong> ${getLikelihoodText(risk.likelihood)}<br>
+                <strong>Impact:</strong> ${getImpactText(risk.impact)}<br>
                 <strong>Proximity:</strong> ${proximityLabel}<br>
                 <strong>Risk Score:</strong> ${riskScore}<br>
                 <strong>Mitigation Status:</strong> ${mitigationLabel}<br>
