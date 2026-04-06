@@ -5409,7 +5409,7 @@
                     <button class="rbtn rbtn-primary" id="refreshRisksBtn" onclick="refreshRisksFromGoogleSheets()">🔄 Refresh Risks</button>
                     <button class="rbtn rbtn-success" onclick="toggleAddRiskPanel()">➕ Add New Risk</button>
                     <button class="rbtn rbtn-danger" onclick="clearAllRisks()">🗑️ Clear All Risks</button>
-                    <button class="rbtn rbtn-amber" id="saReviewBtn" onclick="filterSAReview()">📋 SA Review</button>
+                    <button class="rbtn rbtn-toggle" id="saReviewBtn" onclick="filterSAReview()">📋 SA Review</button>
                     <button class="rbtn rbtn-neutral" onclick="exportToExcel()">📤 Export to Excel</button>
                     <div class="ribbon-sep"></div>
                     <div class="ribbon-search-wrapper">
@@ -9557,6 +9557,7 @@ Generate exactly 7 concise bullet points (no bullet symbols, one per line) that 
         }
 
         function filterRisks() {
+            _clearSAReviewToggle();
             const categoryFilter = document.getElementById('categoryFilter').value;
             const ragFilter      = document.getElementById('ragFilter').value;
             const searchTerm     = (document.getElementById('riskSearchInput')?.value || '').trim().toLowerCase();
@@ -9635,22 +9636,36 @@ Generate exactly 7 concise bullet points (no bullet symbols, one per line) that 
             filterRisks();
         }
 
+        var _saReviewFilterActive = false;
+
         function filterSAReview() {
-            // Filter to show only risks with proximity = 5 (SA Review)
-            const saReviewRisks = risks.filter(risk => risk.proximity === 5);
-            updateRiskTable(saReviewRisks);
-            
-            // Reset the filter dropdowns to show we're using a custom filter
-            document.getElementById('categoryFilter').value = '';
-            document.getElementById('ragFilter').value = '';
-            
-            // Visual feedback on button
             const btn = document.getElementById('saReviewBtn');
-            btn.style.backgroundColor = '#27ae60';
-            btn.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                btn.style.transform = '';
-            }, 100);
+            _saReviewFilterActive = !_saReviewFilterActive;
+
+            if (_saReviewFilterActive) {
+                // Apply SA Review filter
+                const saReviewRisks = risks.filter(risk => risk.proximity === 5);
+                updateRiskTable(saReviewRisks);
+                // Clear other filter dropdowns
+                document.getElementById('categoryFilter').value = '';
+                document.getElementById('ragFilter').value = '';
+                // Activate button state
+                btn.classList.add('on');
+                btn.textContent = '📋 Hide SA Review';
+            } else {
+                // Deactivate — restore normal filtered view
+                btn.classList.remove('on');
+                btn.textContent = '📋 SA Review';
+                filterRisks();
+            }
+        }
+
+        function _clearSAReviewToggle() {
+            if (_saReviewFilterActive) {
+                _saReviewFilterActive = false;
+                const btn = document.getElementById('saReviewBtn');
+                if (btn) { btn.classList.remove('on'); btn.textContent = '📋 SA Review'; }
+            }
         }
 
         // ==================== QUADRANT CHART FUNCTIONS ====================
