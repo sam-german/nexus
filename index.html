@@ -1461,6 +1461,16 @@
             pointer-events: none;
         }
         .ribbon-hist-warning.hidden { display: none; }
+        .ribbon-hist-warning.no-crystal-ball {
+            background: #fde8e8;
+            border-color: #e74c3c;
+            color: #c0392b;
+            animation: noCrystalFlash 0.18s ease-in-out 4;
+        }
+        @keyframes noCrystalFlash {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.15; }
+        }
         .bpr-btn-group {
             display: flex;
             align-items: center;
@@ -3032,19 +3042,27 @@
             width: 14px;
         }
 
-        /* Downward-pointing triangles matching RAG colours */
+        /* RAG header badges — white square with bold R/A/G letter */
         .rag-header-triangle {
-            display: inline-block;
-            flex: 0 0 24px;
-            width: 0;
-            height: 0;
-            border-left: 9px solid transparent;
-            border-right: 9px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 26px;
+            width: 26px;
+            height: 22px;
+            border-radius: 4px;
+            background: white;
+            border: 1.5px solid #dce3ea;
+            font-size: 11px;
+            font-weight: 800;
+            line-height: 1;
         }
-
-        .red-tri   { border-top: 14px solid #e74c3c; }
-        .amber-tri { border-top: 14px solid #f39c12; }
-        .green-tri { border-top: 14px solid #27ae60; }
+        .red-tri   { color: #c0392b; border-color: #e8b4b0; }
+        .amber-tri { color: #d35400; border-color: #f5cba7; }
+        .green-tri { color: #1e8449; border-color: #a9dfbf; }
+        .red-tri::after   { content: 'R'; }
+        .amber-tri::after { content: 'A'; }
+        .green-tri::after { content: 'G'; }
 
         /* Risk Burden header with inline axis */
         .burden-th {
@@ -6085,8 +6103,8 @@
                                 <h4>QUADRANT POSITIONING</h4>
                                 <div class="legend-items">
                                     <div class="legend-item">
-                                        <span class="legend-symbol overlap-adjusted">⚠ </span>
-                                        <span>= Overlap adjusted</span>
+                                        <span class="legend-symbol overlap-adjusted" style="background:transparent;padding:0;overflow:visible;"><svg width="22" height="20" viewBox="0 0 22 20" xmlns="http://www.w3.org/2000/svg" style="display:block;"><polygon points="11,1 21,19 1,19" fill="#f39c12" stroke="#d68910" stroke-width="1.5" stroke-linejoin="round"/><text x="11" y="15.5" text-anchor="middle" font-size="10" font-weight="900" fill="#333" font-family="sans-serif">!</text></svg></span>
+                                        <span>= Overlapping data point</span>
                                     </div>
                                 </div>
                             </div>
@@ -6564,18 +6582,61 @@
          * Navigate to next week
          */
         function navigateToNextWeek() {
+            // Block navigation past the current week
+            if (currentWeek === getCurrentISOWeek()) {
+                _flashNoCrystalBall();
+                return;
+            }
             const [year, week] = currentWeek.split('-W').map(Number);
             let newWeek = week + 1;
             let newYear = year;
-            
+
             if (newWeek > 52) {
                 newYear++;
                 newWeek = 1;
             }
-            
-            currentWeek = newYear + '-W' + String(newWeek).padStart(2, '0');
+
+            // Also block if the next week would be in the future
+            const nextWeek = newYear + '-W' + String(newWeek).padStart(2, '0');
+            if (nextWeek > getCurrentISOWeek()) {
+                _flashNoCrystalBall();
+                return;
+            }
+
+            currentWeek = nextWeek;
             loadWeekData();
             updateWeekDisplay();
+        }
+
+        function _flashNoCrystalBall() {
+            // Beep via Web Audio API
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc  = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.value = 520;
+                gain.gain.setValueAtTime(0.25, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.3);
+            } catch(e) {}
+
+            // Flash the warning badge with "No crystal ball 🔮"
+            const warn = document.getElementById('historicalWarning');
+            if (!warn) return;
+            const prevText    = warn.textContent;
+            const prevHidden  = warn.classList.contains('hidden');
+            warn.textContent  = '🔮 No crystal ball!';
+            warn.classList.remove('hidden');
+            warn.classList.add('no-crystal-ball');
+            setTimeout(function() {
+                warn.classList.remove('no-crystal-ball');
+                warn.textContent = prevText;
+                if (prevHidden) warn.classList.add('hidden');
+            }, 800);
         }
 
         /**
@@ -8729,12 +8790,13 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                 const style = document.createElement('style');
                 style.id = 'quadCommentaryLayoutStyle';
                 style.textContent =
-                    '#quadrantHeader { margin-left:0 !important; margin-right:0 !important; max-width:none !important; }' +
+                    '#quadrantHeader { width:830px !important; max-width:830px !important; margin-left:0 !important; margin-right:0 !important; }' +
                     '#quadMainContainer { display:flex !important; flex-direction:row !important; align-items:flex-start !important; gap:0 !important; }' +
                     '#quadMainContainer .quadrant-content { width:65% !important; max-width:65% !important; min-width:0 !important; flex-shrink:0 !important; overflow:hidden !important; justify-content:flex-start !important; }' +
                     '#quadCommentaryCol { display:flex !important; flex-direction:column !important; width:35% !important; max-width:35% !important; min-width:240px !important; padding-left:20px !important; box-sizing:border-box !important; flex-shrink:0 !important; }' +
                     '#quadLegend { display:none !important; }' +
-                    '#quadCatPanel { display:none !important; }';
+                    '#quadCatPanel { display:none !important; }' +
+                    '#miniQuadGrid { display:none !important; }';
                 document.head.appendChild(style);
                 btn.classList.add('on');
                 btn.textContent = '💬 Hide Commentary';
@@ -9607,18 +9669,19 @@ Generate exactly 7 concise bullet points (no bullet symbols, one per line) that 
                 wrapper.style.cssText += 'width:22px;height:22px;';
                 const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
                 svg.setAttribute('width','22'); svg.setAttribute('height','22');
-                svg.setAttribute('viewBox','0 0 22 22');
-                const bg = document.createElementNS('http://www.w3.org/2000/svg','rect');
-                bg.setAttribute('x','0'); bg.setAttribute('y','0');
-                bg.setAttribute('width','22'); bg.setAttribute('height','22');
-                bg.setAttribute('rx','3'); bg.setAttribute('fill','#f39c12');
-                bg.setAttribute('stroke','#d68910'); bg.setAttribute('stroke-width','1.5');
-                svg.appendChild(bg);
+                svg.setAttribute('viewBox','0 0 22 20');
+                const tri = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+                tri.setAttribute('points','11,1 21,19 1,19');
+                tri.setAttribute('fill','#f39c12');
+                tri.setAttribute('stroke','#d68910'); tri.setAttribute('stroke-width','1.5');
+                tri.setAttribute('stroke-linejoin','round');
+                svg.appendChild(tri);
                 const t = document.createElementNS('http://www.w3.org/2000/svg','text');
-                t.setAttribute('x','11'); t.setAttribute('y','12');
-                t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','middle');
-                t.setAttribute('font-size','13'); t.setAttribute('font-weight','bold'); t.setAttribute('fill','#333');
-                t.textContent = '⚠'; svg.appendChild(t);
+                t.setAttribute('x','11'); t.setAttribute('y','15.5');
+                t.setAttribute('text-anchor','middle');
+                t.setAttribute('font-size','10'); t.setAttribute('font-weight','900');
+                t.setAttribute('fill','#333'); t.setAttribute('font-family','sans-serif');
+                t.textContent = '!'; svg.appendChild(t);
                 wrapper.appendChild(svg);
                 return wrapper;
             }
