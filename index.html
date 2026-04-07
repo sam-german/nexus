@@ -1487,6 +1487,57 @@
         }
         .ribbon-flex-space { flex: 1; }
 
+        /* ── Sync Data animation bar ──────────────────────────────────────── */
+        .sync-bar {
+            display: none;
+            align-items: center;
+            padding: 7px 16px;
+            background: #f7f9fc;
+            border-bottom: 1px solid #e8ecf0;
+            gap: 10px;
+            flex-shrink: 0;
+            min-height: 36px;
+        }
+        .sync-bar.active { display: flex; }
+        .sync-bar-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #546e7a;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .sync-bar-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #e74c3c;
+            font-size: 13px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .sync-dot-track {
+            width: 285px;
+            height: 24px;
+            flex-shrink: 0;
+            display: block;
+        }
+        .sync-bar-msg {
+            display: none;
+            font-size: 12px;
+            font-weight: 600;
+            color: #27ae60;
+            white-space: nowrap;
+        }
+        .sync-bar-msg.error { color: #c0392b; }
+        .sync-bar-msg.info  { color: #2980b9; }
+        /* ── End Sync Data animation bar ─────────────────────────────────── */
+
         /* Quad Chart title group pinned to far right of ribbon */
         .quad-ribbon-title-wrap {
             display: flex;
@@ -5188,6 +5239,11 @@
                     <div class="ribbon-sep"></div>
                     <button class="rbtn rbtn-neutral" onclick="exportDashboardPDF()" title="Export dashboard as PDF">🖨 Export PDF</button>
                 </div>
+                <div class="sync-bar" id="dashboardSyncBar">
+                    <span class="sync-bar-label" id="dashboardSyncLabel"><span class="sync-bar-badge">🤚</span>Syncing Your Data</span>
+                    <svg class="sync-dot-track" id="dashboardSyncSvg"></svg>
+                    <span class="sync-bar-msg" id="dashboardSyncMsg"></span>
+                </div>
                 <div class="tab-body">
                 <div class="dashboard-flex-row" id="dashFlexRow">
                 <div class="dashboard-main-col" id="dashMainCol">
@@ -5406,7 +5462,7 @@
                         <option value="green">Green</option>
                     </select>
                     <div class="ribbon-sep"></div>
-                    <button class="rbtn rbtn-primary" id="refreshRisksBtn" onclick="refreshRisksFromGoogleSheets()">🔄 Refresh Risks</button>
+                    <button class="rbtn rbtn-primary" id="syncDataBtn" onclick="syncData('register')">🔄 Sync Data</button>
                     <button class="rbtn rbtn-success" onclick="toggleAddRiskPanel()">➕ Add New Risk</button>
                     <button class="rbtn rbtn-danger" onclick="clearAllRisks()">🗑️ Clear All Risks</button>
                     <button class="rbtn rbtn-toggle" id="saReviewBtn" onclick="filterSAReview()">📋 SA Review</button>
@@ -5423,6 +5479,11 @@
                         </div>
                         <span class="ribbon-search-count" id="riskSearchCount"></span>
                     </div>
+                </div>
+                <div class="sync-bar" id="registerSyncBar">
+                    <span class="sync-bar-label" id="registerSyncLabel"><span class="sync-bar-badge">🤚</span>Syncing Your Data</span>
+                    <svg class="sync-dot-track" id="registerSyncSvg"></svg>
+                    <span class="sync-bar-msg" id="registerSyncMsg"></span>
                 </div>
                 <div class="tab-body">
 
@@ -5633,6 +5694,11 @@
                     <!-- Today's date pinned right -->
                     <div class="ribbon-flex-space"></div>
                     <div class="ribbon-today-date" id="todayDateLabel"></div>
+                </div>
+                <div class="sync-bar" id="bprSyncBar">
+                    <span class="sync-bar-label" id="bprSyncLabel"><span class="sync-bar-badge">🤚</span>Syncing Your Data</span>
+                    <svg class="sync-dot-track" id="bprSyncSvg"></svg>
+                    <span class="sync-bar-msg" id="bprSyncMsg"></span>
                 </div>
                 <div class="tab-body">
 
@@ -7113,13 +7179,123 @@
         }
         // ==================== END SHARED FETCHER ====================
 
-        async function refreshRisksFromGoogleSheets() {
-            const btn = document.getElementById('refreshRisksBtn');
-            btn.disabled = true;
-            btn.style.animation = 'pulse 1s infinite';
-            _cachedWorkbook = null; // Force fresh fetch
+        // ── Sync Data animation helpers ───────────────────────────────────────
+        var _syncAnimHandle = null;
+
+        function startSyncAnimation(svgId) {
+            if (_syncAnimHandle) { cancelAnimationFrame(_syncAnimHandle); _syncAnimHandle = null; }
+            const svg = document.getElementById(svgId);
+            if (!svg) return;
+            const W = 285, H = 24, CY = 12, MIN_X = 6, MAX_X = 279;
+            svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+            svg.setAttribute('width', W); svg.setAttribute('height', H);
+
+            let x1 = MIN_X, x2 = MAX_X, v1 = 2.4, v2 = -2.4, flash = false;
+
+            function frame() {
+                x1 += v1; x2 += v2;
+                if (x1 >= MAX_X) { x1 = MAX_X; v1 = -v1; }
+                if (x1 <= MIN_X) { x1 = MIN_X; v1 = -v1; }
+                if (x2 >= MAX_X) { x2 = MAX_X; v2 = -v2; }
+                if (x2 <= MIN_X) { x2 = MIN_X; v2 = -v2; }
+
+                const dist = Math.abs(x1 - x2);
+                const near = dist < 22;
+                flash = near ? !flash : false;
+
+                svg.innerHTML = '';
+
+                // Glow filter
+                const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+                const filt = document.createElementNS('http://www.w3.org/2000/svg','filter');
+                filt.setAttribute('id','sg');
+                const fe = document.createElementNS('http://www.w3.org/2000/svg','feGaussianBlur');
+                fe.setAttribute('stdDeviation','3');
+                filt.appendChild(fe); defs.appendChild(filt); svg.appendChild(defs);
+
+                // Track line
+                const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+                line.setAttribute('x1', MIN_X); line.setAttribute('y1', CY);
+                line.setAttribute('x2', MAX_X); line.setAttribute('y2', CY);
+                line.setAttribute('stroke', near ? 'rgba(255,200,100,0.35)' : 'rgba(180,190,205,0.55)');
+                line.setAttribute('stroke-width','1.5');
+                svg.appendChild(line);
+
+                // Dots
+                [[x1,'#ff6b6b'],[x2,'#4fc3f7']].forEach(function(pair) {
+                    var x = pair[0], baseCol = pair[1];
+                    var col = (near && flash) ? '#ffffff' : baseCol;
+                    var gEl = document.createElementNS('http://www.w3.org/2000/svg','circle');
+                    gEl.setAttribute('cx', x); gEl.setAttribute('cy', CY);
+                    gEl.setAttribute('r', near ? 10 : 6);
+                    gEl.setAttribute('fill', col); gEl.setAttribute('opacity','0.28');
+                    gEl.setAttribute('filter','url(#sg)');
+                    svg.appendChild(gEl);
+                    var dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+                    dot.setAttribute('cx', x); dot.setAttribute('cy', CY); dot.setAttribute('r','5');
+                    dot.setAttribute('fill', col);
+                    svg.appendChild(dot);
+                });
+
+                _syncAnimHandle = requestAnimationFrame(frame);
+            }
+            _syncAnimHandle = requestAnimationFrame(frame);
+        }
+
+        function stopSyncAnimation(svgId, msgId, message, type) {
+            if (_syncAnimHandle) { cancelAnimationFrame(_syncAnimHandle); _syncAnimHandle = null; }
+            var svg   = document.getElementById(svgId);
+            var msg   = document.getElementById(msgId);
+            var label = document.getElementById(svgId.replace('SyncSvg', 'SyncLabel'));
+            if (svg)   { svg.innerHTML = ''; svg.style.display = 'none'; }
+            if (label) label.style.display = 'none';
+            if (msg) {
+                msg.textContent = message;
+                msg.className = 'sync-bar-msg' + (type === 'error' ? ' error' : type === 'info' ? ' info' : '');
+                msg.style.display = 'block';
+            }
+            // Auto-fade bar after 8 seconds
+            var barId = svgId.replace('SyncSvg', 'SyncBar');
+            var bar = document.getElementById(barId);
+            if (bar) {
+                setTimeout(function() {
+                    bar.style.transition = 'opacity 0.6s ease';
+                    bar.style.opacity = '0';
+                    setTimeout(function() {
+                        bar.classList.remove('active');
+                        bar.style.opacity = '';
+                        bar.style.transition = '';
+                        if (svg)   { svg.style.display = ''; svg.innerHTML = ''; }
+                        if (label) label.style.display = '';
+                        if (msg)   { msg.style.display = 'none'; msg.textContent = ''; }
+                    }, 650);
+                }, 8000);
+            }
+        }
+        // ── End Sync Data animation helpers ──────────────────────────────────
+
+        async function syncData(barPrefix) {
+            if (!barPrefix) barPrefix = 'register';
+            var barEl = document.getElementById(barPrefix + 'SyncBar');
+            var svgId = barPrefix + 'SyncSvg';
+            var msgId = barPrefix + 'SyncMsg';
+            var svgEl = document.getElementById(svgId);
+            var msgEl = document.getElementById(msgId);
+            var btn   = document.getElementById('syncDataBtn');
+
+            // Show sync bar with running animation
+            var labelEl = document.getElementById(barPrefix + 'SyncLabel');
+            if (barEl)   { barEl.style.opacity = ''; barEl.style.transition = ''; barEl.classList.add('active'); }
+            if (labelEl) labelEl.style.display = '';
+            if (svgEl)   svgEl.style.display = '';
+            if (msgEl)   { msgEl.style.display = 'none'; msgEl.textContent = ''; }
+            startSyncAnimation(svgId);
+
+            if (btn) btn.disabled = true;
+            _cachedWorkbook = null;
+
             try {
-                const workbook = await fetchWorkbookFromGoogleSheets(function(msg) { btn.innerHTML = '\u23F3 ' + msg; });
+                const workbook = await fetchWorkbookFromGoogleSheets(function(msg) {});
                 let riskData = [], businessPlanData_import = [], strategicObjData = [];
                 if (workbook.SheetNames.includes('Risk Register'))
                     riskData = XLSX.utils.sheet_to_json(workbook.Sheets['Risk Register']);
@@ -7127,28 +7303,26 @@
                     businessPlanData_import = XLSX.utils.sheet_to_json(workbook.Sheets['Business Plan'], { range: 4 });
                 if (workbook.SheetNames.includes('Strategic Objectives'))
                     strategicObjData = XLSX.utils.sheet_to_json(workbook.Sheets['Strategic Objectives']);
-                if (riskData.length === 0 && businessPlanData_import.length === 0) {
-                    showToast('Connected but no data found. Sheets: ' + workbook.SheetNames.join(', '), 'info', 5000);
-                    return;
-                }
-                if (riskData.length > 0) processImportedRiskData(riskData);
+                if (riskData.length > 0) processImportedRiskData(riskData, true);
                 if (businessPlanData_import.length > 0) processImportedBusinessPlanData(businessPlanData_import);
                 if (strategicObjData.length > 0) processStrategicObjectives(strategicObjData);
-                let message = '\u2705 Refresh completed:\n';
-                if (riskData.length > 0) message += '- ' + riskData.length + ' risk records processed\n';
-                if (businessPlanData_import.length > 0) message += '- ' + businessPlanData_import.length + ' business plan items processed\n';
-                if (strategicObjData.length > 0) message += '- ' + strategicObjData.length + ' strategic objectives loaded';
-                showToast(message.replace(/\n/g, ' '), 'success', 4000);
+                const parts = [];
+                if (riskData.length > 0) parts.push(riskData.length + ' risk' + (riskData.length !== 1 ? 's' : '') + ' loaded');
+                if (businessPlanData_import.length > 0) parts.push(businessPlanData_import.length + ' plan item' + (businessPlanData_import.length !== 1 ? 's' : '') + ' loaded');
+                if (strategicObjData.length > 0) parts.push(strategicObjData.length + ' objective' + (strategicObjData.length !== 1 ? 's' : '') + ' loaded');
+                const finalMsg = parts.length > 0
+                    ? '\u2705 Sync complete \u2014 ' + parts.join(', ')
+                    : '\u26A0\uFE0F Sync complete \u2014 no data found (sheets: ' + workbook.SheetNames.join(', ') + ')';
+                stopSyncAnimation(svgId, msgId, finalMsg, parts.length > 0 ? 'success' : 'error');
             } catch(error) {
-                console.error('Refresh Risks error:', error);
-                showToast('Could not fetch from Google Sheets. ' + error.message, 'error', 5000);
+                console.error('Sync error:', error);
+                stopSyncAnimation(svgId, msgId, '\u26A0\uFE0F Sync failed: ' + error.message, 'error');
             } finally {
-                btn.disabled = false;
-                btn.innerHTML = '\uD83D\uDD04 Refresh Risks';
+                if (btn) btn.disabled = false;
             }
         }
 
-        function processImportedRiskData(jsonData) {
+        function processImportedRiskData(jsonData, silent) {
             let addedCount = 0;
             let updatedCount = 0;
             
@@ -7293,7 +7467,7 @@
             
             // Show clean success message
             const totalCount = risks.length;
-            alert(`✓ Successfully imported ${jsonData.length} risks\n\n• Updated: ${updatedCount} risks\n• Added new: ${addedCount} risks\n• Total risks: ${totalCount}`);
+            if (!silent) alert(`✓ Successfully imported ${jsonData.length} risks\n\n• Updated: ${updatedCount} risks\n• Added new: ${addedCount} risks\n• Total risks: ${totalCount}`);
         }
 
         /**
@@ -8094,13 +8268,22 @@
 
         // ==================== TAB SWITCHING ====================
 
+        var _hasSyncedOnce = false;
+
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
-            
+
             document.getElementById(tabName).classList.add('active');
-            
+
+            // Auto-sync once per session on first visit to any data tab
+            if (!_hasSyncedOnce && (tabName === 'dashboard' || tabName === 'register' || tabName === 'business-plan')) {
+                _hasSyncedOnce = true;
+                const barPrefix = tabName === 'business-plan' ? 'bpr' : tabName;
+                syncData(barPrefix);
+            }
+
             if (tabName === 'dashboard') {
                 updateDashboard();
             } else if (tabName === 'register') {
