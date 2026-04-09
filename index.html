@@ -3045,10 +3045,17 @@
             padding: 10px 12px !important;
         }
 
-        /* 2cm breathing room after W-6 (last column) */
+        /* Step 1: Pin "This Week / SA" column to minimum content width (~70% narrower than auto) */
+        #bprThisWeekHeaderCell {
+            width: 80px !important;
+            min-width: 80px !important;
+            max-width: 80px !important;
+        }
+
+        /* Step 3: 2 cm breathing room after W-6 (last column) */
         .bpr-summary-table .bpr-week-subth:last-child,
         .bpr-summary-table td.bpr-week-td:last-child {
-            padding-right: 30px !important;
+            padding-right: 2cm !important;
         }
 
         /* Mini section-header chip in Priority column */
@@ -10416,6 +10423,13 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             document.getElementById('categoryFilter').value = '';
             document.getElementById('ragFilter').value = ragType;
             filterRisks();
+            // Enter drill-down: sidebar collapses to Back button only.
+            // Back clears the RAG filter and returns to Dashboard Risk Summary.
+            enterDrillDown(function() {
+                document.getElementById('ragFilter').value = '';
+                filterRisks();
+                switchDashView('summary');
+            });
         }
 
         function filterByCategory(category) {
@@ -10423,9 +10437,85 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             document.getElementById('categoryFilter').value = category;
             document.getElementById('ragFilter').value = '';
             filterRisks();
+            // Enter drill-down: sidebar collapses to Back button only.
+            // Back clears the category filter and returns to Dashboard Risk Summary.
+            enterDrillDown(function() {
+                document.getElementById('categoryFilter').value = '';
+                filterRisks();
+                switchDashView('summary');
+            });
         }
 
         var _saReviewFilterActive = false;
+
+        // ── Drill-down mode ─────────────────────────────────────────────────────
+        // When the user clicks a row in BPR Summary or a category in Risk Summary
+        // the app enters "drill-down mode": all sidebar icons are hidden and a
+        // single "Back" button appears in their place.  Clicking Back restores the
+        // sidebar and returns to the originating dashboard view.
+        var _drillDownActive = false;
+        var _drillDownReturn  = null;   // callback executed when Back is pressed
+
+        function enterDrillDown(returnCallback) {
+            _drillDownActive = true;
+            _drillDownReturn = returnCallback;
+
+            // Hide every sidebar nav button and divider
+            document.querySelectorAll('#appSidebar .sidebar-icon-btn').forEach(function(btn) {
+                btn.style.display = 'none';
+            });
+            document.querySelectorAll('#appSidebar .sidebar-divider').forEach(function(div) {
+                div.style.display = 'none';
+            });
+
+            // Transform the Home button into a Back (←) button
+            var homeBtn = document.getElementById('sidebarHome');
+            if (homeBtn) {
+                homeBtn.style.display = '';          // un-hide it from the batch above
+                homeBtn.classList.add('active');
+                homeBtn.title = 'Back';
+                homeBtn.onclick = exitDrillDown;     // property override replaces onclick="" attribute
+                homeBtn.innerHTML =
+                    '<svg viewBox="0 0 24 24" style="fill:currentColor;">' +
+                    '<path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>' +
+                    '</svg><span class="icon-label">Back</span>';
+            }
+
+            // Scroll the main content area to the top on every drill-down entry
+            var appMain = document.getElementById('appMain');
+            if (appMain) appMain.scrollTop = 0;
+            window.scrollTo(0, 0);
+        }
+
+        function exitDrillDown() {
+            if (!_drillDownActive) return;
+            _drillDownActive = false;
+
+            // Restore every sidebar nav button and divider
+            document.querySelectorAll('#appSidebar .sidebar-icon-btn').forEach(function(btn) {
+                btn.style.display = '';
+            });
+            document.querySelectorAll('#appSidebar .sidebar-divider').forEach(function(div) {
+                div.style.display = '';
+            });
+
+            // Restore the Home button (explicit handler — safer than relying on attribute re-engagement)
+            var homeBtn = document.getElementById('sidebarHome');
+            if (homeBtn) {
+                homeBtn.classList.remove('active');
+                homeBtn.title = 'Home';
+                homeBtn.onclick = function() { navigateHome(); };
+                homeBtn.innerHTML =
+                    '<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>' +
+                    '<span class="icon-label">Home</span>';
+            }
+
+            // Execute the return-navigation callback
+            var cb = _drillDownReturn;
+            _drillDownReturn = null;
+            if (cb) cb();
+        }
+        // ────────────────────────────────────────────────────────────────────────
 
         function filterSAReview() {
             const btn = document.getElementById('saReviewBtn');
@@ -11948,15 +12038,16 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
 
         // ── Switch dashboard view (radar / summary / quadrant) ──
         let _dashCurrentView = 'summary'; // 'summary' | 'radar' | 'bprSummary'
+        let _lastViewWasQuadrant = false;  // true only when returning directly from the Quad Chart
 
         function switchDashView(view) {
             // Close any open dropdowns
             document.querySelectorAll('.view-dropdown').forEach(d => d.classList.remove('open'));
 
             if (view === 'quadrant') {
+                _lastViewWasQuadrant = true;
                 sidebarNav('quadrant');
-                // Port commentary state from Dashboard — openQuadChartDefaults() already ran
-                // inside showTab, so defaults are set; now sync commentary on top
+                // Sync quad commentary to match current dashboard state on the way IN
                 if (_commentaryVisible && !_quadCommentaryVisible) {
                     toggleQuadCommentary();
                 } else if (!_commentaryVisible && _quadCommentaryVisible) {
@@ -11968,12 +12059,17 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             // Make sure we're on the dashboard
             sidebarNav('dashboard');
 
-            // Port commentary state back from Quad Chart → Dashboard
-            if (_quadCommentaryVisible && !_commentaryVisible) {
-                toggleCommentary();
-            } else if (!_quadCommentaryVisible && _commentaryVisible) {
-                toggleCommentary();
+            // Only sync commentary back from Quad Chart when we are genuinely returning
+            // from it — NOT when switching between Risk Summary, BPR Summary or Radar,
+            // where the commentary state must be preserved as-is.
+            if (_lastViewWasQuadrant) {
+                if (_quadCommentaryVisible && !_commentaryVisible) {
+                    toggleCommentary();
+                } else if (!_quadCommentaryVisible && _commentaryVisible) {
+                    toggleCommentary();
+                }
             }
+            _lastViewWasQuadrant = false;
 
             _dashCurrentView = view;
 
@@ -12086,7 +12182,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                     // This Week / Special Attention cell (rowspan=2)
                     `<th rowspan="2" id="bprThisWeekHeaderCell" style="text-align:center;background:#f0f7ff;border-bottom:3px solid #2471a3 !important;border-top:none !important;border-left:none !important;border-right:none !important;color:#2471a3;font-weight:800;vertical-align:bottom;padding:6px 3px !important;">
                         <div style="font-size:10px;font-weight:700;line-height:1.3;">This Week</div>
-                        <div style="font-weight:400;font-size:9px;color:#7f8c8d;line-height:1.2;">${twDates.mondayStr}–${twDates.sundayStr}</div>
+                        <div style="font-weight:400;font-size:9px;color:#7f8c8d;line-height:1.2;white-space:nowrap;">${twDates.mondayStr}–${twDates.sundayStr}</div>
                         <div style="font-size:8px;font-weight:700;color:#c0392b;letter-spacing:0.3px;margin-top:2px;">SPECIAL<br>ATTENTION</div>
                     </th>` +
                     // "Prior Weeks" spanning header over the 6 prior week columns
@@ -12098,8 +12194,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             if (headerRow) {
                 headerRow.innerHTML = priorWeeks.map((wk, idx) => {
                     const dates = getWeekDates(wk);
-                    const isLast = idx === priorWeeks.length - 1;
-                    return `<th class="bpr-week-subth" style="text-align:center;border:none !important;vertical-align:bottom;padding:5px 12px 6px${isLast ? ' 30px' : ' 12px'} !important;background:#f5f7f9;">
+                    return `<th class="bpr-week-subth" style="text-align:center;border:none !important;vertical-align:bottom;padding:5px 12px 6px 12px !important;background:#f5f7f9;">
                         <span style="font-size:11px;font-weight:600;color:#7f8c8d;">${priorWeekLabels[idx]}</span><br>
                         <span style="font-weight:400;font-size:9px;color:#aaa;">${dates.mondayStr}–${dates.sundayStr}</span>
                     </th>`;
@@ -12175,7 +12270,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                     let badgeClass = 'week-past';
                     if (cnt === 0) badgeClass += ' week-zero';
                     const display = cnt === 0 ? '—' : cnt;
-                    return `<td class="bpr-week-td" style="text-align:center;padding:10px 12px${idx === priorWeeks.length - 1 ? ' 10px 30px' : ''} !important;"><span class="bpr-count-badge ${badgeClass}">${display}</span></td>`;
+                    return `<td class="bpr-week-td" style="text-align:center;padding:10px 12px !important;"><span class="bpr-count-badge ${badgeClass}">${display}</span></td>`;
                 }).join('');
 
                 return `<tr style="cursor:pointer;" onclick="navigateToBPRSection('${key}')">
@@ -12186,46 +12281,84 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             }).join('');
         }
 
-        // Navigate to Register tab and activate SA Review filter
+        // Navigate to Register tab — show only SA items belonging to the source BP category
         function navigateToRegisterSA(bprSectionKey) {
             sidebarNav('register');
             setTimeout(() => {
-                // Clear any existing filters first
+                // Clear dropdown filters and any previous SA toggle state
                 const catFilter = document.getElementById('categoryFilter');
                 const ragFilter = document.getElementById('ragFilter');
                 if (catFilter) catFilter.value = '';
                 if (ragFilter) ragFilter.value = '';
-                // Activate the SA Review filter
-                _saReviewFilterActive = false; // ensure toggle starts fresh
-                filterSAReview();
+                _saReviewFilterActive = false;
+
+                // Filter: proximity === 5 (SA flag) AND strategicPriority matches the source BP section
+                const filteredRisks = risks.filter(r =>
+                    r.proximity === 5 &&
+                    r.strategicPriority &&
+                    r.strategicPriority.toLowerCase() === bprSectionKey
+                );
+
+                // Display the filtered set and activate the SA Review button styling
+                updateRiskTable(filteredRisks);
+                _saReviewFilterActive = true;
+                const btn = document.getElementById('saReviewBtn');
+                if (btn) {
+                    btn.classList.add('on');
+                    btn.textContent = '📋 Hide SA Review';
+                }
+
+                // Enter drill-down: sidebar collapses to Back button only.
+                // Back clears the SA filter and returns to Dashboard BPR Summary.
+                enterDrillDown(function() {
+                    _saReviewFilterActive = false;
+                    const saBtn = document.getElementById('saReviewBtn');
+                    if (saBtn) { saBtn.classList.remove('on'); saBtn.textContent = '📋 SA Review'; }
+                    filterRisks();
+                    switchDashView('bprSummary');
+                });
             }, 150);
         }
 
         /**
-         * Navigate to BPR tab: collapse all sections, expand only the target.
+         * Navigate to BPR tab (drill-down): hide every section except the target,
+         * expand the target, enter drill-down mode (Back button in sidebar).
+         * Clicking Back restores all sections and returns to BPR Summary.
          */
         function navigateToBPRSection(sectionKey) {
             sidebarNav('business-plan');
             setTimeout(() => {
                 const allSections = ['customer','investor','finance','technology','operations'];
 
-                // Collapse every section that is currently open
                 allSections.forEach(sk => {
+                    const section = document.querySelector(`.bpr-section.${sk}`);
                     const content = document.getElementById(`${sk}-content`);
-                    if (content && !content.classList.contains('collapsed')) {
-                        toggleBPRSection(sk); // uses the real toggle so maxHeight / arrow text stay consistent
+
+                    if (sk === sectionKey) {
+                        // Show and expand the target section
+                        if (section) section.style.display = '';
+                        if (content && content.classList.contains('collapsed')) {
+                            toggleBPRSection(sk);
+                        }
+                    } else {
+                        // Collapse then hide all other sections
+                        if (content && !content.classList.contains('collapsed')) {
+                            toggleBPRSection(sk);
+                        }
+                        if (section) section.style.display = 'none';
                     }
                 });
 
-                // Expand only the target (if it is still collapsed after the above)
-                const targetContent = document.getElementById(`${sectionKey}-content`);
-                if (targetContent && targetContent.classList.contains('collapsed')) {
-                    toggleBPRSection(sectionKey);
-                }
-
-                // Scroll to the section header
-                const header = document.querySelector(`.bpr-section.${sectionKey} .bpr-section-header`);
-                if (header) header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Enter drill-down: sidebar collapses to Back button only.
+                // (scroll-to-top is handled inside enterDrillDown)
+                // Back restores all sections and returns to Dashboard BPR Summary.
+                enterDrillDown(function() {
+                    allSections.forEach(sk => {
+                        const section = document.querySelector(`.bpr-section.${sk}`);
+                        if (section) section.style.display = '';
+                    });
+                    switchDashView('bprSummary');
+                });
             }, 150);
         }
 
