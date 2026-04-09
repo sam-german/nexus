@@ -2987,8 +2987,151 @@
         .bpr-input.imported {
             background: #f8f9fa;
             border-left: 3px solid #007bff;
-            font-style: italic;
         }
+
+        /* ===== BPR SUMMARY VIEW ===== */
+
+        /* Outer frame — same pale-blue card as .risk-categories-section */
+        .bpr-summary-section {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #b0c4de;
+            margin-bottom: 20px;
+            margin-top: 0;
+        }
+        .bpr-summary-section .categories-header { margin-bottom: 12px; }
+
+        /* Override category-table's hidden first-child so our Priority column shows */
+        .bpr-summary-table th:first-child,
+        .bpr-summary-table td:first-child {
+            display: table-cell !important;
+            width: auto !important;
+            padding: 0 !important;
+            border: revert !important;
+        }
+
+        /* Week group spanning header */
+        .bpr-summary-table .bpr-week-group-th {
+            font-size: 10px !important;
+            font-weight: 600 !important;
+            color: #7f8c8d !important;
+            letter-spacing: 0.4px;
+            text-align: center;
+            border-bottom: none !important;
+            border-top: none !important;
+            background: #f5f7f9 !important;
+            padding: 6px 8px !important;
+        }
+
+        /* Equal-width sub-header cells for each week */
+        .bpr-summary-table .bpr-week-subth {
+            text-align: center;
+            font-size: 11px !important;
+            padding: 7px 12px !important;
+            color: #7f8c8d;
+            width: 9% !important;
+            border-bottom: none !important;
+            border-top: none !important;
+        }
+        .bpr-summary-table .bpr-week-subth.current-week {
+            color: #2471a3;
+            font-weight: 800 !important;
+        }
+
+        /* Equidistant spacing for all prior-week data cells */
+        .bpr-summary-table td.bpr-week-td {
+            text-align: center;
+            padding: 10px 12px !important;
+        }
+
+        /* 2cm breathing room after W-6 (last column) */
+        .bpr-summary-table .bpr-week-subth:last-child,
+        .bpr-summary-table td.bpr-week-td:last-child {
+            padding-right: 30px !important;
+        }
+
+        /* Mini section-header chip in Priority column */
+        .bpr-mini-header {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 8px;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            border-radius: 8px;
+            margin: 3px 4px;
+        }
+        .bpr-mini-tl {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.85);
+            flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+        }
+        .bpr-mini-tl.red   { background: #e74c3c; }
+        .bpr-mini-tl.amber { background: #f39c12; }
+        .bpr-mini-tl.green { background: #27ae60; }
+        .bpr-mini-tl.null  { background: white; border-color: rgba(255,255,255,0.6); }
+
+        /* SA badge */
+        .bpr-sa-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 24px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 0 7px;
+        }
+        .bpr-sa-badge.has-items {
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #c0392b);
+            color: white;
+            box-shadow: 0 2px 5px rgba(192,57,43,0.35);
+        }
+        .bpr-sa-badge.no-items { color: #bdc3c7; border: 1.5px solid #e9ecef; }
+
+        /* Week count badges */
+        .bpr-count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 24px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 0 7px;
+        }
+        .bpr-count-badge.week-current {
+            background: #eaf3fb;
+            color: #2471a3;
+            border: 1.5px solid #aed6f1;
+        }
+        .bpr-count-badge.week-past {
+            background: #f8f9fa;
+            color: #7f8c8d;
+            border: 1.5px solid #e9ecef;
+        }
+        .bpr-count-badge.week-zero { color: #d5d8dc; font-weight: 400; }
+
+        /* Footer banner below table — same card style, blank for now */
+        .bpr-summary-footer {
+            margin-top: 14px;
+            background: #e8f4f8;
+            border: 1px solid #b0c4de;
+            border-radius: 10px;
+            padding: 16px 20px;
+            min-height: 48px;
+        }
+        /* ===== END BPR SUMMARY VIEW ===== */
 
         .rag-dropdown {
             border: none;
@@ -5332,6 +5475,7 @@
                         </button>
                         <div class="view-dropdown" id="dashViewDrop">
                             <div class="view-dropdown-item" onclick="switchDashView('summary')">📋 Risk Summary</div>
+                            <div class="view-dropdown-item" onclick="switchDashView('bprSummary')">📊 BPR Summary</div>
                             <div class="view-dropdown-item" onclick="switchDashView('radar')">📡 Radar</div>
                             <div class="view-dropdown-item" onclick="switchDashView('quadrant')">🔲 Quad Chart</div>
                         </div>
@@ -5511,6 +5655,38 @@
                         <div class="chart-container">
                             <canvas id="radarChart"></canvas>
                         </div>
+                    </div>
+
+                    <!-- BPR Summary Section -->
+                    <div class="bpr-summary-section hidden" id="bprSummarySection">
+                        <div class="categories-header">
+                            <h3 class="categories-title">CLICK A PRIORITY AREA TO DRILL DOWN</h3>
+                        </div>
+                        <table class="category-table bpr-summary-table" id="bprSummaryTable">
+                            <colgroup>
+                                <col id="bprColPriority" style="width:4.5%">
+                                <col id="bprColThisWeek" style="width:2.5%">
+                                <col style="width:15.5%">
+                                <col style="width:15.5%">
+                                <col style="width:15.5%">
+                                <col style="width:15.5%">
+                                <col style="width:15.5%">
+                                <col style="width:15.5%">
+                            </colgroup>
+                            <thead>
+                                <tr id="bprPriorWeeksRow">
+                                    <!-- "Prior Weeks" spanning header — populated by updateBPRSummaryView() -->
+                                </tr>
+                                <tr id="bprWeekHeaderRow">
+                                    <!-- Individual column headers — populated by updateBPRSummaryView() -->
+                                </tr>
+                            </thead>
+                            <tbody id="bprSummaryTbody">
+                                <!-- Dynamically populated by updateBPRSummaryView() -->
+                            </tbody>
+                        </table>
+                        <!-- Footer banner — blank placeholder -->
+                        <div class="bpr-summary-footer" id="bprSummaryFooter"></div>
                     </div>
 
                 </div><!-- /.dashboard-layout -->
@@ -6141,6 +6317,7 @@
                         </button>
                         <div class="view-dropdown" id="quadViewDrop">
                             <div class="view-dropdown-item" onclick="switchDashView('summary')">📋 Risk Summary</div>
+                            <div class="view-dropdown-item" onclick="switchDashView('bprSummary')">📊 BPR Summary</div>
                             <div class="view-dropdown-item" onclick="switchDashView('radar')">📡 Radar</div>
                             <div class="view-dropdown-item view-dropdown-item-active" onclick="toggleViewDropdown('quadViewDrop')">🔲 Quad Chart</div>
                         </div>
@@ -6584,8 +6761,9 @@
                     addBPRRow(targetSection);
                 }
 
-                // Populate the row with risk data
-                const issueText = `${risk.description} (${risk.id}) *`;
+                // Populate the row with risk data (strip date suffix from ID: e.g. STR-0001-ABCD)
+                const shortRiskId = String(risk.id || '').replace(/-\d{8}$/, '');
+                const issueText = `${risk.description} (${shortRiskId}) *`;
                 const actionsText = risk.mitigation || 'Mitigation actions to be defined';
                 const ragStatus = risk.rag || 'red'; // Default to red for SA review items
 
@@ -6650,9 +6828,10 @@
             Object.keys(weekData).forEach(section => {
                 const tbody = document.getElementById(`${section}-tbody`);
                 
-                // Filter out SA items (those marked with saItem flag or with asterisk)
+                // Filter out SA items only (saItem flag or trailing asterisk marker)
+                // Do NOT test row.imported — regular BPR rows from the sync also carry that flag
                 const filteredData = weekData[section].filter((row, index) => {
-                    if (row && (row.saItem || row.imported || (row.issues && row.issues.includes('*')))) {
+                    if (row && (row.saItem || (row.issues && row.issues.endsWith('*')))) {
                         clearedCount++;
                         return false; // Remove this row
                     }
@@ -7924,9 +8103,12 @@
             
             weekData[section][rowIndex][field] = value;
             updateBPRCount(section);
-            
+
             // Save to localStorage
             localStorage.setItem('businessPlanData', JSON.stringify(businessPlanData));
+
+            // Bust BPR commentary cache so next view reflects new data
+            if (typeof _commentaryCache !== 'undefined') delete _commentaryCache['bprSummary||'];
         }
 
         function updateBPRCount(section) {
@@ -8055,8 +8237,9 @@
                     addBPRRow(targetSection);
                 }
 
-                // Populate the row with risk data
-                const issueText = `${risk.description} (${risk.id}) *`;
+                // Populate the row with risk data (strip date suffix from ID: e.g. STR-0001-ABCD)
+                const shortRiskId = String(risk.id || '').replace(/-\d{8}$/, '');
+                const issueText = `${risk.description} (${shortRiskId}) *`;
                 const actionsText = risk.mitigation || 'Mitigation actions to be defined';
                 const ragStatus = risk.rag || 'red'; // Default to red for SA review items
 
@@ -9310,6 +9493,13 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
 
         async function refreshCommentary() {
             if (!_commentaryVisible) return;
+
+            // BPR Summary view gets its own commentary branch
+            if (_dashCurrentView === 'bprSummary') {
+                await refreshBPRCommentary();
+                return;
+            }
+
             const isRadar = document.getElementById('radarSection') &&
                             !document.getElementById('radarSection').classList.contains('hidden');
 
@@ -9391,6 +9581,134 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                 errEl.style.display = 'block';
                 errEl.textContent = 'Unable to generate commentary.';
             }
+        }
+
+        // ── BPR Summary commentary ──────────────────────────────────────────
+        async function refreshBPRCommentary() {
+            const loadEl = document.getElementById('commentaryLoading');
+            const listEl = document.getElementById('commentaryBullets');
+            const errEl  = document.getElementById('commentaryError');
+            if (!loadEl || !listEl) return;
+
+            const cacheKey = 'bprSummary||';
+            if (_commentaryCache[cacheKey]) {
+                loadEl.style.display = 'none';
+                listEl.innerHTML = _commentaryCache[cacheKey].map(b =>
+                    `<li class="commentary-bullet">${b}</li>`
+                ).join('');
+                return;
+            }
+
+            loadEl.style.display = 'flex';
+            listEl.innerHTML = '';
+            if (errEl) errEl.style.display = 'none';
+
+            await new Promise(r => setTimeout(r, 400));
+
+            try {
+                const bullets = generateBPRCommentary();
+                loadEl.style.display = 'none';
+                listEl.innerHTML = bullets.map(b =>
+                    `<li class="commentary-bullet">${b}</li>`
+                ).join('');
+                _commentaryCache[cacheKey] = bullets;
+            } catch(err) {
+                loadEl.style.display = 'none';
+                if (errEl) { errEl.style.display = 'block'; errEl.textContent = 'Unable to generate commentary.'; }
+            }
+        }
+
+        function generateBPRCommentary() {
+            const BPR_AREAS = ['customer','investor','finance','technology','operations'];
+            const LABELS    = { customer:'Customer', investor:'Investor', finance:'Finance', technology:'Technology', operations:'Operations' };
+            const thisWeek  = getCurrentISOWeek();
+            const prior1    = getPriorISOWeek(thisWeek, 1);
+            const prior2    = getPriorISOWeek(thisWeek, 2);
+            const prior3    = getPriorISOWeek(thisWeek, 3);
+            const prior4    = getPriorISOWeek(thisWeek, 4);
+
+            function getCount(section, weekStr) {
+                const wd = businessPlanData.weeks[weekStr];
+                if (!wd || !wd[section]) return 0;
+                return wd[section].filter(r => r && (r.issues || r.actions || r.owner)).length;
+            }
+            function getSACount(section) {
+                const wd = businessPlanData.weeks[thisWeek];
+                if (!wd || !wd[section]) return 0;
+                return wd[section].filter(r => r && r.saItem).length;
+            }
+
+            // Build summary stats
+            const areaSummary = BPR_AREAS.map(k => ({
+                key:     k,
+                label:   LABELS[k],
+                sa:      getSACount(k),
+                current: getCount(k, thisWeek),
+                p1:      getCount(k, prior1),
+                p2:      getCount(k, prior2),
+                p3:      getCount(k, prior3),
+                p4:      getCount(k, prior4)
+            }));
+
+            const totalSA      = areaSummary.reduce((s,a) => s + a.sa, 0);
+            const totalCurrent = areaSummary.reduce((s,a) => s + a.current, 0);
+            const totalP1      = areaSummary.reduce((s,a) => s + a.p1, 0);
+            const busiest      = [...areaSummary].sort((a,b) => b.current - a.current)[0];
+            const quietest     = [...areaSummary].filter(a => a.current > 0).sort((a,b) => a.current - b.current)[0];
+            const areasWithSA  = areaSummary.filter(a => a.sa > 0);
+            const trending     = areaSummary.filter(a => a.current > a.p1 && a.p1 >= 0);
+            const declining    = areaSummary.filter(a => a.current < a.p1 && a.p1 > 0);
+            const activeAreas  = areaSummary.filter(a => a.current > 0);
+            const weeks        = [thisWeek, prior1, prior2, prior3, prior4];
+            const weekTotals   = weeks.map(wk => BPR_AREAS.reduce((s,k) => s + getCount(k, wk), 0));
+
+            const bullets = [];
+
+            // ── Bullet 1: Overall BPR posture ─────────────────────────────
+            if (totalCurrent === 0) {
+                bullets.push(`<strong>No BPR items are recorded for the current week.</strong> Sync your Business Plan data or add items manually to populate this view.`);
+                return bullets;
+            }
+            const trend = totalCurrent > totalP1 ? `up from ${totalP1} last week` : totalCurrent < totalP1 ? `down from ${totalP1} last week` : `unchanged from last week`;
+            bullets.push(`<strong>${totalCurrent} BPR item${totalCurrent !== 1 ? 's' : ''}</strong> are recorded across ${activeAreas.length} of 5 priority areas this week — ${trend}. ${totalSA > 0 ? `<strong style="color:#c0392b">${totalSA} Special Attention item${totalSA > 1 ? 's' : ''}</strong> require${totalSA === 1 ? 's' : ''} priority focus.` : 'No Special Attention items are flagged this week.'}`);
+
+            // ── Bullet 2: Highest-activity area ───────────────────────────
+            if (busiest && busiest.current > 0) {
+                const bTrend = busiest.current > busiest.p1 ? ` (up from ${busiest.p1} last week)` : busiest.current < busiest.p1 ? ` (down from ${busiest.p1} last week)` : '';
+                bullets.push(`<strong>${busiest.label}</strong> is the busiest priority area this week with <strong>${busiest.current} item${busiest.current !== 1 ? 's' : ''}</strong>${bTrend}. ${busiest.sa > 0 ? `It carries <strong style="color:#c0392b">${busiest.sa} SA item${busiest.sa > 1 ? 's' : ''}</strong> — leadership visibility is warranted.` : 'No SA escalations in this area.'}`);
+            }
+
+            // ── Bullet 3: Special Attention summary ───────────────────────
+            if (areasWithSA.length > 0) {
+                const saList = areasWithSA.map(a => `<strong>${a.label}</strong> (${a.sa})`).join(', ');
+                bullets.push(`<strong style="color:#c0392b">Special Attention items</strong> are active in: ${saList}. These items are linked from the Risk Register and require direct action before the next review cycle.`);
+            }
+
+            // ── Bullet 4: Week-on-week movement ──────────────────────────
+            if (trending.length > 0 || declining.length > 0) {
+                const trendStr  = trending.length  > 0 ? `${trending.map(a=>`<strong>${a.label}</strong> (${a.p1}→${a.current})`).join(', ')} show increased activity` : '';
+                const declinStr = declining.length > 0 ? `${declining.map(a=>`<strong>${a.label}</strong> (${a.p1}→${a.current})`).join(', ')} ${declining.length > 1 ? 'show' : 'shows'} reduced volume` : '';
+                const parts = [trendStr, declinStr].filter(Boolean);
+                bullets.push(`Week-on-week: ${parts.join('; ')}. ${trending.length > 0 && declining.length === 0 ? 'The overall reporting volume is increasing — ensure capacity is aligned to governance demands.' : declining.length > 0 && trending.length === 0 ? 'Reporting volume is easing — monitor whether this reflects genuine resolution or under-reporting.' : 'Mixed directional movement suggests different priority areas are at different stages of their review cycle.'}`);
+            }
+
+            // ── Bullet 5: Four-week trend ─────────────────────────────────
+            const nonZeroWeeks = weekTotals.filter(w => w > 0);
+            if (nonZeroWeeks.length >= 3) {
+                const avg4 = Math.round(weekTotals.slice(1).reduce((a,b)=>a+b,0) / 4);
+                const vs4 = totalCurrent > avg4 ? `above` : totalCurrent < avg4 ? `below` : `in line with`;
+                bullets.push(`Over the past 4 weeks, total BPR reporting has averaged <strong>${avg4} item${avg4 !== 1 ? 's' : ''} per week</strong>. This week's count of <strong>${totalCurrent}</strong> is <strong>${vs4} that average</strong>. ${weekTotals.slice(1).every(w => w <= weekTotals[1]) ? 'The trend line is stable-to-declining — review for completeness.' : 'Activity levels vary, suggesting reporting cadence is irregular across priority areas.'}`);
+            }
+
+            // ── Bullet 6: Quiet areas ─────────────────────────────────────
+            const emptyAreas = areaSummary.filter(a => a.current === 0);
+            if (emptyAreas.length > 0) {
+                const emptyList = emptyAreas.map(a => `<strong>${a.label}</strong>`).join(', ');
+                const hadDataPrev = emptyAreas.filter(a => a.p1 > 0 || a.p2 > 0);
+                bullets.push(`${emptyList} ${emptyAreas.length > 1 ? 'have' : 'has'} no items recorded this week. ${hadDataPrev.length > 0 ? `${hadDataPrev.map(a=>`<strong>${a.label}</strong>`).join(', ')} reported items in prior weeks — verify whether this is a genuine lull or a gap in reporting.` : 'No prior-week data is available for these areas; confirm with owners whether a submission is expected.'}`);
+            }
+
+            return bullets.filter(b => b);
         }
 
         // Refresh commentary when radar/summary view switches
@@ -11629,6 +11947,8 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
         });
 
         // ── Switch dashboard view (radar / summary / quadrant) ──
+        let _dashCurrentView = 'summary'; // 'summary' | 'radar' | 'bprSummary'
+
         function switchDashView(view) {
             // Close any open dropdowns
             document.querySelectorAll('.view-dropdown').forEach(d => d.classList.remove('open'));
@@ -11655,21 +11975,258 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                 toggleCommentary();
             }
 
-            const radarSection        = document.getElementById('radarSection');
-            const categoriesSection   = document.querySelector('.risk-categories-section');
+            _dashCurrentView = view;
+
+            const radarSection         = document.getElementById('radarSection');
+            const categoriesSection    = document.querySelector('.risk-categories-section');
             const trafficLightsSection = document.querySelector('.traffic-lights-section');
+            const bprSummarySection    = document.getElementById('bprSummarySection');
             if (!radarSection) return;
+
+            // Hide all three panels first
+            radarSection.classList.add('hidden');
+            if (categoriesSection)    categoriesSection.classList.add('hidden');
+            if (trafficLightsSection) trafficLightsSection.classList.add('hidden');
+            if (bprSummarySection)    bprSummarySection.classList.add('hidden');
 
             if (view === 'radar') {
                 radarSection.classList.remove('hidden');
-                if (categoriesSection)    categoriesSection.classList.add('hidden');
-                if (trafficLightsSection) trafficLightsSection.classList.add('hidden');
+            } else if (view === 'bprSummary') {
+                if (bprSummarySection) bprSummarySection.classList.remove('hidden');
+                updateBPRSummaryView();
+                // Refresh commentary for the BPR context
+                if (_commentaryVisible) refreshCommentary();
             } else {
-                // summary
-                radarSection.classList.add('hidden');
+                // 'summary' (default)
                 if (categoriesSection)    categoriesSection.classList.remove('hidden');
                 if (trafficLightsSection) trafficLightsSection.classList.remove('hidden');
+                if (_commentaryVisible) refreshCommentary();
             }
+        }
+
+        // ── BPR Summary view helpers ──
+
+        /**
+         * Return the ISO week string N weeks before the given week.
+         * e.g. getPriorISOWeek('2026-W15', 1) → '2026-W14'
+         */
+        function getPriorISOWeek(weekStr, n) {
+            const [year, week] = weekStr.split('-W').map(Number);
+            // Convert to a date (Monday of that week) then subtract 7*n days
+            const jan4 = new Date(Date.UTC(year, 0, 4));
+            const dayNum = jan4.getUTCDay() || 7;
+            const monday = new Date(jan4);
+            monday.setUTCDate(jan4.getUTCDate() - dayNum + 1 + (week - 1) * 7);
+            monday.setUTCDate(monday.getUTCDate() - 7 * n);
+            // Re-derive ISO week from that Monday
+            const d = new Date(monday);
+            const dDay = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dDay);
+            const ys = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            const wNo = Math.ceil((((d - ys) / 86400000) + 1) / 7);
+            return d.getUTCFullYear() + '-W' + String(wNo).padStart(2, '0');
+        }
+
+        /**
+         * Render the BPR Summary table.
+         * Rows = 5 priority areas; columns = SA count + current + prior 4 weeks.
+         */
+        // SVG icons matching the full BPR section headers (16×16, fill white)
+        const BPR_AREA_META = {
+            customer:   {
+                color: '#5a7fa3',
+                label: 'Customer',
+                svg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="white" style="flex-shrink:0"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>'
+            },
+            investor:   {
+                color: '#6c5ce7',
+                label: 'Investor',
+                svg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="white" style="flex-shrink:0"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>'
+            },
+            finance:    {
+                color: '#74b49b',
+                label: 'Finance',
+                svg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="white" style="flex-shrink:0"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>'
+            },
+            technology: {
+                color: '#636e72',
+                label: 'Technology',
+                svg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="white" style="flex-shrink:0"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>'
+            },
+            operations: {
+                color: '#0984e3',
+                label: 'Operations',
+                svg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="white" style="flex-shrink:0"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>'
+            }
+        };
+
+        function updateBPRSummaryView() {
+            const BPR_AREAS = ['customer','investor','finance','technology','operations'];
+
+            const thisWeek = getCurrentISOWeek();
+            // Prior week columns: W-1 (most recent) → W-6 (oldest), left to right
+            const priorWeeks = [
+                getPriorISOWeek(thisWeek, 1),
+                getPriorISOWeek(thisWeek, 2),
+                getPriorISOWeek(thisWeek, 3),
+                getPriorISOWeek(thisWeek, 4),
+                getPriorISOWeek(thisWeek, 5),
+                getPriorISOWeek(thisWeek, 6)
+            ];
+            const priorWeekLabels = ['W-1','W-2','W-3','W-4','W-5','W-6'];
+
+            const twDates = getWeekDates(thisWeek);
+
+            // ── Row 1: "Prior Weeks" spanning header centred over the 6 prior week columns ──
+            const priorWeeksRow = document.getElementById('bprPriorWeeksRow');
+            if (priorWeeksRow) {
+                priorWeeksRow.innerHTML =
+                    // BPR Priority cell (rowspan=2)
+                    `<th rowspan="2" style="text-align:left;padding:8px 6px 6px 8px !important;border:none !important;background:#f8f9fa;vertical-align:bottom;font-size:11px;color:#2c3e50;font-weight:700;">BPR Priority</th>` +
+                    // This Week / Special Attention cell (rowspan=2)
+                    `<th rowspan="2" id="bprThisWeekHeaderCell" style="text-align:center;background:#f0f7ff;border-bottom:3px solid #2471a3 !important;border-top:none !important;border-left:none !important;border-right:none !important;color:#2471a3;font-weight:800;vertical-align:bottom;padding:6px 3px !important;">
+                        <div style="font-size:10px;font-weight:700;line-height:1.3;">This Week</div>
+                        <div style="font-weight:400;font-size:9px;color:#7f8c8d;line-height:1.2;">${twDates.mondayStr}–${twDates.sundayStr}</div>
+                        <div style="font-size:8px;font-weight:700;color:#c0392b;letter-spacing:0.3px;margin-top:2px;">SPECIAL<br>ATTENTION</div>
+                    </th>` +
+                    // "Prior Weeks" spanning header over the 6 prior week columns
+                    `<th colspan="6" style="text-align:center;font-size:10px;font-weight:600;color:#7f8c8d;background:#f5f7f9;border:none !important;border-bottom:1px solid #dce3ea !important;padding:5px 30px 5px 8px !important;letter-spacing:0.3px;">Prior Weeks</th>`;
+            }
+
+            // ── Row 2: Individual week column headers ──
+            const headerRow = document.getElementById('bprWeekHeaderRow');
+            if (headerRow) {
+                headerRow.innerHTML = priorWeeks.map((wk, idx) => {
+                    const dates = getWeekDates(wk);
+                    const isLast = idx === priorWeeks.length - 1;
+                    return `<th class="bpr-week-subth" style="text-align:center;border:none !important;vertical-align:bottom;padding:5px 12px 6px${isLast ? ' 30px' : ' 12px'} !important;background:#f5f7f9;">
+                        <span style="font-size:11px;font-weight:600;color:#7f8c8d;">${priorWeekLabels[idx]}</span><br>
+                        <span style="font-weight:400;font-size:9px;color:#aaa;">${dates.mondayStr}–${dates.sundayStr}</span>
+                    </th>`;
+                }).join('');
+            }
+
+            // ── Read live traffic-light state for a section from the BPR tab DOM ──
+            function getTLState(sectionKey) {
+                const el = document.querySelector(`.section-traffic-light-display[data-section="${sectionKey}"]`);
+                if (!el) return 'null';
+                if (el.classList.contains('red'))   return 'red';
+                if (el.classList.contains('amber')) return 'amber';
+                if (el.classList.contains('green')) return 'green';
+                return 'null';
+            }
+
+            // ── Count SA items for a section — current week only (step 4 confirmed correct) ──
+            function getSACount(sectionKey) {
+                const wkData = businessPlanData.weeks[thisWeek];
+                if (!wkData || !wkData[sectionKey]) return 0;
+                return wkData[sectionKey].filter(r => r && r.saItem).length;
+            }
+
+            // ── Count non-empty items for a section in a given week ──
+            function getItemCount(sectionKey, weekStr) {
+                const wkData = businessPlanData.weeks[weekStr];
+                if (!wkData || !wkData[sectionKey]) return 0;
+                return wkData[sectionKey].filter(r => r && (r.issues || r.actions || r.owner)).length;
+            }
+
+            // ── Build tbody ──
+            const tbody = document.getElementById('bprSummaryTbody');
+            if (!tbody) return;
+
+            tbody.innerHTML = BPR_AREAS.map(key => {
+                const meta    = BPR_AREA_META[key];
+                const tlState = getTLState(key);
+                const saCount = getSACount(key);
+
+                // Mini section-header chip (BPR Priority column)
+                const miniHeader = `<div class="bpr-mini-header" style="background:${meta.color};">
+                    <div class="bpr-mini-tl ${tlState}"></div>
+                    ${meta.svg}
+                    <span>${meta.label.toUpperCase()}</span>
+                </div>`;
+
+                // This Week count — clicks navigate to BPR tab for this section
+                const thisCnt = getItemCount(key, thisWeek);
+                let thisWeekBadgeClass = 'week-current';
+                if (thisCnt === 0) thisWeekBadgeClass += ' week-zero';
+                const thisWeekDisplay = thisCnt === 0 ? '—' : thisCnt;
+
+                // SA badge — clicks navigate to Register tab with SA filter active
+                const saDisplay = saCount > 0 ? saCount : '—';
+                const saBadgeClass = saCount > 0 ? 'bpr-sa-badge has-items' : 'bpr-sa-badge no-items';
+
+                const thisWeekCell = `<td style="text-align:center;background:#f0f7ff;border-left:2px solid #aed6f1;padding:4px 3px !important;" onclick="event.stopPropagation();">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                        <span class="bpr-count-badge ${thisWeekBadgeClass}"
+                              style="cursor:pointer;display:block;"
+                              title="View this week's BPR items"
+                              onclick="event.stopPropagation(); navigateToBPRSection('${key}');">${thisWeekDisplay}</span>
+                        <span class="${saBadgeClass}"
+                              style="cursor:${saCount > 0 ? 'pointer' : 'default'};"
+                              title="${saCount > 0 ? 'View Special Attention items in Register' : 'No Special Attention items'}"
+                              onclick="event.stopPropagation(); ${saCount > 0 ? `navigateToRegisterSA('${key}');` : ''}">${saDisplay}</span>
+                    </div>
+                </td>`;
+
+                // Prior week cells — clicking the row still navigates to BPR tab
+                const priorWeekCells = priorWeeks.map((wk, idx) => {
+                    const cnt = getItemCount(key, wk);
+                    let badgeClass = 'week-past';
+                    if (cnt === 0) badgeClass += ' week-zero';
+                    const display = cnt === 0 ? '—' : cnt;
+                    return `<td class="bpr-week-td" style="text-align:center;padding:10px 12px${idx === priorWeeks.length - 1 ? ' 10px 30px' : ''} !important;"><span class="bpr-count-badge ${badgeClass}">${display}</span></td>`;
+                }).join('');
+
+                return `<tr style="cursor:pointer;" onclick="navigateToBPRSection('${key}')">
+                    <td style="padding:0 !important;">${miniHeader}</td>
+                    ${thisWeekCell}
+                    ${priorWeekCells}
+                </tr>`;
+            }).join('');
+        }
+
+        // Navigate to Register tab and activate SA Review filter
+        function navigateToRegisterSA(bprSectionKey) {
+            sidebarNav('register');
+            setTimeout(() => {
+                // Clear any existing filters first
+                const catFilter = document.getElementById('categoryFilter');
+                const ragFilter = document.getElementById('ragFilter');
+                if (catFilter) catFilter.value = '';
+                if (ragFilter) ragFilter.value = '';
+                // Activate the SA Review filter
+                _saReviewFilterActive = false; // ensure toggle starts fresh
+                filterSAReview();
+            }, 150);
+        }
+
+        /**
+         * Navigate to BPR tab: collapse all sections, expand only the target.
+         */
+        function navigateToBPRSection(sectionKey) {
+            sidebarNav('business-plan');
+            setTimeout(() => {
+                const allSections = ['customer','investor','finance','technology','operations'];
+
+                // Collapse every section that is currently open
+                allSections.forEach(sk => {
+                    const content = document.getElementById(`${sk}-content`);
+                    if (content && !content.classList.contains('collapsed')) {
+                        toggleBPRSection(sk); // uses the real toggle so maxHeight / arrow text stay consistent
+                    }
+                });
+
+                // Expand only the target (if it is still collapsed after the above)
+                const targetContent = document.getElementById(`${sectionKey}-content`);
+                if (targetContent && targetContent.classList.contains('collapsed')) {
+                    toggleBPRSection(sectionKey);
+                }
+
+                // Scroll to the section header
+                const header = document.querySelector(`.bpr-section.${sectionKey} .bpr-section-header`);
+                if (header) header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 150);
         }
 
         // ── Overview card expansion ──
