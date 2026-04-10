@@ -7134,25 +7134,48 @@
         /**
          * Navigate to previous week
          */
+        /**
+         * After loading any week's data, apply the current toggle state to sections:
+         *   _bprAllExpanded = true  → expand sections that have rows
+         *   _bprAllExpanded = false → collapse all sections
+         * This keeps the expand/collapse state consistent as the user moves through weeks.
+         */
+        function _applyBPRExpandState() {
+            _BPR_SECTIONS.forEach(function(sk) {
+                var content = document.getElementById(sk + '-content');
+                if (!content) return;
+                var tbody = document.getElementById(sk + '-tbody');
+                var hasRows = tbody && tbody.children.length > 0;
+                var isCollapsed = content.classList.contains('collapsed');
+
+                if (_bprAllExpanded && isCollapsed && hasRows) {
+                    toggleBPRSection(sk);          // expand sections that have content
+                } else if (!_bprAllExpanded && !isCollapsed) {
+                    toggleBPRSection(sk);          // collapse all sections
+                }
+            });
+        }
+
         function navigateToPreviousWeek() {
+            _cancelCrystalBall();
             const [year, week] = currentWeek.split('-W').map(Number);
             let newWeek = week - 1;
             let newYear = year;
-            
             if (newWeek < 1) {
                 newYear--;
-                newWeek = 52; // Approximate, most years have 52 weeks
+                newWeek = 52;
             }
-            
             currentWeek = newYear + '-W' + String(newWeek).padStart(2, '0');
             loadWeekData();
             updateWeekDisplay();
+            _applyBPRExpandState();
         }
 
         /**
          * Navigate to next week
          */
         function navigateToNextWeek() {
+            _cancelCrystalBall();
             // Block navigation past the current week
             if (currentWeek === getCurrentISOWeek()) {
                 _flashNoCrystalBall();
@@ -7161,22 +7184,20 @@
             const [year, week] = currentWeek.split('-W').map(Number);
             let newWeek = week + 1;
             let newYear = year;
-
             if (newWeek > 52) {
                 newYear++;
                 newWeek = 1;
             }
-
             // Also block if the next week would be in the future
             const nextWeek = newYear + '-W' + String(newWeek).padStart(2, '0');
             if (nextWeek > getCurrentISOWeek()) {
                 _flashNoCrystalBall();
                 return;
             }
-
             currentWeek = nextWeek;
             loadWeekData();
             updateWeekDisplay();
+            _applyBPRExpandState();
         }
 
         function _flashNoCrystalBall() {
@@ -7198,16 +7219,32 @@
             // Flash the warning badge with "No crystal ball 🔮"
             const warn = document.getElementById('historicalWarning');
             if (!warn) return;
-            const prevText    = warn.textContent;
-            const prevHidden  = warn.classList.contains('hidden');
-            warn.textContent  = '🔮 No crystal ball!';
+            // Cancel any in-flight flash first
+            _cancelCrystalBall();
+            warn.textContent = '🔮 No crystal ball!';
             warn.classList.remove('hidden');
             warn.classList.add('no-crystal-ball');
-            setTimeout(function() {
+            _crystalBallTimer = setTimeout(function() {
+                _crystalBallTimer = null;
                 warn.classList.remove('no-crystal-ball');
-                warn.textContent = prevText;
-                if (prevHidden) warn.classList.add('hidden');
+                warn.textContent = '⚠️ Historical — read only';
+                warn.classList.add('hidden');
             }, 800);
+        }
+
+        var _crystalBallTimer = null;
+        // Cancel any in-flight crystal-ball flash and restore the warning element cleanly
+        function _cancelCrystalBall() {
+            if (_crystalBallTimer) {
+                clearTimeout(_crystalBallTimer);
+                _crystalBallTimer = null;
+                var warn = document.getElementById('historicalWarning');
+                if (warn) {
+                    warn.classList.remove('no-crystal-ball');
+                    warn.textContent = '⚠️ Historical — read only';
+                    warn.classList.add('hidden'); // navigation will un-hide if needed
+                }
+            }
         }
 
         /**
