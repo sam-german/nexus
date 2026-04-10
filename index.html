@@ -2894,8 +2894,9 @@
         .bpr-table th {
             background: #f8f9fa;
             border-bottom: 2px solid #dee2e6;
-            padding: 12px;
+            padding: 5px 6px;
             font-weight: 600;
+            font-size: 11px;
             color: #495057;
             text-align: left;
         }
@@ -2919,19 +2920,45 @@
         }
 
         .bpr-table th:nth-child(5) {
-            width: 100px;
+            width: 80px;
             text-align: center;
+            white-space: nowrap;
         }
 
         .bpr-table th:nth-child(6) {
-            width: 50px;
+            width: 80px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .bpr-table th:nth-child(7) {
+            width: 80px;
+            text-align: center;
+        }
+
+        .bpr-table th:nth-child(8) {
+            width: 36px;
+            text-align: center;
+        }
+
+        .bpr-table td:nth-child(5),
+        .bpr-table td:nth-child(6) {
+            text-align: center;
+            color: #555;
+            font-size: 10.5px;
+            white-space: nowrap;
+        }
+
+        .bpr-table td:nth-child(7) {
             text-align: center;
         }
 
         .bpr-table td {
-            padding: 12px;
+            padding: 5px 6px;
             border-bottom: 1px solid #dee2e6;
             vertical-align: top;
+            font-size: 11px;
+            font-family: inherit;
         }
 
         .bpr-table td:first-child {
@@ -2948,29 +2975,41 @@
             background: #f8f9fa;
         }
 
+        /* SA / Risk-imported rows */
+        .bpr-sa-row {
+            border-left: 3px solid #e74c3c !important;
+            background: #fff8f7 !important;
+        }
+        .bpr-sa-row:hover {
+            background: #fff0ee !important;
+        }
+        .bpr-sa-badge {
+            display: inline-block;
+            font-size: 11px;
+            background: #e74c3c;
+            color: #fff;
+            border-radius: 3px;
+            padding: 1px 4px;
+            margin-right: 4px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
         .bpr-input {
             width: 100%;
             border: none;
             background: transparent;
-            padding: 8px;
-            font-size: 14px;
+            padding: 3px 4px;
+            font-size: 11px;
             resize: none;
-            min-height: 60px;
+            min-height: 24px;
             max-height: 300px;
-            overflow-y: auto;
+            overflow: hidden;
             font-family: inherit;
             line-height: 1.5;
             box-sizing: border-box;
-        }
-
-        /* Issues column - smaller default */
-        .bpr-table td:nth-child(2) .bpr-input {
-            min-height: 60px;
-        }
-
-        /* Actions and Outcomes column - larger default */
-        .bpr-table td:nth-child(4) .bpr-input {
-            min-height: 120px;
         }
 
         .bpr-input:focus {
@@ -3140,12 +3179,90 @@
         }
         /* ===== END BPR SUMMARY VIEW ===== */
 
+        /* ===== HELICOPTER VIEW ===== */
+        .helicopter-section { background:#e8f4f8; padding:20px; border-radius:10px; border:1px solid #b0c4de; margin-bottom:20px; }
+        .helicopter-section.hidden { display:none; }
+
+        .heli-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .heli-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            border-top: 4px solid var(--accent, #3498db);
+            padding: 20px 20px 14px 20px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: box-shadow 0.18s ease, transform 0.18s ease;
+        }
+        .heli-card:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+            transform: translateY(-2px);
+        }
+
+        .heli-card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #f0f4f8;
+            padding-bottom: 10px;
+        }
+        .heli-card-icon { font-size: 17px; }
+        .heli-card-title { font-size: 13px; font-weight: 700; color: #2c3e50; letter-spacing: 0.3px; text-transform: uppercase; }
+
+        .heli-metrics { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+
+        .heli-big-num {
+            font-size: 30px;
+            font-weight: 800;
+            color: #2c3e50;
+            line-height: 1;
+        }
+        .heli-big-unit { font-size: 12px; font-weight: 400; color: #7f8c8d; margin-left: 4px; }
+
+        .heli-sub { font-size: 11px; color: #7f8c8d; margin-top: 1px; font-weight: 600; }
+        .heli-alert { font-size: 11px; font-weight: 600; color: #c0392b; margin-top: 2px; }
+        .heli-ok    { font-size: 11px; font-weight: 600; color: #27ae60; margin-top: 2px; }
+
+        .heli-rag-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+        .heli-rag-row .rag-mini { width: 26px !important; height: 26px !important; font-size: 12px !important; flex-shrink: 0; }
+
+        .heli-card-footer {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 10px;
+            padding: 6px 14px;
+            background: #ffffff;
+            border: 1px solid #d0d5dd;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent, #3498db);
+            text-align: center;
+            letter-spacing: 0.2px;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+        }
+        .heli-card:hover .heli-card-footer {
+            background: #f7f9fc;
+            border-color: var(--accent, #3498db);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+        }
+        /* ===== END HELICOPTER VIEW ===== */
+
         .rag-dropdown {
             border: none;
             background: transparent;
-            font-size: 16px;
+            font-size: 13px;
             cursor: pointer;
-            padding: 5px;
+            padding: 2px 3px;
         }
 
         .rag-dropdown:focus {
@@ -5240,7 +5357,7 @@
 
         <!-- Hero -->
         <div class="ov-hero">
-            <h1>Platform Overview</h1>
+            <h1>Nexus AIG Overview</h1>
             <p>Your Governance Operating System for Critical Public Services</p>
             <div class="ov-divider"></div>
         </div>
@@ -5249,35 +5366,35 @@
         <div class="ov-grid">
 
             <!-- Card 1: Risk Register -->
-            <div class="ov-card">
+            <div class="ov-card" onclick="quickLaunchCard('register', event)">
                 <div class="ov-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#00d4c8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
                 <div class="ov-card-title">Risk Register</div>
                 <div class="ov-card-desc">A comprehensive, AI-assisted register that captures, classifies and scores risks across all governance domains — from Strategic &amp; Commercial to Cybersecurity &amp; Compliance.</div>
-                <button class="ov-card-cta" onclick="expandOverviewCard('register', this)">More ..</button>
+                <button class="ov-card-cta" onclick="event.stopPropagation(); expandOverviewCard('register', this)">More ..</button>
             </div>
 
             <!-- Card 2: Business Review -->
-            <div class="ov-card amber-accent">
+            <div class="ov-card amber-accent" onclick="quickLaunchCard('business', event)">
                 <div class="ov-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><line x1="12" y1="11" x2="16" y2="11"/><line x1="12" y1="16" x2="16" y2="16"/><line x1="8" y1="11" x2="8.01" y2="11"/><line x1="8" y1="16" x2="8.01" y2="16"/></svg></div>
                 <div class="ov-card-title">Business Review &amp; Action Planning</div>
                 <div class="ov-card-desc">Action planning and strategic review of tasks, progress and escalations — bridging governance intent with operational delivery in real time.</div>
-                <button class="ov-card-cta ov-card-cta-amber" onclick="expandOverviewCard('business', this)">More ..</button>
+                <button class="ov-card-cta ov-card-cta-amber" onclick="event.stopPropagation(); expandOverviewCard('business', this)">More ..</button>
             </div>
 
             <!-- Card 3: Dashboard -->
-            <div class="ov-card">
+            <div class="ov-card" onclick="quickLaunchCard('dashboard', event)">
                 <div class="ov-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#00d4c8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg></div>
                 <div class="ov-card-title">Dashboard Summaries &amp; Pre/Post Mitigation</div>
                 <div class="ov-card-desc">Powerful visualisations and AI-generated summaries giving leaders an instant, evidence-based read on governance health across all risk domains.</div>
-                <button class="ov-card-cta" onclick="expandOverviewCard('dashboard', this)">More ..</button>
+                <button class="ov-card-cta" onclick="event.stopPropagation(); expandOverviewCard('dashboard', this)">More ..</button>
             </div>
 
             <!-- Card 4: People -->
-            <div class="ov-card amber-accent">
+            <div class="ov-card amber-accent" onclick="quickLaunchCard('people', event)">
                 <div class="ov-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
                 <div class="ov-card-title">People &amp; Accountability</div>
                 <div class="ov-card-desc">See who's contributing to the operational and strategic excellence of your governance framework — from board members to front-line operators.</div>
-                <button class="ov-card-cta ov-card-cta-amber" onclick="expandOverviewCard('people', this)">More ..</button>
+                <button class="ov-card-cta ov-card-cta-amber" onclick="event.stopPropagation(); expandOverviewCard('people', this)">More ..</button>
             </div>
 
         </div><!-- /ov-grid -->
@@ -5319,18 +5436,18 @@
                     <span class="icon-label">Home</span>
                 </button>
                 <div class="sidebar-divider"></div>
+                <!-- Dashboard -->
+                <button class="sidebar-icon-btn" id="sidebarDashboard" onclick="openDashboard()" title="Dashboard">
+                    <svg viewBox="0 0 24 24"><path d="M5 9.2h3V19H5zm5.6-4.2h2.8v14h-2.8zm5.6 8h2.8v6h-2.8z"/></svg>
+                    <span class="icon-label">Dashboard</span>
+                </button>
                 <!-- Risk Register -->
                 <button class="sidebar-icon-btn" id="sidebarRegister" onclick="sidebarNav('register')" title="Risk Register">
                     <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-8-2H7v-2h4v2zm6-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
                     <span class="icon-label">Register</span>
                 </button>
-                <!-- Dashboard -->
-                <button class="sidebar-icon-btn" id="sidebarDashboard" onclick="sidebarNav('dashboard')" title="Dashboard">
-                    <svg viewBox="0 0 24 24"><path d="M5 9.2h3V19H5zm5.6-4.2h2.8v14h-2.8zm5.6 8h2.8v6h-2.8z"/></svg>
-                    <span class="icon-label">Dashboard</span>
-                </button>
                 <!-- Business Plan Review -->
-                <button class="sidebar-icon-btn" id="sidebarBPR" onclick="sidebarNav('business-plan')" title="Business Plan Review">
+                <button class="sidebar-icon-btn" id="sidebarBPR" onclick="openBPRTab()" title="Business Plan Review">
                     <svg viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
                     <span class="icon-label">BPR</span>
                 </button>
@@ -5481,6 +5598,7 @@
                             View ▾
                         </button>
                         <div class="view-dropdown" id="dashViewDrop">
+                            <div class="view-dropdown-item" onclick="switchDashView('helicopter')">🚁 Helicopter View</div>
                             <div class="view-dropdown-item" onclick="switchDashView('summary')">📋 Risk Summary</div>
                             <div class="view-dropdown-item" onclick="switchDashView('bprSummary')">📊 BPR Summary</div>
                             <div class="view-dropdown-item" onclick="switchDashView('radar')">📡 Radar</div>
@@ -5500,6 +5618,64 @@
                 <div class="dashboard-flex-row" id="dashFlexRow">
                 <div class="dashboard-main-col" id="dashMainCol">
                 <div class="dashboard-layout">
+
+                    <!-- Helicopter View Section -->
+                    <div class="helicopter-section hidden" id="helicopterSection">
+                        <div class="categories-header" style="margin-bottom:14px;">
+                            <h3 class="categories-title">🚁 HELICOPTER VIEW — CLICK A PANEL TO LAND ON</h3>
+                        </div>
+                        <div class="heli-grid">
+
+                            <!-- Risk Summary Card -->
+                            <div class="heli-card" style="--accent:#e74c3c;" onclick="switchDashView('summary')">
+                                <div class="heli-card-header">
+                                    <span class="heli-card-icon">📋</span>
+                                    <span class="heli-card-title">Risk Summary</span>
+                                </div>
+                                <div class="heli-metrics" id="heliRiskMetrics">
+                                    <div class="heli-big-num">—</div>
+                                </div>
+                                <div class="heli-card-footer">Go to Risk Summary →</div>
+                            </div>
+
+                            <!-- BPR Summary Card -->
+                            <div class="heli-card" style="--accent:#f59e0b;" onclick="switchDashView('bprSummary')">
+                                <div class="heli-card-header">
+                                    <span class="heli-card-icon">📊</span>
+                                    <span class="heli-card-title">BPR Summary</span>
+                                </div>
+                                <div class="heli-metrics" id="heliBPRMetrics">
+                                    <div class="heli-big-num">—</div>
+                                </div>
+                                <div class="heli-card-footer">Go to BPR Summary →</div>
+                            </div>
+
+                            <!-- Risk Radar Card -->
+                            <div class="heli-card" style="--accent:#4a90e2;" onclick="switchDashView('radar')">
+                                <div class="heli-card-header">
+                                    <span class="heli-card-icon">📡</span>
+                                    <span class="heli-card-title">Risk Radar</span>
+                                </div>
+                                <div class="heli-metrics" id="heliRadarMetrics">
+                                    <div class="heli-big-num">—</div>
+                                </div>
+                                <div class="heli-card-footer">Go to Radar →</div>
+                            </div>
+
+                            <!-- Quadrant Chart Card -->
+                            <div class="heli-card" style="--accent:#6c5ce7;" onclick="switchDashView('quadrant')">
+                                <div class="heli-card-header">
+                                    <span class="heli-card-icon">🔲</span>
+                                    <span class="heli-card-title">Quadrant Chart</span>
+                                </div>
+                                <div class="heli-metrics" id="heliQuadMetrics">
+                                    <div class="heli-big-num">—</div>
+                                </div>
+                                <div class="heli-card-footer">Go to Quad Chart →</div>
+                            </div>
+
+                        </div>
+                    </div>
 
                     <!-- Risk Categories Section with Simple Table -->
                     <div class="risk-categories-section">
@@ -5958,6 +6134,8 @@
 
                     <!-- Normal BPR buttons (shown on current week) -->
                     <div class="bpr-btn-group" id="bprNormalBtns">
+                        <button class="rbtn rbtn-neutral" id="bprExpandCollapseBtn" onclick="toggleBPRExpandAll()" style="display:none;">⊞ Expand All</button>
+                        <div class="ribbon-sep" id="bprExpandSep" style="display:none;"></div>
                         <button class="rbtn rbtn-primary" id="importRisksBtn" onclick="refreshBPRFromGoogleSheets()">🔄 Refresh BPR Items</button>
                         <button class="rbtn rbtn-danger" id="clearRisksBtn" onclick="clearImportedRisks()">🗑️ Clear SA Risks</button>
                         <div class="ribbon-sep"></div>
@@ -6070,6 +6248,8 @@
                                     <th>Issues</th>
                                     <th>RAG</th>
                                     <th>Actions and Outcomes</th>
+                                    <th>Date Logged</th>
+                                    <th>Last Updated</th>
                                     <th>Status</th>
                                     <th></th>
                                 </tr>
@@ -6127,6 +6307,8 @@
                                     <th>Issues</th>
                                     <th>RAG</th>
                                     <th>Actions and Outcomes</th>
+                                    <th>Date Logged</th>
+                                    <th>Last Updated</th>
                                     <th>Status</th>
                                     <th></th>
                                 </tr>
@@ -6184,6 +6366,8 @@
                                     <th>Issues</th>
                                     <th>RAG</th>
                                     <th>Actions and Outcomes</th>
+                                    <th>Date Logged</th>
+                                    <th>Last Updated</th>
                                     <th>Status</th>
                                     <th></th>
                                 </tr>
@@ -6241,6 +6425,8 @@
                                     <th>Issues</th>
                                     <th>RAG</th>
                                     <th>Actions and Outcomes</th>
+                                    <th>Date Logged</th>
+                                    <th>Last Updated</th>
                                     <th>Status</th>
                                     <th></th>
                                 </tr>
@@ -6298,6 +6484,8 @@
                                     <th>Issues</th>
                                     <th>RAG</th>
                                     <th>Actions and Outcomes</th>
+                                    <th>Date Logged</th>
+                                    <th>Last Updated</th>
                                     <th>Status</th>
                                     <th></th>
                                 </tr>
@@ -6323,6 +6511,7 @@
                             View ▾
                         </button>
                         <div class="view-dropdown" id="quadViewDrop">
+                            <div class="view-dropdown-item" onclick="switchDashView('helicopter')">🚁 Helicopter View</div>
                             <div class="view-dropdown-item" onclick="switchDashView('summary')">📋 Risk Summary</div>
                             <div class="view-dropdown-item" onclick="switchDashView('bprSummary')">📊 BPR Summary</div>
                             <div class="view-dropdown-item" onclick="switchDashView('radar')">📡 Radar</div>
@@ -6770,7 +6959,7 @@
 
                 // Populate the row with risk data (strip date suffix from ID: e.g. STR-0001-ABCD)
                 const shortRiskId = String(risk.id || '').replace(/-\d{8}$/, '');
-                const issueText = `${risk.description} (${shortRiskId}) *`;
+                const issueText = `[RISK] ${risk.description} (${shortRiskId})`;
                 const actionsText = risk.mitigation || 'Mitigation actions to be defined';
                 const ragStatus = risk.rag || 'red'; // Default to red for SA review items
 
@@ -6790,23 +6979,24 @@
                 // Update the UI
                 const tbody = document.getElementById(`${targetSection}-tbody`);
                 const row = tbody.children[targetRowIndex];
-                
+
                 if (row) {
+                    row.classList.add('bpr-sa-row'); // Visual indicator for risk rows
                     const issuesInput = row.querySelector('textarea');
                     const actionsInput = row.querySelectorAll('textarea')[1];
                     const ragSelect = row.querySelectorAll('select')[0];
                     const statusSelect = row.querySelectorAll('select')[1];
-                    
+
                     issuesInput.value = issueText;
                     issuesInput.classList.add('imported');
                     autoExpandTextarea(issuesInput);
-                    
+
                     ragSelect.value = ragStatus;
-                    
+
                     actionsInput.value = actionsText;
                     actionsInput.classList.add('imported');
                     autoExpandTextarea(actionsInput);
-                    
+
                     if (statusSelect) {
                         statusSelect.value = 'OPEN';
                     }
@@ -6838,7 +7028,7 @@
                 // Filter out SA items only (saItem flag or trailing asterisk marker)
                 // Do NOT test row.imported — regular BPR rows from the sync also carry that flag
                 const filteredData = weekData[section].filter((row, index) => {
-                    if (row && (row.saItem || (row.issues && row.issues.endsWith('*')))) {
+                    if (row && (row.saItem || (row.issues && (row.issues.endsWith('*') || row.issues.startsWith('[RISK]'))))) {
                         clearedCount++;
                         return false; // Remove this row
                     }
@@ -6852,7 +7042,7 @@
                 filteredData.forEach((rowData, index) => {
                     addBPRRow(section);
                     const row = tbody.children[index];
-                    
+
                     if (rowData.issues) {
                         const issuesInput = row.querySelector('textarea');
                         issuesInput.value = rowData.issues;
@@ -6870,6 +7060,10 @@
                             actionsInput.classList.add('imported');
                         }
                     }
+                    const _dl = row.querySelector('.bpr-date-dl');
+                    const _lu = row.querySelector('.bpr-date-lu');
+                    if (_dl) _dl.textContent = formatBPRDate(rowData.dateLogged);
+                    if (_lu) _lu.textContent = formatBPRDate(rowData.lastUpdated);
                 });
 
                 // Ensure at least one empty row in each section
@@ -7032,6 +7226,27 @@
             }
             loadWeekData();
             updateWeekDisplay();
+            // Collapse all sections and set toggle to "Expand All"
+            _BPR_SECTIONS.forEach(function(sk) {
+                var content = document.getElementById(sk + '-content');
+                if (content && !content.classList.contains('collapsed')) toggleBPRSection(sk);
+            });
+            _bprAllExpanded = false;
+            var btn = document.getElementById('bprExpandCollapseBtn');
+            if (btn && btn.style.display !== 'none') btn.innerHTML = '⊞ Expand All';
+        }
+
+        function _syncBPRExpandBtn() {
+            // Consider all sections that exist and have content
+            var anyCollapsed = _BPR_SECTIONS.some(function(sk) {
+                var content = document.getElementById(sk + '-content');
+                return content && content.classList.contains('collapsed');
+            });
+            _bprAllExpanded = !anyCollapsed;
+            var btn = document.getElementById('bprExpandCollapseBtn');
+            if (btn && btn.style.display !== 'none') {
+                btn.innerHTML = _bprAllExpanded ? '⊟ Collapse All' : '⊞ Expand All';
+            }
         }
 
         /**
@@ -7105,21 +7320,31 @@
             sections.forEach(section => {
                 const tbody = document.getElementById(`${section}-tbody`);
                 const addBtn = tbody.parentElement.nextElementSibling;
-                
+
                 // Disable/enable inputs
                 const inputs = tbody.querySelectorAll('.bpr-input, .rag-dropdown');
                 inputs.forEach(input => {
                     input.disabled = !isEditable;
                 });
-                
+
                 // Disable/enable remove buttons
                 const removeButtons = tbody.querySelectorAll('.remove-row-btn');
                 removeButtons.forEach(btn => {
                     btn.disabled = !isEditable;
                 });
-                
-                // Disable/enable add row button
+
+                // Hide "+ Add Row" on historical/read-only weeks; show on current week
+                addBtn.style.display = isEditable ? '' : 'none';
                 addBtn.disabled = !isEditable;
+
+                // On historical weeks, auto-collapse sections that have no data rows
+                if (!isCurrentWeekEditable()) {
+                    const hasContent = tbody.children.length > 0;
+                    const content = document.getElementById(section + '-content');
+                    if (!hasContent && content && !content.classList.contains('collapsed')) {
+                        toggleBPRSection(section);
+                    }
+                }
             });
             
             // Disable/enable import and clear buttons
@@ -7130,42 +7355,55 @@
         }
 
         /**
-         * Load data for current week
+         * Load data for current (or navigated) week
          */
         function loadWeekData() {
             // Ensure week exists in data structure
             if (!businessPlanData.weeks[currentWeek]) {
                 businessPlanData.weeks[currentWeek] = {
-                    customer: [],
-                    investor: [],
-                    finance: [],
-                    technology: [],
-                    operations: []
+                    customer: [], investor: [], finance: [], technology: [], operations: []
                 };
             }
-            
-            const weekData = businessPlanData.weeks[currentWeek];
-            const sections = ['customer', 'investor', 'finance', 'technology', 'operations'];
-            
-            sections.forEach(section => {
-                const tbody = document.getElementById(`${section}-tbody`);
+
+            const weekData  = businessPlanData.weeks[currentWeek];
+            const sections  = ['customer', 'investor', 'finance', 'technology', 'operations'];
+            const isEditable = isCurrentWeekEditable();
+
+            sections.forEach(function(section) {
+                const tbody = document.getElementById(section + '-tbody');
                 tbody.innerHTML = '';
-                
+
                 if (weekData[section].length === 0) {
-                    // Add initial empty row
-                    addBPRRow(section);
+                    // New/empty section: add one starter row on current week only
+                    if (isEditable) addBPRRow(section);
                 } else {
-                    // Load existing data
-                    weekData[section].forEach((rowData, index) => {
+                    let rowsToRender;
+                    if (isEditable) {
+                        // ── Current week ──
+                        // Sort in-place: filled rows first, empty (starter) rows last
+                        const filled = weekData[section].filter(_bprRowIsFilled);
+                        const empty  = weekData[section].filter(function(r){ return !_bprRowIsFilled(r); });
+                        const sorted = filled.concat(empty);
+                        sorted.forEach(function(r, i){ weekData[section][i] = r; });
+                        if (empty.length > 0) {
+                            // Persist reordered data so rowIndex handlers stay in sync
+                            localStorage.setItem('businessPlanData', JSON.stringify(businessPlanData));
+                        }
+                        rowsToRender = weekData[section];
+                    } else {
+                        // ── Historical week ──
+                        // Only render rows that actually have content
+                        rowsToRender = weekData[section].filter(_bprRowIsFilled);
+                    }
+
+                    rowsToRender.forEach(function(rowData, index) {
                         addBPRRow(section);
                         const row = tbody.children[index];
-                        
+
                         if (rowData.issues) {
                             const issuesInput = row.querySelector('textarea');
                             issuesInput.value = rowData.issues;
-                            if (rowData.imported) {
-                                issuesInput.classList.add('imported');
-                            }
+                            if (rowData.imported) issuesInput.classList.add('imported');
                             autoExpandTextarea(issuesInput);
                         }
                         if (rowData.rag) {
@@ -7174,23 +7412,31 @@
                         if (rowData.actions) {
                             const actionsInput = row.querySelectorAll('textarea')[1];
                             actionsInput.value = rowData.actions;
-                            if (rowData.imported) {
-                                actionsInput.classList.add('imported');
-                            }
+                            if (rowData.imported) actionsInput.classList.add('imported');
                             autoExpandTextarea(actionsInput);
                         }
                         if (rowData.status) {
                             const statusDropdown = row.querySelectorAll('select')[1];
-                            if (statusDropdown) {
-                                statusDropdown.value = rowData.status;
-                            }
+                            if (statusDropdown) statusDropdown.value = rowData.status;
                         }
+                        if (rowData.saItem) row.classList.add('bpr-sa-row');
+                        const dlCell = row.querySelector('.bpr-date-dl');
+                        const luCell = row.querySelector('.bpr-date-lu');
+                        if (dlCell) dlCell.textContent = formatBPRDate(rowData.dateLogged);
+                        if (luCell) luCell.textContent = formatBPRDate(rowData.lastUpdated);
                     });
                 }
-                
-                updateBPRCount(section);
+
+                // Count badge:
+                // • Current week  → count filled rows from data (excludes blank starters)
+                // • Historical    → count exactly what's rendered (= rowsToRender.length)
+                if (isEditable) {
+                    updateBPRCount(section);
+                } else {
+                    document.getElementById(section + '-count').textContent = tbody.children.length;
+                }
             });
-            
+
             // Load traffic light states for this week
             loadSectionTrafficLights();
         }
@@ -7982,10 +8228,20 @@
             textarea.style.height = newHeight + 'px';
         }
 
+        function formatBPRDate(iso) {
+            if (!iso) return '—';
+            try {
+                const d = new Date(iso);
+                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+            } catch(e) { return '—'; }
+        }
+
         function addBPRRow(section) {
             const tbody = document.getElementById(`${section}-tbody`);
             const rowNumber = tbody.children.length + 1;
-            
+            const nowIso = new Date().toISOString();
+
             const row = document.createElement('tr');
             row.className = 'bpr-row';
             row.innerHTML = `
@@ -8000,6 +8256,8 @@
                     </select>
                 </td>
                 <td><textarea class="bpr-input" placeholder="Enter actions and outcomes..." oninput="autosaveBPR('${section}', ${rowNumber - 1}, 'actions', this.value); autoExpandTextarea(this);"></textarea></td>
+                <td class="bpr-date-dl">${formatBPRDate(nowIso)}</td>
+                <td class="bpr-date-lu">${formatBPRDate(nowIso)}</td>
                 <td>
                     <select class="status-dropdown" onchange="autosaveBPR('${section}', ${rowNumber - 1}, 'status', this.value)">
                         <option value="OPEN">OPEN</option>
@@ -8105,9 +8363,15 @@
                     
                     // Update lastUpdated timestamp
                     weekData[section][rowIndex].lastUpdated = new Date().toISOString();
+                    // Refresh Last Updated cell in DOM
+                    const _tbody = document.getElementById(section + '-tbody');
+                    if (_tbody && _tbody.children[rowIndex]) {
+                        const _luCell = _tbody.children[rowIndex].querySelector('.bpr-date-lu');
+                        if (_luCell) _luCell.textContent = formatBPRDate(weekData[section][rowIndex].lastUpdated);
+                    }
                 }
             }
-            
+
             weekData[section][rowIndex][field] = value;
             updateBPRCount(section);
 
@@ -8118,13 +8382,79 @@
             if (typeof _commentaryCache !== 'undefined') delete _commentaryCache['bprSummary||'];
         }
 
+        // Helper reused by loadWeekData and updateBPRCount
+        function _bprRowIsFilled(r) {
+            return r && ((r.issues || '').trim() !== '' || r.rag || (r.actions || '').trim() !== '');
+        }
+
         function updateBPRCount(section) {
             const weekData = businessPlanData.weeks[currentWeek];
-            const filledRows = weekData[section].filter(row => 
-                row && (row.issues.trim() || row.rag || row.actions.trim())
-            ).length;
-            
+            const filledRows = weekData[section].filter(_bprRowIsFilled).length;
             document.getElementById(`${section}-count`).textContent = filledRows;
+        }
+
+        var _bprAllExpanded = false;
+        var _BPR_SECTIONS = ['customer','investor','finance','technology','operations'];
+
+        /**
+         * Silently reset BPR to default state (current week, all sections collapsed,
+         * toggle set to Expand All) without navigating to the tab.
+         * Called when the user navigates AWAY from BPR so it's fresh next time.
+         */
+        function _resetBPRToDefault() {
+            // Reset to current week if needed
+            var isoNow = getCurrentISOWeek();
+            if (currentWeek !== isoNow) {
+                currentWeek = isoNow;
+                if (window._showAllActive) {
+                    window._showAllActive = false;
+                    var showAllBtn = document.getElementById('showAllBtn');
+                    if (showAllBtn) { showAllBtn.innerHTML = '📋 Show All'; showAllBtn.classList.remove('active','on'); }
+                }
+                loadWeekData();
+                updateWeekDisplay();
+            }
+            // Collapse all sections
+            _BPR_SECTIONS.forEach(function(sk) {
+                var content = document.getElementById(sk + '-content');
+                if (content && !content.classList.contains('collapsed')) toggleBPRSection(sk);
+            });
+            // Reset expand toggle
+            _bprAllExpanded = false;
+            var btn = document.getElementById('bprExpandCollapseBtn');
+            if (btn) btn.innerHTML = '⊞ Expand All';
+        }
+
+        // Opens BPR tab from the sidebar — collapses all sections and shows the Expand/Collapse button
+        function openBPRTab() {
+            sidebarNav('business-plan');
+            // Collapse all sections
+            _BPR_SECTIONS.forEach(function(sk) {
+                var content = document.getElementById(sk + '-content');
+                if (content && !content.classList.contains('collapsed')) {
+                    toggleBPRSection(sk);
+                }
+            });
+            // Show the Expand/Collapse All button and its separator, then reset state
+            _bprAllExpanded = false;
+            var btn = document.getElementById('bprExpandCollapseBtn');
+            var sep = document.getElementById('bprExpandSep');
+            if (btn) { btn.style.display = ''; btn.innerHTML = '⊞ Expand All'; }
+            if (sep) sep.style.display = '';
+        }
+
+        // Expands or collapses all BPR sections
+        function toggleBPRExpandAll() {
+            _bprAllExpanded = !_bprAllExpanded;
+            _BPR_SECTIONS.forEach(function(sk) {
+                var content = document.getElementById(sk + '-content');
+                if (!content) return;
+                var isCollapsed = content.classList.contains('collapsed');
+                if (_bprAllExpanded && isCollapsed) toggleBPRSection(sk);
+                if (!_bprAllExpanded && !isCollapsed) toggleBPRSection(sk);
+            });
+            var btn = document.getElementById('bprExpandCollapseBtn');
+            if (btn) btn.innerHTML = _bprAllExpanded ? '⊟ Collapse All' : '⊞ Expand All';
         }
 
         function toggleBPRSection(section) {
@@ -8136,9 +8466,10 @@
             const toggle = header.querySelector('.section-toggle');
 
             if (content.classList.contains('collapsed')) {
-                // Expanding
+                // Expanding — use a large fixed max-height so textareas that haven't
+                // auto-expanded yet don't cause the section to be clipped.
                 content.classList.remove('collapsed');
-                content.style.maxHeight = content.scrollHeight + 'px';
+                content.style.maxHeight = '9999px';
                 toggle.textContent = '▼';
                 toggle.classList.remove('collapsed');
                 if (objBtn) objBtn.classList.add('visible');
@@ -8246,7 +8577,7 @@
 
                 // Populate the row with risk data (strip date suffix from ID: e.g. STR-0001-ABCD)
                 const shortRiskId = String(risk.id || '').replace(/-\d{8}$/, '');
-                const issueText = `${risk.description} (${shortRiskId}) *`;
+                const issueText = `[RISK] ${risk.description} (${shortRiskId})`;
                 const actionsText = risk.mitigation || 'Mitigation actions to be defined';
                 const ragStatus = risk.rag || 'red'; // Default to red for SA review items
 
@@ -8258,6 +8589,7 @@
                     dateLogged: new Date().toISOString(),
                     lastUpdated: new Date().toISOString(),
                     imported: true,
+                    saItem: true,
                     weekCreated: currentWeek,
                     updateHistory: []
                 };
@@ -8265,19 +8597,20 @@
                 // Update the UI
                 const tbody = document.getElementById(`${targetSection}-tbody`);
                 const row = tbody.children[targetRowIndex];
-                
+
                 if (row) {
+                    row.classList.add('bpr-sa-row'); // Visual indicator for risk rows
                     const issuesInput = row.querySelector('textarea');
                     const actionsInput = row.querySelectorAll('textarea')[1];
                     const ragSelect = row.querySelectorAll('select')[0];
                     const statusSelect = row.querySelectorAll('select')[1];
-                    
+
                     issuesInput.value = issueText;
                     issuesInput.classList.add('imported');
                     autoExpandTextarea(issuesInput);
-                    
+
                     ragSelect.value = ragStatus;
-                    
+
                     actionsInput.value = actionsText;
                     actionsInput.classList.add('imported');
                     autoExpandTextarea(actionsInput);
@@ -8321,7 +8654,7 @@
                 
                 // Filter out imported risks (those with asterisk or marked as imported)
                 const filteredData = weekData[section].filter((row, index) => {
-                    if (row && (row.imported || (row.issues && row.issues.includes('*')))) {
+                    if (row && (row.imported || (row.issues && (row.issues.includes('*') || row.issues.startsWith('[RISK]'))))) {
                         clearedCount++;
                         return false; // Remove this row
                     }
@@ -8335,7 +8668,7 @@
                 filteredData.forEach((rowData, index) => {
                     addBPRRow(section);
                     const row = tbody.children[index];
-                    
+
                     if (rowData.issues) {
                         const issuesInput = row.querySelector('textarea');
                         issuesInput.value = rowData.issues;
@@ -8353,6 +8686,10 @@
                             actionsInput.classList.add('imported');
                         }
                     }
+                    const _dl2 = row.querySelector('.bpr-date-dl');
+                    const _lu2 = row.querySelector('.bpr-date-lu');
+                    if (_dl2) _dl2.textContent = formatBPRDate(rowData.dateLogged);
+                    if (_lu2) _lu2.textContent = formatBPRDate(rowData.lastUpdated);
                 });
 
                 // Ensure at least one empty row in each section
@@ -8775,7 +9112,15 @@
             }
             // Navigate to the requested section after a brief delay
             if (section) {
-                setTimeout(() => sidebarNav(section), 450);
+                setTimeout(() => {
+                    if (section === 'dashboard') {
+                        openDashboard();
+                    } else if (section === 'business-plan') {
+                        openBPRTab();
+                    } else {
+                        sidebarNav(section);
+                    }
+                }, 450);
             }
         }
 
@@ -11685,6 +12030,11 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
         }
 
         function navigateToAiInput() {
+            // If leaving BPR, reset it so it's fresh next time
+            var activeBPR = document.getElementById('business-plan');
+            if (activeBPR && activeBPR.classList.contains('active')) {
+                _resetBPRToDefault();
+            }
             // Fade out the overview if it is visible
             const ov = document.getElementById('nexusOverview');
             if (ov && ov.style.display !== 'none' && ov.style.display !== '') {
@@ -11719,7 +12069,19 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             if (riskParams) riskParams.style.display = 'none';
         }
 
+        // Always land on Helicopter View when navigating to the Dashboard
+        function openDashboard() {
+            switchDashView('helicopter');
+        }
+
         function sidebarNav(tabName) {
+            // If navigating away from BPR, reset it to default state (current week, all collapsed)
+            if (tabName !== 'business-plan') {
+                var activeBPR = document.getElementById('business-plan');
+                if (activeBPR && activeBPR.classList.contains('active')) {
+                    _resetBPRToDefault();
+                }
+            }
             // Hide home page, show app container
             document.getElementById('homePage').style.display = 'none';
             document.getElementById('appContainer').style.display = 'block';
@@ -12036,6 +12398,106 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             }
         });
 
+        // ── Helicopter View — compute and render key metrics for all four panels ──
+        function updateHelicopterView() {
+
+            // ── Risk Summary card ──────────────────────────────────────────────
+            const total     = risks.length;
+            const redCnt    = risks.filter(r => r.rag === 'red').length;
+            const amberCnt  = risks.filter(r => r.rag === 'amber').length;
+            const greenCnt  = risks.filter(r => r.rag === 'green').length;
+            const riskSA    = risks.filter(r => Number(r.proximity) === 5).length;
+
+            document.getElementById('heliRiskMetrics').innerHTML =
+                `<div><span class="heli-big-num">${total}</span><span class="heli-big-unit">risks in register</span></div>` +
+                `<div class="heli-rag-row">` +
+                    `<span class="rag-mini red">${redCnt}</span>` +
+                    `<span class="rag-mini amber">${amberCnt}</span>` +
+                    `<span class="rag-mini green">${greenCnt}</span>` +
+                    `<span class="heli-sub">RAG breakdown</span>` +
+                `</div>` +
+                (function() {
+                    // Categories with highest and lowest risk burden (by count)
+                    var CATS = [
+                        'Strategic & Commercial', 'Financial & Credit',
+                        'Operational & Execution', 'Technology & Platform',
+                        'Cybersecurity & Information Security', 'Legal, Regulatory & Compliance'
+                    ];
+                    var catCounts = CATS.map(function(c){ return { name: c, count: risks.filter(function(r){ return r.category === c; }).length }; });
+                    catCounts.sort(function(a,b){ return b.count - a.count; });
+                    var highest = catCounts[0];
+                    var lowest  = catCounts[catCounts.length - 1];
+                    var shortName = function(n){ return n.replace(' & ', '/').split(' ').slice(0,2).join(' '); };
+                    return `<div class="heli-sub" style="font-size:10.5px;">` +
+                        `<span style="color:#c0392b;">▲ ${shortName(highest.name)}</span> (${highest.count})` +
+                        ` &nbsp;·&nbsp; ` +
+                        `<span style="color:#27ae60;">▼ ${shortName(lowest.name)}</span> (${lowest.count})` +
+                        `</div>`;
+                })();
+
+            // ── BPR Summary card ───────────────────────────────────────────────
+            const BPR_AREAS  = ['customer','investor','finance','technology','operations'];
+            const thisWeek   = getCurrentISOWeek();
+            const wkData     = (businessPlanData && businessPlanData.weeks) ? businessPlanData.weeks[thisWeek] : null;
+            let bprTotal = 0, bprSA = 0, bprActive = 0;
+            if (wkData) {
+                BPR_AREAS.forEach(function(sk) {
+                    var items = wkData[sk] || [];
+                    var cnt   = items.filter(function(r){ return r && (r.issues || r.actions || r.owner); }).length;
+                    var sa    = items.filter(function(r){ return r && r.saItem; }).length;
+                    bprTotal += cnt; bprSA += sa; if (cnt > 0) bprActive++;
+                });
+            }
+
+            document.getElementById('heliBPRMetrics').innerHTML =
+                `<div><span class="heli-big-num">${bprTotal}</span><span class="heli-big-unit">items this week</span></div>` +
+                `<div class="heli-sub">${bprActive} of 5 priority areas active</div>` +
+                (bprSA > 0
+                    ? `<div class="heli-alert">⚠️ ${bprSA} Special Attention item${bprSA > 1 ? 's' : ''}</div>`
+                    : `<div class="heli-ok">✓ No Special Attention items</div>`);
+
+            // ── Radar card ────────────────────────────────────────────────────
+            const RADAR_CATS = [
+                'Strategic & Commercial', 'Financial & Credit',
+                'Operational & Execution', 'Technology & Platform',
+                'Cybersecurity & Information Security', 'Legal, Regulatory & Compliance'
+            ];
+            const THRESHOLD = 30;
+            var radarScores = RADAR_CATS.map(function(cat) {
+                var catRisks = risks.filter(function(r){ return r.category === cat; });
+                if (!catRisks.length) return 0;
+                var sum = catRisks.reduce(function(s, r){
+                    return s + (parseFloat(calculateRiskScore(r.likelihood, r.impact, r.proximity, r.mitigationStatus)) || 0);
+                }, 0);
+                return Math.round(sum / catRisks.length);
+            });
+            var aboveThreshold = radarScores.filter(function(s){ return s > THRESHOLD; }).length;
+            var avgScore = radarScores.length ? Math.round(radarScores.reduce(function(a,b){return a+b;},0) / radarScores.length) : 0;
+            var maxScore = Math.max.apply(null, radarScores);
+            var maxCatFull = RADAR_CATS[radarScores.indexOf(maxScore)] || '—';
+            // Shorten to first two meaningful words for the card
+            var maxCatShort = maxCatFull.replace(' & ', '/').split(' ').slice(0, 2).join(' ');
+
+            document.getElementById('heliRadarMetrics').innerHTML =
+                `<div><span class="heli-big-num">${avgScore}<span style="font-size:14px;font-weight:400;color:#7f8c8d;">/30</span></span><span class="heli-big-unit">avg exposure score</span></div>` +
+                `<div class="heli-sub">Highest: <strong style="color:#2c3e50;">${maxCatShort}</strong> (${maxScore})</div>` +
+                (aboveThreshold > 0
+                    ? `<div class="heli-alert">⚠️ ${aboveThreshold} categor${aboveThreshold > 1 ? 'ies' : 'y'} above threshold</div>`
+                    : `<div class="heli-ok">✓ All categories within threshold</div>`);
+
+            // ── Quadrant card ─────────────────────────────────────────────────
+            var highConcern  = risks.filter(function(r){ return (r.likelihood||0) >= 4 && (r.impact||0) >= 4; }).length;
+            var nearTerm     = risks.filter(function(r){ var p=Number(r.proximity); return p===0||p===1; }).length;
+            var unmitigated  = risks.filter(function(r){ return !r.mitigationStatus || r.mitigationStatus.toLowerCase().includes('none'); }).length;
+
+            document.getElementById('heliQuadMetrics').innerHTML =
+                `<div><span class="heli-big-num">${highConcern}</span><span class="heli-big-unit">in high-concern zone</span></div>` +
+                `<div class="heli-sub">${nearTerm} with immediate/short-term proximity</div>` +
+                (unmitigated > 0
+                    ? `<div class="heli-alert">⚠️ ${unmitigated} risk${unmitigated > 1 ? 's' : ''} without mitigation</div>`
+                    : `<div class="heli-ok">✓ All risks have mitigation plans</div>`);
+        }
+
         // ── Switch dashboard view (radar / summary / quadrant) ──
         let _dashCurrentView = 'summary'; // 'summary' | 'radar' | 'bprSummary'
         let _lastViewWasQuadrant = false;  // true only when returning directly from the Quad Chart
@@ -12077,20 +12539,24 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             const categoriesSection    = document.querySelector('.risk-categories-section');
             const trafficLightsSection = document.querySelector('.traffic-lights-section');
             const bprSummarySection    = document.getElementById('bprSummarySection');
+            const helicopterSection    = document.getElementById('helicopterSection');
             if (!radarSection) return;
 
-            // Hide all three panels first
+            // Hide all panels first
             radarSection.classList.add('hidden');
             if (categoriesSection)    categoriesSection.classList.add('hidden');
             if (trafficLightsSection) trafficLightsSection.classList.add('hidden');
             if (bprSummarySection)    bprSummarySection.classList.add('hidden');
+            if (helicopterSection)    helicopterSection.classList.add('hidden');
 
-            if (view === 'radar') {
+            if (view === 'helicopter') {
+                if (helicopterSection) helicopterSection.classList.remove('hidden');
+                updateHelicopterView();
+            } else if (view === 'radar') {
                 radarSection.classList.remove('hidden');
             } else if (view === 'bprSummary') {
                 if (bprSummarySection) bprSummarySection.classList.remove('hidden');
                 updateBPRSummaryView();
-                // Refresh commentary for the BPR context
                 if (_commentaryVisible) refreshCommentary();
             } else {
                 // 'summary' (default)
@@ -12327,6 +12793,11 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
          */
         function navigateToBPRSection(sectionKey) {
             sidebarNav('business-plan');
+            // Hide the Expand/Collapse button and separator — not applicable during drill-down
+            var _ecBtn = document.getElementById('bprExpandCollapseBtn');
+            var _ecSep = document.getElementById('bprExpandSep');
+            if (_ecBtn) _ecBtn.style.display = 'none';
+            if (_ecSep) _ecSep.style.display = 'none';
             setTimeout(() => {
                 const allSections = ['customer','investor','finance','technology','operations'];
 
@@ -12483,6 +12954,26 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
 </svg>`
             };
             return illus[id] || '';
+        }
+
+        // Card section mapping for direct launch
+        var _cardSectionMap = {
+            'register':  'register',
+            'business':  'business-plan',
+            'dashboard': 'dashboard',
+            'people':    null   // coming soon — no direct nav
+        };
+
+        function quickLaunchCard(id, event) {
+            // If the click originated from the More.. button, let the button handle it
+            if (event && event.target && event.target.closest('.ov-card-cta')) return;
+            // Don't fire if a card expand is already in progress
+            if (_expandedCardId) return;
+            var section = _cardSectionMap[id];
+            if (section) {
+                enterFullApp(section);
+            }
+            // People card: do nothing (coming soon)
         }
 
         function expandOverviewCard(id, btn) {
