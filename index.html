@@ -1493,11 +1493,16 @@
             background: #fde8e8;
             border-color: #e74c3c;
             color: #c0392b;
-            animation: noCrystalFlash 0.18s ease-in-out 4;
+            animation: noCrystalSequence 1.5s ease-in-out forwards;
         }
-        @keyframes noCrystalFlash {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0.15; }
+        @keyframes noCrystalSequence {
+            0%   { opacity: 1; }
+            10%  { opacity: 0.12; }
+            20%  { opacity: 1; }
+            30%  { opacity: 0.12; }
+            45%  { opacity: 1; }
+            65%  { opacity: 1; }
+            100% { opacity: 0; }
         }
         .bpr-btn-group {
             display: flex;
@@ -6170,8 +6175,6 @@
                         <div class="ribbon-sep"></div>
                         <button class="rbtn rbtn-neutral" id="bprExpandCollapseBtn" onclick="toggleBPRExpandAll()" style="display:none;">⊞ Expand All</button>
                         <div class="ribbon-sep" id="bprExpandSep" style="display:none;"></div>
-                        <button class="rbtn rbtn-primary" id="importRisksBtn" onclick="refreshBPRFromGoogleSheets()">🔄 Refresh BPR Items</button>
-                        <button class="rbtn rbtn-danger" id="clearRisksBtn" onclick="clearImportedRisks()">🗑️ Clear SA Risks</button>
                         <div class="ribbon-sep"></div>
                         <button class="rbtn rbtn-toggle" id="saItemsBtn" onclick="toggleSAItems()">
                             Include SA Risks <span class="toggle-status" id="saItemsStatus" style="margin-left:5px;font-size:10px;background:rgba(0,0,0,0.1);padding:1px 6px;border-radius:8px;">OFF</span>
@@ -7287,9 +7290,9 @@
             _crystalBallTimer = setTimeout(function() {
                 _crystalBallTimer = null;
                 warn.classList.remove('no-crystal-ball');
-                warn.textContent = '⚠️ Historical — read only';
+                warn.textContent = 'Review in Progress';
                 warn.classList.add('hidden');
-            }, 800);
+            }, 1500);
         }
 
         var _crystalBallTimer = null;
@@ -7301,7 +7304,7 @@
                 var warn = document.getElementById('historicalWarning');
                 if (warn) {
                     warn.classList.remove('no-crystal-ball');
-                    warn.textContent = '⚠️ Historical — read only';
+                    warn.textContent = 'Review in Progress';
                     warn.classList.add('hidden'); // navigation will un-hide if needed
                 }
             }
