@@ -1497,11 +1497,9 @@
         }
         @keyframes noCrystalSequence {
             0%   { opacity: 1; }
-            10%  { opacity: 0.12; }
-            20%  { opacity: 1; }
-            30%  { opacity: 0.12; }
-            45%  { opacity: 1; }
-            65%  { opacity: 1; }
+            15%  { opacity: 0.12; }
+            35%  { opacity: 1; }
+            60%  { opacity: 1; }
             100% { opacity: 0; }
         }
         .bpr-btn-group {
@@ -5668,7 +5666,7 @@
                                 <div class="heli-metrics" id="heliRiskMetrics">
                                     <div class="heli-big-num">—</div>
                                 </div>
-                                <div class="heli-card-footer">Go to Risk Summary →</div>
+                                <div class="heli-card-footer"></div>
                             </div>
 
                             <!-- BPR Summary Card -->
@@ -5680,7 +5678,7 @@
                                 <div class="heli-metrics" id="heliBPRMetrics">
                                     <div class="heli-big-num">—</div>
                                 </div>
-                                <div class="heli-card-footer">Go to BPR Summary →</div>
+                                <div class="heli-card-footer"></div>
                             </div>
 
                             <!-- Risk Radar Card -->
@@ -5692,7 +5690,7 @@
                                 <div class="heli-metrics" id="heliRadarMetrics">
                                     <div class="heli-big-num">—</div>
                                 </div>
-                                <div class="heli-card-footer">Go to Radar →</div>
+                                <div class="heli-card-footer"></div>
                             </div>
 
                             <!-- Quadrant Chart Card -->
@@ -5704,7 +5702,7 @@
                                 <div class="heli-metrics" id="heliQuadMetrics">
                                     <div class="heli-big-num">—</div>
                                 </div>
-                                <div class="heli-card-footer">Go to Quad Chart →</div>
+                                <div class="heli-card-footer"></div>
                             </div>
 
                         </div>
@@ -8186,7 +8184,7 @@
                 };
                 
                 // Check if this item already exists (based on issues text match)
-                const existingItem = weekGroups[weekStr][section].find(i => i.issues === item.issues);
+                const existingItem = weekGroups[weekStr][section].find(i => i && i.issues === item.issues);
                 if (!existingItem) {
                     weekGroups[weekStr][section].push(item);
                 }
@@ -8207,8 +8205,8 @@
                 Object.keys(weekGroups[weekStr]).forEach(section => {
                     weekGroups[weekStr][section].forEach(item => {
                         // Check for duplicates before adding
-                        const exists = businessPlanData.weeks[weekStr][section].find(existing => 
-                            existing.issues === item.issues
+                        const exists = businessPlanData.weeks[weekStr][section].find(existing =>
+                            existing && existing.issues === item.issues
                         );
                         if (!exists) {
                             businessPlanData.weeks[weekStr][section].push(item);
