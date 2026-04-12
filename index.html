@@ -1616,7 +1616,7 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
-            height: 34px;
+            height: calc(34px - 3mm);
             padding: 0 14px;
             border: none;
             border-radius: 5px;
@@ -5653,7 +5653,7 @@
                             <div class="view-dropdown-item" onclick="switchDashView('summary')">📋 Risk Summary</div>
                             <div class="view-dropdown-item" onclick="switchDashView('bprSummary')">📊 BPR Summary</div>
                             <div class="view-dropdown-item" onclick="switchDashView('radar')">📡 Radar</div>
-                            <div class="view-dropdown-item" onclick="switchDashView('quadrant')">🔲 Quad Chart</div>
+                            <div class="view-dropdown-item" onclick="switchDashView('quadrant')">⊞ Quad Chart</div>
                         </div>
                     </div>
                     <button class="rbtn rbtn-toggle" id="commentaryToggleBtn" onclick="toggleCommentary()">💬 Show Commentary</button>
@@ -5716,7 +5716,7 @@
                             <!-- Quadrant Chart Card -->
                             <div class="heli-card" style="--accent:#6c5ce7;" onclick="switchDashView('quadrant')">
                                 <div class="heli-card-header">
-                                    <span class="heli-card-icon">🔲</span>
+                                    <span class="heli-card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="9" height="9" rx="1.5" fill="#6c5ce7"/><rect x="12" y="1" width="9" height="9" rx="1.5" fill="#6c5ce7" opacity="0.55"/><rect x="1" y="12" width="9" height="9" rx="1.5" fill="#6c5ce7" opacity="0.55"/><rect x="12" y="12" width="9" height="9" rx="1.5" fill="#6c5ce7"/></svg></span>
                                     <span class="heli-card-title">Quadrant Chart</span>
                                 </div>
                                 <div class="heli-metrics" id="heliQuadMetrics">
@@ -6611,7 +6611,7 @@
                             <div class="view-dropdown-item" onclick="switchDashView('summary')">📋 Risk Summary</div>
                             <div class="view-dropdown-item" onclick="switchDashView('bprSummary')">📊 BPR Summary</div>
                             <div class="view-dropdown-item" onclick="switchDashView('radar')">📡 Radar</div>
-                            <div class="view-dropdown-item view-dropdown-item-active" onclick="toggleViewDropdown('quadViewDrop')">🔲 Quad Chart</div>
+                            <div class="view-dropdown-item view-dropdown-item-active" onclick="toggleViewDropdown('quadViewDrop')">⊞ Quad Chart</div>
                         </div>
                     </div>
                     <button class="rbtn rbtn-purple" id="catFilterToggle" onclick="toggleCatPanel()">Show Categories</button>
@@ -12617,6 +12617,10 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             // Update week display label
             document.getElementById('weekNumber').textContent = 'All Weeks';
             document.getElementById('weekDateRange').textContent = allWeeks.length + ' week(s) with data';
+
+            // Disable week navigation while showing all weeks
+            const weekNavWrap = document.querySelector('.ribbon-week-nav-wrap');
+            if (weekNavWrap) weekNavWrap.classList.add('nav-disabled');
         }
 
         function exitShowAll() {
@@ -12624,6 +12628,9 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             const btn = document.getElementById('showAllBtn');
             btn.innerHTML = '📋 View All Weeks';
             btn.classList.remove('active');
+            // Re-enable week navigation
+            const weekNavWrap = document.querySelector('.ribbon-week-nav-wrap');
+            if (weekNavWrap) weekNavWrap.classList.remove('nav-disabled');
             loadWeekData();
             updateWeekDisplay();
         }
