@@ -6202,7 +6202,7 @@
                     <!-- Nav buttons (shown on historical week) -->
                     <div class="bpr-btn-group hidden" id="bprNavBtns">
                         <button class="rbtn rbtn-toggle on" id="resetWeekBtn" onclick="resetToCurrentWeek()">↩ Current Week</button>
-                        <button class="rbtn rbtn-toggle" id="showAllBtn" onclick="toggleShowAll()">📋 Show All</button>
+                        <button class="rbtn rbtn-toggle" id="showAllBtn" onclick="toggleShowAll()">📋 View All Weeks</button>
                     </div>
 
                     <!-- Today's date pinned right -->
@@ -7055,7 +7055,7 @@
 
                 // Populate the row with risk data (strip date suffix from ID: e.g. STR-0001-ABCD)
                 const shortRiskId = String(risk.id || '').replace(/-\d{8}$/, '');
-                const issueText = `[RISK] ${risk.description} (${shortRiskId})`;
+                const issueText = `💣 ${risk.description} (${shortRiskId})`;
                 const actionsText = risk.mitigation || 'Mitigation actions to be defined';
                 const ragStatus = risk.rag || 'red'; // Default to red for SA review items
 
@@ -7124,7 +7124,7 @@
                 // Filter out SA items only (saItem flag or trailing asterisk marker)
                 // Do NOT test row.imported — regular BPR rows from the sync also carry that flag
                 const filteredData = weekData[section].filter((row, index) => {
-                    if (row && (row.saItem || (row.issues && (row.issues.endsWith('*') || row.issues.startsWith('[RISK]'))))) {
+                    if (row && (row.saItem || (row.issues && (row.issues.endsWith('*') || row.issues.startsWith('💣'))))) {
                         clearedCount++;
                         return false; // Remove this row
                     }
@@ -7362,7 +7362,7 @@
                 window._showAllActive = false;
                 const showAllBtn = document.getElementById('showAllBtn');
                 if (showAllBtn) {
-                    showAllBtn.innerHTML = '📋 Show All';
+                    showAllBtn.innerHTML = '📋 View All Weeks';
                     showAllBtn.classList.remove('active', 'on');
                 }
             }
@@ -8567,7 +8567,7 @@
                 if (window._showAllActive) {
                     window._showAllActive = false;
                     var showAllBtn = document.getElementById('showAllBtn');
-                    if (showAllBtn) { showAllBtn.innerHTML = '📋 Show All'; showAllBtn.classList.remove('active','on'); }
+                    if (showAllBtn) { showAllBtn.innerHTML = '📋 View All Weeks'; showAllBtn.classList.remove('active','on'); }
                 }
                 loadWeekData();
                 updateWeekDisplay();
@@ -8810,7 +8810,7 @@
 
                 // Populate the row with risk data (strip date suffix from ID: e.g. STR-0001-ABCD)
                 const shortRiskId = String(risk.id || '').replace(/-\d{8}$/, '');
-                const issueText = `[RISK] ${risk.description} (${shortRiskId})`;
+                const issueText = `💣 ${risk.description} (${shortRiskId})`;
                 const actionsText = risk.mitigation || 'Mitigation actions to be defined';
                 const ragStatus = risk.rag || 'red'; // Default to red for SA review items
 
@@ -8887,7 +8887,7 @@
                 
                 // Filter out imported risks (those with asterisk or marked as imported)
                 const filteredData = weekData[section].filter((row, index) => {
-                    if (row && (row.imported || (row.issues && (row.issues.includes('*') || row.issues.startsWith('[RISK]'))))) {
+                    if (row && (row.imported || (row.issues && (row.issues.includes('*') || row.issues.startsWith('💣'))))) {
                         clearedCount++;
                         return false; // Remove this row
                     }
@@ -12552,7 +12552,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
         function showAllBPRItems() {
             window._showAllActive = true;
             const btn = document.getElementById('showAllBtn');
-            btn.innerHTML = '✕ Exit Show All';
+            btn.innerHTML = '✕ Exit All Weeks';
             btn.classList.add('active');
 
             const sections = ['customer', 'investor', 'finance', 'technology', 'operations'];
@@ -12622,7 +12622,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
         function exitShowAll() {
             window._showAllActive = false;
             const btn = document.getElementById('showAllBtn');
-            btn.innerHTML = '📋 Show All';
+            btn.innerHTML = '📋 View All Weeks';
             btn.classList.remove('active');
             loadWeekData();
             updateWeekDisplay();
