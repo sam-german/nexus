@@ -2383,6 +2383,59 @@
             gap: 22px;
         }
 
+        /* Meeting Notes modal specifics */
+        .notes-modal-week-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        .notes-modal-textarea {
+            width: 100%;
+            min-height: 260px;
+            resize: vertical;
+            border: 1px solid #d0dbe8;
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #2c3e50;
+            line-height: 1.6;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .notes-modal-textarea:focus {
+            border-color: #2471a3;
+            box-shadow: 0 0 0 3px rgba(36,113,163,0.12);
+        }
+        .notes-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 4px;
+        }
+        .notes-modal-btn {
+            padding: 8px 22px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            transition: background 0.15s, opacity 0.15s;
+        }
+        .notes-modal-btn.cancel {
+            background: #ecf0f1;
+            color: #555;
+        }
+        .notes-modal-btn.cancel:hover { background: #dfe4e8; }
+        .notes-modal-btn.save {
+            background: linear-gradient(135deg, #04122a, #0a2a50);
+            color: white;
+        }
+        .notes-modal-btn.save:hover { opacity: 0.88; }
+
         /* Top hero row: avatar | contribution */
         .person-hero {
             display: flex;
@@ -6506,7 +6559,7 @@
                     <div class="meeting-icons-col">
                         <div class="meeting-icons-header">
                             <!-- Notepad + pen icon (inert placeholder) -->
-                            <button class="meeting-scope-icon-btn" id="meetingNotesBtn" title="Meeting Notes" disabled>
+                            <button class="meeting-scope-icon-btn" id="meetingNotesBtn" title="Meeting Notes" onclick="openMeetingNotesModal()">
                                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                                     <polyline points="14 2 14 8 20 8"/>
@@ -7205,6 +7258,24 @@
             </div><!-- /.person-modal-body -->
         </div><!-- /.person-modal -->
     </div><!-- /.person-modal-overlay -->
+
+    <!-- Meeting Notes Modal -->
+    <div class="person-modal-overlay" id="meetingNotesOverlay" onclick="closeMeetingNotesModal(event)">
+        <div class="person-modal" id="meetingNotesModal" style="width:580px;">
+            <div class="person-modal-header">
+                <span>📋 Meeting Notes</span>
+                <button class="person-modal-close" onclick="closeMeetingNotesModal(null)">✕</button>
+            </div>
+            <div class="person-modal-body">
+                <div class="notes-modal-week-label" id="meetingNotesWeekLabel">Week —</div>
+                <textarea class="notes-modal-textarea" id="meetingNotesTextarea" placeholder="Type your meeting notes here…"></textarea>
+                <div class="notes-modal-footer">
+                    <button class="notes-modal-btn cancel" onclick="closeMeetingNotesModal(null)">Cancel</button>
+                    <button class="notes-modal-btn save" onclick="closeMeetingNotesModal(null)">Save</button>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.meetingNotesOverlay -->
 
     <!-- Floating Scrollbar -->
     <div class="floating-scrollbar" id="floatingScrollbar">
@@ -7985,9 +8056,12 @@
                 }
 
                 // Count badge:
-                // • Current week  → count filled rows from data (excludes blank starters)
-                // • Historical    → count exactly what's rendered (= rowsToRender.length)
-                if (isEditable) {
+                // • Show All active → handled by updateBPRCount (all-weeks total)
+                // • Current week    → count filled rows from data (excludes blank starters)
+                // • Historical      → count exactly what's rendered (= rowsToRender.length)
+                if (window._showAllActive) {
+                    updateBPRCount(section);
+                } else if (isEditable) {
                     updateBPRCount(section);
                 } else {
                     document.getElementById(section + '-count').textContent = tbody.children.length;
@@ -8768,10 +8842,44 @@
                 if (overlay && overlay.classList.contains('open')) {
                     closePersonModal(null);
                 }
+                var notesOverlay = document.getElementById('meetingNotesOverlay');
+                if (notesOverlay && notesOverlay.classList.contains('open')) {
+                    closeMeetingNotesModal(null);
+                }
             }
         });
 
         // ==================== END PEOPLE TAB ====================
+
+        // ==================== MEETING NOTES MODAL ====================
+
+        function openMeetingNotesModal() {
+            // Populate week label from the current week display
+            var weekLabel = '';
+            var weekNumEl = document.getElementById('weekNumber');
+            var weekRangeEl = document.getElementById('weekDateRange');
+            if (weekNumEl) weekLabel = weekNumEl.textContent.trim();
+            if (weekRangeEl && weekRangeEl.textContent.trim()) {
+                weekLabel += '  ·  ' + weekRangeEl.textContent.trim();
+            }
+            var labelEl = document.getElementById('meetingNotesWeekLabel');
+            if (labelEl) labelEl.textContent = weekLabel || 'Current Week';
+
+            // Clear any previous content and open
+            document.getElementById('meetingNotesTextarea').value = '';
+            document.getElementById('meetingNotesOverlay').classList.add('open');
+            setTimeout(function() {
+                document.getElementById('meetingNotesTextarea').focus();
+            }, 80);
+        }
+
+        function closeMeetingNotesModal(evt) {
+            // If triggered by backdrop click, only close if click was on the overlay itself
+            if (evt && evt.target !== document.getElementById('meetingNotesOverlay')) return;
+            document.getElementById('meetingNotesOverlay').classList.remove('open');
+        }
+
+        // ==================== END MEETING NOTES MODAL ====================
 
         async function syncData(barPrefix) {
             if (!barPrefix) barPrefix = 'register';
@@ -9362,6 +9470,17 @@
         }
 
         function updateBPRCount(section) {
+            if (window._showAllActive) {
+                // Show All mode: sum filled rows across every stored week
+                const allWeeks = Object.keys(businessPlanData.weeks);
+                const total = allWeeks.reduce(function(sum, wk) {
+                    const wd = businessPlanData.weeks[wk];
+                    if (!wd || !wd[section]) return sum;
+                    return sum + wd[section].filter(function(r) { return r && (r.issues || r.actions); }).length;
+                }, 0);
+                document.getElementById(section + '-count').textContent = total;
+                return; // BF button visibility not relevant in show-all mode
+            }
             const weekData = businessPlanData.weeks[currentWeek];
             const filledRows = weekData[section].filter(_bprRowIsFilled).length;
             document.getElementById(`${section}-count`).textContent = filledRows;
