@@ -2319,6 +2319,239 @@
         /* ===== END HOME AI INPUT FLOW ===== */
 
 
+        /* ===== PEOPLE PROFILE MODAL ===== */
+        .person-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.52);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+        }
+        .person-modal-overlay.open { display: flex; }
+
+        .person-modal {
+            background: #fff;
+            border-radius: 16px;
+            width: 720px;
+            max-width: 96vw;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 28px 70px rgba(0,0,0,0.28);
+            overflow: hidden;
+            animation: modalIn 0.22s ease;
+        }
+
+        /* Header bar */
+        .person-modal-header {
+            background: linear-gradient(135deg, #04122a 0%, #071e3d 60%, #0a2a50 100%);
+            color: white;
+            padding: 14px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .person-modal-header span {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.85;
+            letter-spacing: 0.3px;
+        }
+        .person-modal-close {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.65);
+            font-size: 20px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 2px 7px;
+            border-radius: 5px;
+            transition: color 0.15s, background 0.15s;
+        }
+        .person-modal-close:hover { color: white; background: rgba(255,255,255,0.14); }
+
+        /* Scrollable body */
+        .person-modal-body {
+            overflow-y: auto;
+            flex: 1;
+            padding: 28px 28px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        /* Top hero row: avatar | contribution */
+        .person-hero {
+            display: flex;
+            gap: 28px;
+            align-items: flex-start;
+        }
+
+        /* Avatar block */
+        .person-avatar-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+            width: 130px;
+        }
+        .person-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #b8cce8, #7fa8cc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .person-avatar svg { width: 80px; height: 80px; }
+        .person-name-label {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            line-height: 1.3;
+            margin-bottom: 4px;
+        }
+        .person-role-label {
+            background: #eaf4ff;
+            color: #2980b9;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 12px;
+            border-radius: 20px;
+            border: 1px solid #bee3f8;
+            text-align: center;
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Contribution block */
+        .person-contribution {
+            flex: 1;
+        }
+        .person-contribution-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 16px;
+        }
+        .person-stats-row {
+            display: flex;
+            gap: 32px;
+            align-items: flex-end;
+        }
+        .person-points-block {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+        .person-points-number {
+            font-size: 58px;
+            font-weight: 800;
+            color: #00b8aa;
+            line-height: 1;
+        }
+        .person-points-label {
+            font-size: 13px;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        .person-chart-block {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+        }
+        .person-chart-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        .person-bar-chart {
+            display: flex;
+            gap: 6px;
+            align-items: flex-end;
+            height: 60px;
+        }
+        .person-bar {
+            width: 22px;
+            border-radius: 4px 4px 0 0;
+            background: linear-gradient(180deg, #00d4c8, #00a89e);
+        }
+
+        /* Activity & Recommendations */
+        .person-section-heading {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .person-activity-box {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .person-activity-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #2c3e50;
+        }
+        .person-activity-num {
+            color: #adb5bd;
+            font-weight: 600;
+            font-size: 12px;
+            min-width: 18px;
+        }
+        .person-activity-dots {
+            flex: 1;
+            border-bottom: 1px dotted #ced4da;
+            height: 1px;
+            margin: 0 6px;
+        }
+        .person-badge-done {
+            background: #00b8aa;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 9px;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
+        .person-badge-book {
+            background: white;
+            color: #00b8aa;
+            border: 1.5px solid #00b8aa;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 9px;
+            border-radius: 10px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.15s, color 0.15s;
+        }
+        .person-badge-book:hover { background: #00b8aa; color: white; }
+        /* Selected row highlight when modal is open */
+        #peopleTableWrap tr.pm-selected td {
+            background: #dbeafe !important;
+            color: #1e40af !important;
+        }
+        /* ===== END PEOPLE PROFILE MODAL ===== */
+
         /* ===== PRINT / PDF STYLES ===== */
         @media print {
             /* Hide everything except dashboard content */
@@ -5540,8 +5773,8 @@
                 </button>
 
                 <div class="sidebar-divider"></div>
-                <!-- People (inert) -->
-                <button class="sidebar-icon-btn" id="sidebarPeople" title="People">
+                <!-- People -->
+                <button class="sidebar-icon-btn" id="sidebarPeople" onclick="sidebarNav('people')" title="People">
                     <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
                     <span class="icon-label">People</span>
                 </button>
@@ -6832,12 +7065,138 @@
                 </div><!-- /.quadrant-main-container -->
                 </div><!-- /.tab-body -->
             </div><!-- /#quadrant tab -->
+
+            <!-- People Tab -->
+            <div id="people" class="tab-content">
+                <!-- People Ribbon -->
+                <div class="ribbon">
+                    <span class="ribbon-label">People &amp; Accountability</span>
+                    <div class="ribbon-sep"></div>
+                    <button class="rbtn rbtn-primary" id="peopleSyncBtn" onclick="syncData('people')">🔄 Sync Data</button>
+                    <div class="ribbon-sep"></div>
+                    <button class="rbtn rbtn-neutral" disabled style="opacity:0.5;cursor:not-allowed;">👥 Roles</button>
+                    <button class="rbtn rbtn-neutral" disabled style="opacity:0.5;cursor:not-allowed;">📊 Summary</button>
+                    <button class="rbtn rbtn-neutral" disabled style="opacity:0.5;cursor:not-allowed;">📤 Export</button>
+                    <div class="ribbon-flex-space"></div>
+                    <div class="ribbon-search-wrapper">
+                        <div class="ribbon-search-box">
+                            <span class="ribbon-search-icon">🔍</span>
+                            <input class="ribbon-search-input" id="peopleSearchInput"
+                                type="text" placeholder="Search people…"
+                                oninput="searchPeople(this.value)">
+                            <button class="ribbon-search-clear" id="peopleSearchClear"
+                                onclick="clearPeopleSearch()" title="Clear search">✕</button>
+                        </div>
+                        <span class="ribbon-search-count" id="peopleSearchCount"></span>
+                    </div>
+                </div>
+                <div class="sync-bar" id="peopleSyncBar">
+                    <span class="sync-bar-label" id="peopleSyncLabel"><span class="sync-bar-badge">🤚</span>Syncing Your Data</span>
+                    <svg class="sync-dot-track" id="peopleSyncSvg"></svg>
+                    <span class="sync-bar-msg" id="peopleSyncMsg"></span>
+                </div>
+                <div class="tab-body" id="peopleTabBody">
+                    <div id="peopleTableWrap">
+                        <p style="color:#7f8c8d;font-style:italic;padding:20px 0;">No people data loaded. Click Sync Data to import from the source file.</p>
+                    </div>
+                </div>
+            </div><!-- /#people tab -->
+
             </div><!-- /.content -->
                     </div><!-- /.container -->
                 </div><!-- /#appContainer -->
             </div><!-- /#appMain -->
         </div><!-- /.app-body -->
     </div><!-- /.app-shell -->
+
+    <!-- People Profile Modal -->
+    <div class="person-modal-overlay" id="personModalOverlay" onclick="closePersonModal(event)">
+        <div class="person-modal" id="personModal">
+            <div class="person-modal-header">
+                <span id="pmModalTitle">👤 People &amp; Accountability</span>
+                <button class="person-modal-close" onclick="closePersonModal(null)">✕</button>
+            </div>
+            <div class="person-modal-body">
+
+                <!-- Hero row: avatar left, contribution right -->
+                <div class="person-hero">
+                    <div class="person-avatar-block">
+                        <div class="person-name-label" id="pmName">—</div>
+                        <div class="person-avatar">
+                            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="40" cy="30" r="16" fill="rgba(255,255,255,0.55)"/>
+                                <path d="M10 70c0-16.569 13.431-30 30-30s30 13.431 30 30" fill="rgba(255,255,255,0.45)"/>
+                            </svg>
+                        </div>
+                        <div class="person-role-label" id="pmRole">—</div>
+                    </div>
+
+                    <div class="person-contribution">
+                        <div class="person-contribution-title">My Contribution</div>
+                        <div class="person-stats-row">
+                            <div class="person-points-block">
+                                <div class="person-points-number" id="pmPoints">—</div>
+                                <div class="person-points-label">NX Points</div>
+                            </div>
+                            <div class="person-chart-block">
+                                <div class="person-bar-chart" id="pmBarChart">
+                                    <!-- bars injected by JS -->
+                                </div>
+                                <div class="person-chart-label">Past 6 weeks activity</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Summary -->
+                <div>
+                    <div class="person-section-heading">Activity Summary</div>
+                    <div class="person-activity-box">
+                        <div class="person-activity-row">
+                            <span class="person-activity-num">1</span>
+                            <span>Risk 101 (Online Module)</span>
+                            <span class="person-activity-dots"></span>
+                            <span class="person-badge-done">DONE</span>
+                        </div>
+                        <div class="person-activity-row">
+                            <span class="person-activity-num">2</span>
+                            <span>Risks Raised <span id="pmRisksRaised">(3)</span></span>
+                        </div>
+                        <div class="person-activity-row">
+                            <span class="person-activity-num">3</span>
+                            <span>Actions Completed <span id="pmActionsCompleted">(7)</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommended for you -->
+                <div>
+                    <div class="person-section-heading">Recommended for you (3 items)</div>
+                    <div class="person-activity-box">
+                        <div class="person-activity-row">
+                            <span class="person-activity-num">1</span>
+                            <span>Risk 102 (Online Module)</span>
+                            <span class="person-activity-dots"></span>
+                            <button class="person-badge-book">Book</button>
+                        </div>
+                        <div class="person-activity-row">
+                            <span class="person-activity-num">2</span>
+                            <span>ISO31000 Overview (Online Module)</span>
+                            <span class="person-activity-dots"></span>
+                            <button class="person-badge-book">Book</button>
+                        </div>
+                        <div class="person-activity-row">
+                            <span class="person-activity-num">3</span>
+                            <span>RAT Team Training (In Person)</span>
+                            <span class="person-activity-dots"></span>
+                            <button class="person-badge-book">Book</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /.person-modal-body -->
+        </div><!-- /.person-modal -->
+    </div><!-- /.person-modal-overlay -->
 
     <!-- Floating Scrollbar -->
     <div class="floating-scrollbar" id="floatingScrollbar">
@@ -8082,6 +8441,321 @@
         }
         // ── End Sync Data animation helpers ──────────────────────────────────
 
+        // ==================== PEOPLE TAB ====================
+
+        window._peopleData = window._peopleData || [];
+
+        // Columns where horizontal padding is tightened so adjacent cols sit closer
+        var _PEOPLE_NARROW_COLS = ['first name', 'username'];
+
+        // Column names (lowercase) that should be rendered as formatted dates
+        var _PEOPLE_DATE_COL_HINTS = ['date', 'time', 'created', 'modified', 'updated', 'joined', 'registered', 'last login', 'lastlogin'];
+
+        function _isPeopleDateCol(colName) {
+            var lower = colName.toLowerCase();
+            return _PEOPLE_DATE_COL_HINTS.some(function(hint) { return lower.includes(hint); });
+        }
+
+        function _formatPeopleDate(val) {
+            var d = (val instanceof Date) ? val : null;
+            if (!d && val) {
+                // Excel serial numbers come through as numbers sometimes
+                if (typeof val === 'number') {
+                    // Excel epoch: days since 1 Jan 1900 (with leap-year bug offset)
+                    var ms = (val - 25569) * 86400 * 1000;
+                    var candidate = new Date(ms);
+                    if (!isNaN(candidate)) d = candidate;
+                }
+                if (!d) {
+                    var parsed = new Date(val);
+                    if (!isNaN(parsed)) d = parsed;
+                }
+            }
+            if (!d || isNaN(d)) return val !== null && val !== undefined ? String(val) : '';
+            var dd   = String(d.getDate()).padStart(2, '0');
+            var mm   = String(d.getMonth() + 1).padStart(2, '0');
+            var yyyy = d.getFullYear();
+            var hh   = String(d.getHours()).padStart(2, '0');
+            var min  = String(d.getMinutes()).padStart(2, '0');
+            return dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + min;
+        }
+
+        var _peoplePage       = 1;
+        var _PEOPLE_PAGE_SIZE = 20;
+        var _peopleFiltered   = null; // null = show all
+
+        function renderPeopleTable() {
+            var wrap = document.getElementById('peopleTableWrap');
+            if (!wrap) return;
+            var allData  = window._peopleData || [];
+            var data     = _peopleFiltered !== null ? _peopleFiltered : allData;
+            if (!allData.length) {
+                wrap.innerHTML = '<p style="color:#7f8c8d;font-style:italic;padding:20px 0;">No people data loaded. Click Sync Data to import from the source file.</p>';
+                return;
+            }
+
+            // Derive columns from first row of full data
+            var cols = Object.keys(allData[0]);
+
+            // Pre-compute per-column flags
+            var colIsDate = cols.map(function(c) { return _isPeopleDateCol(c); });
+
+            // Identify clickable columns (Surname / First Name)
+            var surnameIdx   = cols.findIndex(function(c) { return /^(surname|last\s*name|family\s*name|lname)$/i.test(c.trim()); });
+            var firstNameIdx = cols.findIndex(function(c) { return /^(first\s*name|firstname|given\s*name|fname)$/i.test(c.trim()); });
+
+            // ── Column width classification ───────────────────────────────────────
+            // Area A: # column → just wide enough for 3 digits
+            // Area B: blank/empty columns (all values empty) → reduce to 40px
+            // Area C: Role column → 110px (wider for longer role names)
+            var colWidthStyle = cols.map(function(col) {
+                var isBlank = /^__EMPTY/i.test(col) || allData.every(function(r) {
+                    var v = r[col];
+                    return v === null || v === undefined || String(v).trim() === '';
+                });
+                if (isBlank) return 'width:40px;min-width:40px;max-width:40px;overflow:hidden;';
+                if (/^role$/i.test(col.trim())) return 'width:110px;min-width:110px;';
+                return '';
+            });
+
+            // Pagination slice
+            var totalPages = Math.max(1, Math.ceil(data.length / _PEOPLE_PAGE_SIZE));
+            _peoplePage    = Math.min(_peoplePage, totalPages);
+            var start      = (_peoplePage - 1) * _PEOPLE_PAGE_SIZE;
+            var pageData   = data.slice(start, start + _PEOPLE_PAGE_SIZE);
+
+            // Build table — Risk Register styling via .risk-table CSS class
+            var html = '<div style="overflow-x:auto;">';
+            html += '<table class="risk-table">';
+
+            // Header — dark blue, matches Risk Register
+            html += '<thead><tr>';
+            html += '<th style="width:28px;min-width:28px;max-width:28px;text-align:center;">#</th>';
+            cols.forEach(function(col, ci) {
+                var ws = colWidthStyle[ci];
+                html += '<th' + (ws ? ' style="' + ws + '"' : '') + '>' + escapeHtml(col) + '</th>';
+            });
+            html += '</tr></thead>';
+
+            // Body
+            html += '<tbody>';
+            pageData.forEach(function(row, pageIdx) {
+                // Resolve original index (needed when search filter is active)
+                var globalIdx = _peopleFiltered !== null
+                    ? allData.indexOf(row)
+                    : start + pageIdx;
+                html += '<tr>';
+                html += '<td style="text-align:center;color:#8fa8c8;">' + (globalIdx + 1) + '</td>';
+                cols.forEach(function(col, ci) {
+                    var raw     = row[col] !== undefined && row[col] !== null ? row[col] : '';
+                    var display = colIsDate[ci] ? _formatPeopleDate(raw) : escapeHtml(String(raw));
+                    var ws      = colWidthStyle[ci] ? ' style="' + colWidthStyle[ci] + '"' : '';
+                    var isClickable = (ci === surnameIdx || ci === firstNameIdx);
+                    if (isClickable) {
+                        html += '<td ondblclick="openPersonModal(' + globalIdx + ')" title="Double-click to view profile" style="' + (colWidthStyle[ci] || '') + 'cursor:pointer;text-decoration:underline dotted #8fa8c8;">' + display + '</td>';
+                    } else {
+                        html += '<td' + ws + '>' + display + '</td>';
+                    }
+                });
+                html += '</tr>';
+            });
+            html += '</tbody></table></div>';
+
+            // Pagination controls (reuse Risk Register classes)
+            var pagHtml = '<div class="pagination-container">';
+            pagHtml += '<div class="pagination-info">Showing ' + (start + 1) + '–' + Math.min(start + _PEOPLE_PAGE_SIZE, data.length) + ' of ' + data.length + ' records</div>';
+            pagHtml += '<div class="pagination-controls">';
+
+            function mkBtn(label, page, extra) {
+                var disabled = (extra === 'prev' && _peoplePage === 1) || (extra === 'next' && _peoplePage === totalPages);
+                var active   = (page === _peoplePage && extra !== 'prev' && extra !== 'next') ? ' active' : '';
+                return '<button class="page-btn' + active + '"' + (disabled ? ' disabled' : '') + ' onclick="peopleGoToPage(' + page + ')">' + label + '</button>';
+            }
+
+            pagHtml += mkBtn('&#8592; Prev', _peoplePage - 1, 'prev');
+            if (totalPages <= 7) {
+                for (var p = 1; p <= totalPages; p++) pagHtml += mkBtn(p, p, '');
+            } else {
+                pagHtml += mkBtn(1, 1, '');
+                if (_peoplePage > 3) pagHtml += '<button class="page-btn" disabled>…</button>';
+                for (var p2 = Math.max(2, _peoplePage - 1); p2 <= Math.min(totalPages - 1, _peoplePage + 1); p2++) pagHtml += mkBtn(p2, p2, '');
+                if (_peoplePage < totalPages - 2) pagHtml += '<button class="page-btn" disabled>…</button>';
+                pagHtml += mkBtn(totalPages, totalPages, '');
+            }
+            pagHtml += mkBtn('Next &#8594;', _peoplePage + 1, 'next');
+            pagHtml += '</div></div>';
+
+            // Row count badge header
+            var countLabel = _peopleFiltered !== null
+                ? data.length + ' of ' + allData.length + ' records'
+                : data.length + ' records';
+            var header = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
+                       + '<span style="font-size:13px;font-weight:600;color:#2c3e50;">People &amp; Accountability</span>'
+                       + '<span style="background:#e8f4fd;color:#2980b9;font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;">' + countLabel + '</span>'
+                       + '</div>';
+
+            wrap.innerHTML = header + html + pagHtml;
+        }
+
+        function peopleGoToPage(page) {
+            _peoplePage = page;
+            renderPeopleTable();
+        }
+
+        function searchPeople(value) {
+            var clearBtn = document.getElementById('peopleSearchClear');
+            if (clearBtn) clearBtn.classList.toggle('visible', value.length > 0);
+            var term = value.trim().toLowerCase();
+            if (!term) {
+                _peopleFiltered = null;
+            } else {
+                var allData = window._peopleData || [];
+                _peopleFiltered = allData.filter(function(row) {
+                    return Object.values(row).some(function(v) {
+                        return v !== null && v !== undefined && String(v).toLowerCase().includes(term);
+                    });
+                });
+            }
+            _peoplePage = 1;
+            var countEl = document.getElementById('peopleSearchCount');
+            if (countEl) {
+                if (!term) {
+                    countEl.textContent = ''; countEl.className = 'ribbon-search-count';
+                } else if (!_peopleFiltered.length) {
+                    countEl.textContent = 'No matches'; countEl.className = 'ribbon-search-count no-results';
+                } else {
+                    countEl.textContent = _peopleFiltered.length + ' match' + (_peopleFiltered.length !== 1 ? 'es' : '');
+                    countEl.className = 'ribbon-search-count has-results';
+                }
+            }
+            renderPeopleTable();
+        }
+
+        function clearPeopleSearch() {
+            var input = document.getElementById('peopleSearchInput');
+            if (input) input.value = '';
+            var clearBtn = document.getElementById('peopleSearchClear');
+            if (clearBtn) clearBtn.classList.remove('visible');
+            var countEl = document.getElementById('peopleSearchCount');
+            if (countEl) { countEl.textContent = ''; countEl.className = 'ribbon-search-count'; }
+            _peopleFiltered = null;
+            _peoplePage = 1;
+            renderPeopleTable();
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function openPersonModal(rowIdx) {
+            var data = window._peopleData || [];
+            var row  = data[rowIdx];
+            if (!row) return;
+
+            // ── Resolve field values from flexible column names ──────────────────
+            function getField(row, hints) {
+                var keys = Object.keys(row);
+                for (var h = 0; h < hints.length; h++) {
+                    var hl = hints[h].toLowerCase();
+                    for (var k = 0; k < keys.length; k++) {
+                        if (keys[k].toLowerCase() === hl) return row[keys[k]];
+                    }
+                }
+                // fuzzy fallback: contains
+                for (var h2 = 0; h2 < hints.length; h2++) {
+                    var hl2 = hints[h2].toLowerCase();
+                    for (var k2 = 0; k2 < keys.length; k2++) {
+                        if (keys[k2].toLowerCase().includes(hl2)) return row[keys[k2]];
+                    }
+                }
+                return '';
+            }
+
+            var firstName = getField(row, ['first name','firstname','given name','fname']) || '';
+            var surname   = getField(row, ['surname','last name','lastname','family name','lname']) || '';
+            var fullName  = (firstName + ' ' + surname).trim() || '—';
+            var points    = getField(row, ['nexus points','nxpoints','nx points','points','score']) || 0;
+
+            // Role from column F (index 5, 0-based) — direct column position
+            var rowValues = Object.values(row);
+            var roleFromColF = rowValues[5] !== undefined && rowValues[5] !== null ? String(rowValues[5]) : '';
+            // Fall back to name-based lookup if col F is empty
+            if (!roleFromColF) roleFromColF = getField(row, ['role','job title','title','position','department']) || '';
+
+            // Organisation from column C (index 2, 0-based)
+            var organisation = rowValues[2] !== undefined && rowValues[2] !== null ? String(rowValues[2]) : '';
+            if (!organisation) organisation = getField(row, ['organisation','organization','org','company','entity']) || '';
+
+            // ── Populate modal fields ─────────────────────────────────────────────
+            document.getElementById('pmName').textContent   = fullName;
+            document.getElementById('pmPoints').textContent = points !== '' ? points : '—';
+            document.getElementById('pmRole').textContent   = roleFromColF || '—';
+
+            // Modal title: "👤 People & Accountability (Organisation)"
+            var titleEl = document.getElementById('pmModalTitle');
+            if (titleEl) {
+                titleEl.textContent = organisation
+                    ? '👤 People & Accountability (' + organisation + ')'
+                    : '👤 People & Accountability';
+            }
+
+            // ── Bar chart: deterministic dummy bars tied to the row index ─────────
+            var baseHeights = [28, 35, 22, 42, 38, 52]; // default shape
+            // Vary shape slightly per person (no randomness — reproducible)
+            var seed = rowIdx + 1;
+            var bars = baseHeights.map(function(h) {
+                return Math.max(12, Math.min(58, h + ((seed * 7 + h * 3) % 15) - 7));
+            });
+            var chartEl = document.getElementById('pmBarChart');
+            if (chartEl) {
+                chartEl.innerHTML = bars.map(function(h) {
+                    return '<div class="person-bar" style="height:' + h + 'px;"></div>';
+                }).join('');
+            }
+
+            // ── Dummy activity figures seeded by row ─────────────────────────────
+            var risksRaised   = (seed * 3 + 1) % 8 + 1;
+            var actionsComp   = (seed * 5 + 2) % 12 + 2;
+            document.getElementById('pmRisksRaised').textContent     = '(' + risksRaised + ')';
+            document.getElementById('pmActionsCompleted').textContent = '(' + actionsComp + ')';
+
+            // ── Show modal + highlight row (row is offset by current page start) ──
+            document.querySelectorAll('#peopleTableWrap tr.pm-selected').forEach(function(r) {
+                r.classList.remove('pm-selected');
+            });
+            var pageStart   = (_peoplePage - 1) * _PEOPLE_PAGE_SIZE;
+            var rowOnPage   = rowIdx - pageStart;
+            var rows = document.querySelectorAll('#peopleTableWrap tbody tr');
+            if (rows[rowOnPage]) rows[rowOnPage].classList.add('pm-selected');
+
+            document.getElementById('personModalOverlay').classList.add('open');
+        }
+
+        function closePersonModal(evt) {
+            // Close only if clicking the backdrop itself (not the modal card)
+            if (evt && evt.target !== document.getElementById('personModalOverlay')) return;
+            document.getElementById('personModalOverlay').classList.remove('open');
+            document.querySelectorAll('#peopleTableWrap tr.pm-selected').forEach(function(r) {
+                r.classList.remove('pm-selected');
+            });
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var overlay = document.getElementById('personModalOverlay');
+                if (overlay && overlay.classList.contains('open')) {
+                    closePersonModal(null);
+                }
+            }
+        });
+
+        // ==================== END PEOPLE TAB ====================
+
         async function syncData(barPrefix) {
             if (!barPrefix) barPrefix = 'register';
             var barEl = document.getElementById(barPrefix + 'SyncBar');
@@ -8089,7 +8763,7 @@
             var msgId = barPrefix + 'SyncMsg';
             var svgEl = document.getElementById(svgId);
             var msgEl = document.getElementById(msgId);
-            var btn   = document.getElementById('syncDataBtn');
+            var btn   = document.getElementById(barPrefix + 'SyncBtn') || document.getElementById('syncDataBtn');
 
             // Show sync bar with running animation
             var labelEl = document.getElementById(barPrefix + 'SyncLabel');
@@ -8111,13 +8785,21 @@
                     businessPlanData_import = XLSX.utils.sheet_to_json(workbook.Sheets['Business Plan'], { range: 4 });
                 if (workbook.SheetNames.includes('Strategic Objectives'))
                     strategicObjData = XLSX.utils.sheet_to_json(workbook.Sheets['Strategic Objectives']);
+                let peopleData = [];
+                if (workbook.SheetNames.includes('People'))
+                    peopleData = XLSX.utils.sheet_to_json(workbook.Sheets['People']);
                 if (riskData.length > 0) processImportedRiskData(riskData, true);
                 if (businessPlanData_import.length > 0) processImportedBusinessPlanData(businessPlanData_import);
                 if (strategicObjData.length > 0) processStrategicObjectives(strategicObjData);
+                if (peopleData.length > 0) {
+                    window._peopleData = peopleData;
+                    renderPeopleTable();
+                }
                 const parts = [];
                 if (riskData.length > 0) parts.push(riskData.length + ' risk' + (riskData.length !== 1 ? 's' : '') + ' loaded');
                 if (businessPlanData_import.length > 0) parts.push(businessPlanData_import.length + ' plan item' + (businessPlanData_import.length !== 1 ? 's' : '') + ' loaded');
                 if (strategicObjData.length > 0) parts.push(strategicObjData.length + ' objective' + (strategicObjData.length !== 1 ? 's' : '') + ' loaded');
+                if (peopleData.length > 0) parts.push(peopleData.length + ' person' + (peopleData.length !== 1 ? 's' : '') + ' loaded');
                 const finalMsg = parts.length > 0
                     ? '\u2705 Sync complete \u2014 ' + parts.join(', ')
                     : '\u26A0\uFE0F Sync complete \u2014 no data found (sheets: ' + workbook.SheetNames.join(', ') + ')';
@@ -9267,7 +9949,7 @@
             document.getElementById(tabName).classList.add('active');
 
             // Auto-sync once per session on first visit to any data tab
-            if (!_hasSyncedOnce && (tabName === 'dashboard' || tabName === 'register' || tabName === 'business-plan')) {
+            if (!_hasSyncedOnce && (tabName === 'dashboard' || tabName === 'register' || tabName === 'business-plan' || tabName === 'people')) {
                 _hasSyncedOnce = true;
                 const barPrefix = tabName === 'business-plan' ? 'bpr' : tabName;
                 syncData(barPrefix);
@@ -9284,6 +9966,8 @@
                 applyRiskRegisterFilterToQuadrant();
                 updateQuadrantChart();
                 openQuadChartDefaults();
+            } else if (tabName === 'people') {
+                renderPeopleTable();
             }
         }
 
@@ -11812,7 +12496,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                     const tabName = this.getAttribute('data-tab');
                     // Sync sidebar highlight
                     document.querySelectorAll('.sidebar-icon-btn').forEach(b => b.classList.remove('active'));
-                    const sidebarMap = {'dashboard':'sidebarDashboard','register':'sidebarRegister','business-plan':'sidebarBPR','quadrant':'sidebarQuadrant'};
+                    const sidebarMap = {'dashboard':'sidebarDashboard','register':'sidebarRegister','business-plan':'sidebarBPR','quadrant':'sidebarQuadrant','people':'sidebarPeople'};
                     if (sidebarMap[tabName]) document.getElementById(sidebarMap[tabName]).classList.add('active');
                     showTab(tabName);
                 });
@@ -12465,7 +13149,8 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                 'dashboard': 'sidebarDashboard',
                 'register': 'sidebarRegister',
                 'business-plan': 'sidebarBPR',
-                'quadrant': 'sidebarQuadrant'
+                'quadrant': 'sidebarQuadrant',
+                'people':   'sidebarPeople'
             };
             if (map[tabName]) document.getElementById(map[tabName])?.classList.add('active');
         }
@@ -13281,7 +13966,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                     'Team and role-based views for operational clarity',
                     'Integration with organisational structure and reporting lines'
                 ],
-                section: null,
+                section: 'people',
                 illustrationId: 'ovIllus-people'
             }
         };
@@ -13340,7 +14025,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             'register':  'register',
             'business':  'business-plan',
             'dashboard': 'dashboard',
-            'people':    null   // coming soon — no direct nav
+            'people':    'people'
         };
 
         function quickLaunchCard(id, event) {
@@ -13352,7 +14037,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             if (section) {
                 enterFullApp(section);
             }
-            // People card: do nothing (coming soon)
+            // People card: navigate to people tab
         }
 
         function expandOverviewCard(id, btn) {
