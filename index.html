@@ -393,6 +393,12 @@
             overflow-y: auto;
         }
 
+        /* Risk Register tab — flush the table to the left edge */
+        #register .tab-body {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
         /* Dashboard uses a flex row wrapper inside tab-body */
         .dashboard-flex-row {
             display: flex;
@@ -4249,7 +4255,7 @@
         }
 
         /* Col 1: Risk ID */
-        .risk-table td:nth-child(1), .risk-table th:nth-child(1) { width:6%; white-space:nowrap; padding-right:3px; }
+        .risk-table td:nth-child(1), .risk-table th:nth-child(1) { width:6%; white-space:nowrap; padding-left:18px; padding-right:3px; }
         /* Col 2: Date Logged */
         .risk-table td:nth-child(2), .risk-table th:nth-child(2) { width:5%; white-space:nowrap; padding-right:3px; }
         /* Col 3: Description */
@@ -4309,6 +4315,26 @@
         }
         .scan-highlight:hover td {
             background: rgba(231, 76, 60, 0.15) !important;
+        }
+
+        /* Risk ID cell: reserve left padding so the ID text never shifts,
+           whether or not the scan eye is present */
+        td.risk-id-cell {
+            position: relative;
+            padding-left: 18px !important;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        /* Eye icon: absolutely placed in the reserved gap, text stays put */
+        .scan-eye-icon {
+            position: absolute;
+            left: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.85em;
+            line-height: 1;
+            cursor: default;
+            user-select: none;
         }
 
         /* Traffic light style RAG indicators */
@@ -5719,6 +5745,72 @@
             <div class="risk-modal-footer" id="editModalFooter2" style="display:none;">
                 <button class="modal-btn modal-btn-commit" onclick="saveEditRiskModal()">✓ Save Changes</button>
                 <button class="modal-btn modal-btn-cancel" onclick="closeEditRiskModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vet Review Modal -->
+    <div class="risk-modal-overlay" id="vetReviewModal">
+        <div class="risk-modal">
+            <div class="risk-modal-header" style="background: linear-gradient(135deg, #0d3b5e 0%, #1a5276 60%, #1f618d 100%); border-bottom: 2px solid #5dade2;">
+                <h2>
+                    <span style="font-size:1.1em;margin-right:6px;">👁️</span>
+                    Vet Review
+                </h2>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span id="vetReviewIdDisplay" style="font-size:12px;opacity:0.8;font-family:monospace;"></span>
+                    <button class="risk-modal-close" onclick="closeVetReviewModal()">✕</button>
+                </div>
+            </div>
+
+            <div class="risk-modal-body" style="padding:24px;">
+                <div class="modal-form-grid">
+                    <div class="modal-field full-width">
+                        <label>Risk Description</label>
+                        <textarea id="vr_description" rows="3" readonly style="background:#f4f6f8;color:#555;cursor:default;"></textarea>
+                    </div>
+                    <div class="modal-field">
+                        <label>Vet Outcome</label>
+                        <select id="vr_outcome">
+                            <option value="">Select…</option>
+                            <option>Pass</option>
+                            <option>Fail</option>
+                            <option>Defer</option>
+                            <option>Escalate</option>
+                        </select>
+                    </div>
+                    <div class="modal-field">
+                        <label>Reviewer</label>
+                        <input type="text" id="vr_reviewer" placeholder="Reviewer name…">
+                    </div>
+                    <div class="modal-field">
+                        <label>Date Reviewed</label>
+                        <input type="date" id="vr_date">
+                    </div>
+                    <div class="modal-field">
+                        <label>Priority Override</label>
+                        <select id="vr_priority">
+                            <option value="">No change</option>
+                            <option>Critical</option>
+                            <option>High</option>
+                            <option>Medium</option>
+                            <option>Low</option>
+                        </select>
+                    </div>
+                    <div class="modal-field full-width">
+                        <label>Review Notes</label>
+                        <textarea id="vr_notes" rows="4" placeholder="Enter vet review notes…"></textarea>
+                    </div>
+                    <div class="modal-field full-width">
+                        <label>Recommended Action</label>
+                        <textarea id="vr_action" rows="2" placeholder="Describe the recommended action…"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="risk-modal-footer">
+                <button class="modal-btn modal-btn-commit" onclick="saveVetReview()" style="background:#1a5276;">✓ Save Review</button>
+                <button class="modal-btn modal-btn-cancel" onclick="closeVetReviewModal()">Cancel</button>
             </div>
         </div>
     </div>
@@ -7392,6 +7484,7 @@
             aiModel:          'claude-sonnet-4-20250514',
             priorWeeksCount:  6,
             // 5. Display
+            riskPageSize:     20,
             peoplePageSize:   20,
             // 6. Tenant Organisations (auto-populated from People data)
             tenantOrgs:       [],
@@ -8446,13 +8539,24 @@
                 btn.innerHTML = '✕ Clear Scan';
                 btn.classList.add('on');
 
+                // Calculate register health based on % of vettable risks
+                const total = risks.length;
+                const pct   = total > 0 ? (matched.length / total) * 100 : 0;
+                var health;
+                if      (pct === 0)  health = 'Flawless';
+                else if (pct <   5)  health = 'Strong';
+                else if (pct <  20)  health = 'Acceptable';
+                else if (pct <= 40)  health = 'Unstable';
+                else if (pct <= 79)  health = 'Weak';
+                else                 health = 'Catastrophic';
+
                 // Show result in sync bar message
                 if (msgEl) {
                     if (matched.length > 0) {
-                        msgEl.textContent = '⚠ ' + matched.length + ' vettable risk' + (matched.length > 1 ? 's' : '') + ' identified';
+                        msgEl.textContent = '⚠ ' + matched.length + ' vettable risk' + (matched.length > 1 ? 's' : '') + ' identified (Register health = "' + health + '")';
                         msgEl.className   = 'sync-bar-msg error';
                     } else {
-                        msgEl.textContent = '✓ No vettable risks identified';
+                        msgEl.textContent = '✓ No vettable risks identified (Register health = "' + health + '")';
                         msgEl.className   = 'sync-bar-msg info';
                     }
                     msgEl.style.display = 'block';
@@ -12266,7 +12370,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
 
         // ── Pagination state ──
         let _currentPage = 1;
-        const PAGE_SIZE = 20;
+        const PAGE_SIZE = 20; // legacy — renderPage reads NEXUS_CONFIG.riskPageSize at runtime
         let _currentRisks = [];
 
         function updateRiskTable(filteredRisks = null) {
@@ -12299,12 +12403,13 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             const tbody = document.getElementById('riskTableBody');
             tbody.innerHTML = '';
 
+            const _PAGE_SIZE = NEXUS_CONFIG.riskPageSize || 20; // live-read from config
             const total = _currentRisks.length;
-            const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+            const totalPages = Math.max(1, Math.ceil(total / _PAGE_SIZE));
             _currentPage = Math.min(_currentPage, totalPages);
 
-            const start = (_currentPage - 1) * PAGE_SIZE;
-            const pageRisks = _currentRisks.slice(start, start + PAGE_SIZE);
+            const start = (_currentPage - 1) * _PAGE_SIZE;
+            const pageRisks = _currentRisks.slice(start, start + _PAGE_SIZE);
 
             pageRisks.forEach(risk => {
                 const riskScore = calculateRiskScore(risk.likelihood, risk.impact, risk.proximity, risk.mitigationStatus);
@@ -12333,8 +12438,9 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                 if (window._scanActive && window._scannedRiskIds && window._scannedRiskIds.has(risk.id)) {
                     row.classList.add('scan-highlight');
                 }
+                const isScanned = window._scanActive && window._scannedRiskIds && window._scannedRiskIds.has(risk.id);
                 row.innerHTML = `
-                    <td style="cursor:pointer;" ondblclick="openEditRiskModal('${risk.id.replace(/'/g,'&apos;')}')" title="Double-click to edit">${shortId}</td>
+                    <td class="risk-id-cell" ondblclick="${isScanned ? `openVetReviewModal('${risk.id.replace(/'/g,'&apos;')}')` : `openEditRiskModal('${risk.id.replace(/'/g,'&apos;')}')`}" title="${isScanned ? 'Double-click to vet review' : 'Double-click to edit'}">${isScanned ? '<span class="scan-eye-icon" title="Flagged by Scan Register">👁️</span>' : ''}<span class="risk-id-text">${shortId}</span></td>
                     <td>${dateStr}</td>
                     <td>${tc(risk.description, 30)}</td>
                     <td>${tc(risk.category, 20)}</td>
@@ -12354,7 +12460,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             });
 
             // Filler rows to keep table height constant on short final pages
-            const fillerCount = PAGE_SIZE - pageRisks.length;
+            const fillerCount = _PAGE_SIZE - pageRisks.length;
             for (let i = 0; i < fillerCount; i++) {
                 const filler = document.createElement('tr');
                 filler.className = 'filler-row';
@@ -12368,7 +12474,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                 info.textContent = 'No risks to display';
             } else {
                 const from = start + 1;
-                const to = Math.min(start + PAGE_SIZE, total);
+                const to = Math.min(start + _PAGE_SIZE, total);
                 info.textContent = 'Showing ' + from + '–' + to + ' of ' + total + ' risks';
             }
 
@@ -13591,7 +13697,8 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
 
 
         // ==================== EDIT RISK MODAL ====================
-        let _editingRiskId = null;
+        let _editingRiskId    = null;
+        let _vetReviewRiskId  = null;
 
         function openEditRiskModal(riskId) {
             const risk = risks.find(r => r.id === riskId);
@@ -13638,6 +13745,101 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
         function closeEditRiskModal() {
             document.getElementById('editRiskModal').classList.remove('open');
             _editingRiskId = null;
+        }
+
+        function openVetReviewModal(riskId) {
+            const risk = risks.find(r => r.id === riskId);
+            if (!risk) return;
+            _vetReviewRiskId = riskId;
+
+            // Show risk ID in header
+            const s = String(riskId);
+            const m = s.match(/^(.*)-(\d{8})$/);
+            let displayId = s;
+            if (m) {
+                const y=m[2].slice(0,4), mo=m[2].slice(4,6), d=m[2].slice(6,8);
+                displayId = m[1] + '  •  ' + d+'/'+mo+'/'+y;
+            }
+            document.getElementById('vetReviewIdDisplay').textContent = displayId;
+
+            // Populate read-only description so reviewer has context
+            document.getElementById('vr_description').value = risk.description || '';
+
+            // Reset editable fields
+            document.getElementById('vr_outcome').value  = '';
+            document.getElementById('vr_reviewer').value = '';
+            document.getElementById('vr_date').value     = new Date().toISOString().slice(0,10);
+            document.getElementById('vr_priority').value = '';
+            document.getElementById('vr_notes').value    = '';
+            document.getElementById('vr_action').value   = '';
+
+            document.getElementById('vetReviewModal').classList.add('open');
+        }
+
+        function closeVetReviewModal() {
+            document.getElementById('vetReviewModal').classList.remove('open');
+            _vetReviewRiskId = null;
+        }
+
+        function saveVetReview() {
+            const risk = risks.find(r => r.id === _vetReviewRiskId);
+            if (!risk) { alert('Risk not found.'); return; }
+
+            // Map Strategic Priority → BPR section
+            const validSections = ['customer','investor','finance','technology','operations'];
+            const section = (risk.strategicPriority || '').toLowerCase().trim();
+            if (!validSections.includes(section)) {
+                alert('Cannot save to BPR: this risk has no Strategic Priority set.\nPlease set one via the Edit modal first.');
+                return;
+            }
+
+            // Read form fields
+            const reviewer = document.getElementById('vr_reviewer').value.trim();
+            const dateVal  = document.getElementById('vr_date').value;
+            const notes    = document.getElementById('vr_notes').value.trim();
+            const action   = document.getElementById('vr_action').value.trim();
+
+            // Short ID for the Issues header
+            const m = String(risk.id).match(/^(.*)-(\d{8})$/);
+            const shortId = m ? m[1] : risk.id;
+
+            // Read additional fields
+            const outcome  = document.getElementById('vr_outcome').value  || '—';
+            const priority = document.getElementById('vr_priority').value || 'No change';
+
+            // Build mapped field values
+            const issuesText  = 'VET REPORT (' + shortId + '):\nVet Outcome: ' + outcome + '\nReviewed by: ' + (reviewer || '—');
+            const actionsText = 'Priority Override set to: ' + priority + '\nNOTES:\n' + (notes || '—') + '\nACTIONS:\n' + (action || '—');
+            const dateLogged  = dateVal ? new Date(dateVal).toISOString() : new Date().toISOString();
+
+            // Add a blank row to the correct BPR section then populate it
+            addBPRRow(section);
+
+            const tbody   = document.getElementById(section + '-tbody');
+            const newRow  = tbody.lastElementChild;
+            const rowIdx  = tbody.children.length - 1;
+
+            // Populate DOM textareas
+            const tas = newRow.querySelectorAll('.bpr-input');
+            if (tas[0]) { tas[0].value = issuesText;  autoExpandTextarea(tas[0]); }
+            if (tas[1]) { tas[1].value = actionsText; autoExpandTextarea(tas[1]); }
+
+            // Override the Date Logged cell with the review date
+            const dlCell = newRow.querySelector('.bpr-date-dl');
+            if (dlCell) dlCell.textContent = formatBPRDate(dateLogged);
+
+            // Persist into the data structure via autosaveBPR
+            autosaveBPR(section, rowIdx, 'issues',  issuesText);
+            autosaveBPR(section, rowIdx, 'actions', actionsText);
+
+            // Also correct dateLogged directly (autosaveBPR doesn't touch it)
+            const weekData = businessPlanData.weeks[currentWeek];
+            if (weekData[section][rowIdx]) {
+                weekData[section][rowIdx].dateLogged = dateLogged;
+            }
+
+            closeVetReviewModal();
+            showSettingsToast('Vet Review saved to BPR (' + section.charAt(0).toUpperCase() + section.slice(1) + ') ✓');
         }
 
         function switchEditModalTab(n) {
@@ -13702,6 +13904,10 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
         // Close edit modal on overlay click
         document.getElementById('editRiskModal').addEventListener('click', function(e) {
             if (e.target === this) closeEditRiskModal();
+        });
+
+        document.getElementById('vetReviewModal').addEventListener('click', function(e) {
+            if (e.target === this) closeVetReviewModal();
         });
 
         // ==================== END EDIT RISK MODAL ====================
@@ -14806,18 +15012,35 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
         function openSettings() {
             // Populate panel from current config before showing
             _settingsToPanel();
-            document.getElementById('nexusSettingsOverlay').style.display = 'flex';
-            document.getElementById('nexusSettingsPanel').classList.add('open');
-            document.getElementById('sidebarSettings').classList.add('active');
+            const ov = document.getElementById('nexusSettingsOverlay');
+            ov.style.display = 'flex';
+            // Allow the browser to paint the display:flex state first, then
+            // add .open so both the backdrop fade and panel slide animate smoothly
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    ov.classList.add('open');
+                    document.getElementById('nexusSettingsPanel').classList.add('open');
+                    document.getElementById('sidebarSettings').classList.add('active');
+                });
+            });
         }
 
         function closeSettings() {
+            const ov = document.getElementById('nexusSettingsOverlay');
+            ov.classList.remove('open');
             document.getElementById('nexusSettingsPanel').classList.remove('open');
             document.getElementById('sidebarSettings').classList.remove('active');
+            // Collapse all sections back to default closed state for next visit
+            ['cfg_s1','cfg_s2','cfg_s3','cfg_s4','cfg_s5','cfg_s6'].forEach(function(id) {
+                var body  = document.getElementById(id);
+                var arrow = document.querySelector('[data-acc="' + id + '"] .cfg-arrow');
+                if (body)  body.style.display = 'none';
+                if (arrow) arrow.style.transform = 'rotate(-90deg)';
+            });
+            // Wait for the slide-out and fade-out to finish before hiding the overlay
             setTimeout(function() {
-                const ov = document.getElementById('nexusSettingsOverlay');
                 if (ov) ov.style.display = 'none';
-            }, 300);
+            }, 480);
         }
 
         function _settingsToPanel() {
@@ -14846,6 +15069,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             document.getElementById('cfg_priorWeeks').value = cfg.priorWeeksCount;
             // Section 5: Display
             document.getElementById('cfg_peoplePageSize').value = cfg.peoplePageSize;
+            document.getElementById('cfg_riskPageSize').value  = cfg.riskPageSize;
             // Tenant Organisations (part of Section 1)
             const tenantEl = document.getElementById('cfg_tenantOrgs');
             if (tenantEl) tenantEl.value = (cfg.tenantOrgs || []).join('\n');
@@ -14900,6 +15124,8 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             // Section 5: Display
             const pps = parseInt(document.getElementById('cfg_peoplePageSize').value, 10);
             if (!isNaN(pps) && pps > 0) cfg.peoplePageSize = pps;
+            const rps = parseInt(document.getElementById('cfg_riskPageSize').value, 10);
+            if (!isNaN(rps) && rps > 0) cfg.riskPageSize = rps;
 
             // Persist and apply
             saveNexusConfig();
@@ -14911,6 +15137,9 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             // Re-render affected views
             if (document.getElementById('people') && document.getElementById('people').classList.contains('active')) {
                 renderPeopleTable();
+            }
+            if (document.getElementById('register') && document.getElementById('register').classList.contains('active')) {
+                updateRiskTable();
             }
             updateBPRSummaryView();
             showSettingsToast('Settings saved ✓');
@@ -14939,14 +15168,24 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             }, 2500);
         }
 
-        // Accordion toggle for settings sections
+        // Accordion toggle for settings sections — only one open at a time
         function toggleSettingsSection(id) {
             const body = document.getElementById(id);
             const arrow = document.querySelector(`[data-acc="${id}"] .cfg-arrow`);
             if (!body) return;
             const isOpen = body.style.display !== 'none';
-            body.style.display = isOpen ? 'none' : 'block';
-            if (arrow) arrow.style.transform = isOpen ? 'rotate(-90deg)' : 'rotate(0deg)';
+            // Close all sections first
+            ['cfg_s1','cfg_s2','cfg_s3','cfg_s4','cfg_s5','cfg_s6'].forEach(function(sid) {
+                const sb = document.getElementById(sid);
+                const sa = document.querySelector('[data-acc="' + sid + '"] .cfg-arrow');
+                if (sb) sb.style.display = 'none';
+                if (sa) sa.style.transform = 'rotate(-90deg)';
+            });
+            // If the clicked section was closed, open it now
+            if (!isOpen) {
+                body.style.display = 'block';
+                if (arrow) arrow.style.transform = 'rotate(0deg)';
+            }
         }
 
                 function collapseExpandedCard() {
@@ -14989,6 +15228,13 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
     <!-- ==================== SETTINGS PANEL OVERLAY ==================== -->
     <div id="nexusSettingsOverlay" style="display:none;position:fixed;inset:0;z-index:2000;align-items:stretch;justify-content:flex-start;" onclick="if(event.target===this)closeSettings()">
         <style>
+            #nexusSettingsOverlay {
+                background: rgba(0,0,0,0);
+                transition: background 0.45s ease;
+            }
+            #nexusSettingsOverlay.open {
+                background: rgba(0,0,0,0.45);
+            }
             #nexusSettingsPanel {
                 width: 420px; max-width: 96vw;
                 background: #fff;
@@ -14996,7 +15242,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                 display: flex; flex-direction: column;
                 box-shadow: 8px 0 40px rgba(0,0,0,0.22);
                 transform: translateX(-100%);
-                transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+                transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
                 overflow: hidden;
             }
             #nexusSettingsPanel.open { transform: translateX(0); }
@@ -15257,6 +15503,10 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                         <div class="cfg-field">
                             <label class="cfg-label">People Table — Rows per Page</label>
                             <input type="number" id="cfg_peoplePageSize" class="cfg-input" min="5" max="200" style="width:80px">
+                        </div>
+                        <div class="cfg-field">
+                            <label class="cfg-label">Risk Register — Rows per Page</label>
+                            <input type="number" id="cfg_riskPageSize" class="cfg-input" min="5" max="200" style="width:80px">
                         </div>
                     </div>
                 </div>
