@@ -5723,20 +5723,7 @@
                         </div>
                         <div class="modal-field">
                             <label>Risk Owner</label>
-                            <input type="text" id="e_owner" list="e_owner_list" placeholder="Owner name…" autocomplete="off">
-                            <datalist id="e_owner_list">
-                                <option>CEO (James Rose)</option>
-                                <option>CCO (James Staargaard)</option>
-                                <option>President (Karl Johnson)</option>
-                                <option>CFO (Neil Stewart)</option>
-                                <option>COO (Elizabeth Williams)</option>
-                                <option>CTO/CRO (Alston German)</option>
-                                <option>CDO (Doug Ash)</option>
-                                <option>Treasurer (Alison Dolin)</option>
-                                <option>Finance (JoAnne Tompson)</option>
-                                <option>VP Sales (Mike Newall)</option>
-                                <option>Unassigned</option>
-                            </datalist>
+                            <select id="e_owner"></select>
                         </div>
                         <div class="modal-field">
                             <label>Actionee</label>
@@ -5758,8 +5745,8 @@
                             <textarea id="ap_description" rows="3" placeholder="Describe the action…"></textarea>
                         </div>
                         <div class="modal-field">
-                            <label>Owner <span class="req">*</span></label>
-                            <input type="text" id="ap_owner" placeholder="Action owner…">
+                            <label>Action Owner <span class="req">*</span></label>
+                            <select id="ap_owner"></select>
                         </div>
                         <div class="modal-field">
                             <label>Due By <span class="req">*</span></label>
@@ -5827,7 +5814,7 @@
                     </div>
                     <div class="modal-field">
                         <label>Reviewer</label>
-                        <input type="text" id="vr_reviewer" placeholder="Reviewer name…">
+                        <select id="vr_reviewer"></select>
                     </div>
                     <div class="modal-field">
                         <label>Date Reviewed</label>
@@ -5883,7 +5870,7 @@
             <div class="nexus-landing-wordmark">NE<span class="nx-x">X</span>US</div>
             <div class="nexus-landing-subtitle">Active Infrastructure Governance</div>
             <div class="nexus-landing-divider"></div>
-            <div class="nexus-landing-tagline">Where Governance Really Matters</div>
+            <div class="nexus-landing-tagline">When Governance Matters</div>
             <button class="nexus-landing-btn" id="nexusExploreBtn"
                 onclick="enterApp()" title="Explore Nexus">Explore Nexus</button>
         </div>
@@ -5906,8 +5893,8 @@
 
         <!-- Hero -->
         <div class="ov-hero">
-            <h1>Nexus AIG Overview</h1>
-            <p>Where Governance Really Matters</p>
+            <h1>Nexus AIG</h1>
+            <p>When Governance Matters</p>
             <div class="ov-divider"></div>
         </div>
 
@@ -5968,7 +5955,10 @@
             </div>
             <div class="app-topbar-title">
                 <h1>Active Infrastructure Governance OS</h1>
-                <p>Active Infrastructure Governance</p>
+                <p>Version 0.073</p>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;margin-right:4px;gap:2px;">
+                <span id="activeOrgBadge" style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:500;letter-spacing:0.3px;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;display:none;"></span>
             </div>
             <button id="loginBtn" title="Login / Account" style="background:none;border:none;color:white;cursor:pointer;padding:8px;border-radius:6px;display:flex;align-items:center;gap:8px;font-size:13px;font-family:inherit;transition:background 0.2s;width:90px;justify-content:flex-end;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='none'">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
@@ -6023,7 +6013,7 @@
                 <div class="home-page" id="homePage">
                     <div class="home-welcome">
                         <h2>Welcome to Nexus</h2>
-                        <p>Active Infrastructure Governance</p>
+                        <p>Version 0.073</p>
                     </div>
                     <div style="width:100%;max-width:540px;">
                     <div class="home-ai-box" id="homeAiBox">
@@ -6130,7 +6120,7 @@
                     <div class="container">
                         <div class="header">
                             <h1>Active Infrastructure Governance OS</h1>
-                            <p>Active Infrastructure Governance</p>
+                            <p>Version 0.073</p>
                         </div>
                         <div class="content">
             <!-- Dashboard Tab -->
@@ -7535,6 +7525,7 @@
             peoplePageSize:   20,
             // 6. Tenant Organisations (auto-populated from People data)
             tenantOrgs:       [],
+            activeTenantOrg:  '',
             // 7. Roles (auto-populated from People data)
             roles:            []
         };
@@ -7553,6 +7544,63 @@
         }
 
         // Rebuild all <select> dropdowns that reference configurable lists
+        // Update the active org badge in the top bar
+        function updateActiveOrgBadge() {
+            const badge = document.getElementById('activeOrgBadge');
+            if (!badge) return;
+            const org = NEXUS_CONFIG.activeTenantOrg || '';
+            if (org) {
+                badge.textContent = '🏢 ' + org;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // Rebuild the Active Organisation <select> from the current textarea content
+        function refreshActiveTenantOrgSelect(selectedValue) {
+            const sel = document.getElementById('cfg_activeTenantOrg');
+            if (!sel) return;
+            const textarea = document.getElementById('cfg_tenantOrgs');
+            const orgs = textarea
+                ? textarea.value.split('\n').map(s => s.trim()).filter(Boolean)
+                : (NEXUS_CONFIG.tenantOrgs || []);
+            const current = selectedValue !== undefined ? selectedValue : sel.value;
+            sel.innerHTML = '<option value="">— None (show all people) —</option>' +
+                orgs.map(o => `<option value="${o}"${o === current ? ' selected' : ''}>${o}</option>`).join('');
+        }
+
+        // Returns people names filtered by the active org (falls back to teamMembers if none set)
+        function getActivePeopleNames() {
+            const activeOrg = NEXUS_CONFIG.activeTenantOrg || '';
+            const people    = window._peopleData || [];
+            const orgKey    = window._peopleOrgColKey;
+
+            if (activeOrg && people.length && orgKey) {
+                const getField = (row, keys) => {
+                    for (const k of keys) {
+                        const found = Object.keys(row).find(rk => rk.trim().toLowerCase() === k.toLowerCase());
+                        if (found && row[found] != null) {
+                            const v = String(row[found]).trim();
+                            if (v) return v;
+                        }
+                    }
+                    return '';
+                };
+                return people
+                    .filter(row => String(row[orgKey] || '').trim() === activeOrg)
+                    .map(row => {
+                        const first = getField(row, ['first name','firstname','given name','fname']);
+                        const last  = getField(row, ['surname','last name','lastname','family name','lname']);
+                        const full  = [first, last].filter(Boolean).join(' ');
+                        return full;
+                    })
+                    .filter(name => name.replace(/\s/g, '').length > 0);
+            }
+            // Fallback: all team members (filter out any blank entries)
+            return (NEXUS_CONFIG.teamMembers || []).filter(n => n && n.trim().length > 0);
+        }
+
         function populateConfigDropdowns() {
             const cfg = NEXUS_CONFIG;
 
@@ -7573,20 +7621,18 @@
                     cfg.riskCategories.map(c => `<option${cur===c?' selected':''}>${c}</option>`).join('');
             }
 
-            // ── Team Members (Risk Owners) ───────────────────────────────
-            const ownerSelects = ['m_owner','riskRole'];
+            // ── Team Members (Risk Owners) — filtered by active org ──────
+            const activeNames = getActivePeopleNames();
+            const ownerSelects = ['m_owner','riskRole','e_owner','ap_owner','vr_reviewer'];
             ownerSelects.forEach(function(id) {
                 const el = document.getElementById(id);
                 if (!el) return;
                 const cur = el.value;
                 el.innerHTML = '<option value="">Select…</option>' +
-                    cfg.teamMembers.map(o => `<option value="${o}"${cur===o?' selected':''}>${o}</option>`).join('');
+                    activeNames.map(o => `<option value="${o}"${cur===o?' selected':''}>${o}</option>`).join('');
             });
-            // Edit modal datalist
-            const ownerList = document.getElementById('e_owner_list');
-            if (ownerList) {
-                ownerList.innerHTML = cfg.teamMembers.map(o => `<option>${o}</option>`).join('');
-            }
+            // Sync the active org badge in the top bar
+            updateActiveOrgBadge();
 
             // ── Likelihood ───────────────────────────────────────────────
             const likeSelects = ['m_likelihood','e_likelihood','aiLikelihoodSel'];
@@ -15208,6 +15254,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             // Tenant Organisations (part of Section 1)
             const tenantEl = document.getElementById('cfg_tenantOrgs');
             if (tenantEl) tenantEl.value = (cfg.tenantOrgs || []).join('\n');
+            refreshActiveTenantOrgSelect(cfg.activeTenantOrg);
             // Roles (part of Section 1)
             const rolesEl = document.getElementById('cfg_roles');
             if (rolesEl) rolesEl.value = (cfg.roles || []).join('\n');
@@ -15221,6 +15268,8 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                 .split('\n').map(s => s.trim()).filter(Boolean);
             const tenantEl = document.getElementById('cfg_tenantOrgs');
             if (tenantEl) cfg.tenantOrgs = tenantEl.value.split('\n').map(s => s.trim()).filter(Boolean);
+            const activeOrgEl = document.getElementById('cfg_activeTenantOrg');
+            if (activeOrgEl) cfg.activeTenantOrg = activeOrgEl.value;
             const rolesEl = document.getElementById('cfg_roles');
             if (rolesEl) cfg.roles = rolesEl.value.split('\n').map(s => s.trim()).filter(Boolean);
             ['customer','investor','finance','technology','operations'].forEach(function(k) {
@@ -15490,8 +15539,15 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                                 Tenant Organisations
                                 <button onclick="refreshTenantOrgsFromData()" style="font-size:0.72em;background:#e8f4fd;color:#2471a3;border:1px solid #b3d7f0;border-radius:5px;padding:2px 8px;cursor:pointer;font-weight:600;">↻ Refresh from People Data</button>
                             </label>
-                            <textarea id="cfg_tenantOrgs" class="cfg-textarea" rows="6"></textarea>
+                            <textarea id="cfg_tenantOrgs" class="cfg-textarea" rows="6" oninput="refreshActiveTenantOrgSelect()"></textarea>
                             <div class="cfg-hint">One organisation per line. Auto-populated from the Organisation column in the People tab. Powers the Org filter on the People ribbon.</div>
+                        </div>
+                        <div class="cfg-field">
+                            <label class="cfg-label">Active Organisation</label>
+                            <select id="cfg_activeTenantOrg" class="cfg-input" style="width:100%;">
+                                <option value="">— None (show all people) —</option>
+                            </select>
+                            <div class="cfg-hint">Sets which organisation's people appear in Owner, Reviewer, and Actionee dropdowns across the register and modals.</div>
                         </div>
                         <div class="cfg-field">
                             <label class="cfg-label" style="display:flex;align-items:center;justify-content:space-between;">
