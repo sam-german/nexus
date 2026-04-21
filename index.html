@@ -2852,6 +2852,49 @@
         #apLockedMsg .ap-lock-icon { font-size: 2.4em; margin-bottom: 12px; }
         #apLockedMsg p { font-size: 0.9em; line-height: 1.6; max-width: 320px; }
 
+        /* ── Bowtie View ── */
+        .bowtie-section { padding: 10px 0 0; }
+        .bowtie-nav-bar {
+            display: flex; align-items: center; gap: 12px;
+            padding: 8px 14px 10px; background: #f5f7fa;
+            border-bottom: 1px solid #dde3ea; flex-wrap: wrap;
+        }
+        .bowtie-counter {
+            font-size: 0.8em; font-weight: 700; color: #5a6a80;
+            letter-spacing: 0.04em; text-transform: uppercase;
+        }
+        .bowtie-risk-id {
+            font-size: 0.85em; font-weight: 600; color: #e74c3c;
+            margin-left: 6px;
+        }
+        .bowtie-nav-btn {
+            background: #04122a; color: #fff; border: none;
+            border-radius: 6px; padding: 5px 14px; cursor: pointer;
+            font-size: 0.82em; font-weight: 600;
+        }
+        .bowtie-nav-btn:disabled { opacity: 0.35; cursor: default; }
+        .bowtie-nav-btn:not(:disabled):hover { background: #0a2a50; }
+        .bowtie-svg-wrap { padding: 10px 14px 6px; overflow-x: auto; }
+        .bowtie-empty {
+            padding: 50px 20px; text-align: center;
+            color: #7f8c8d; font-style: italic; font-size: 0.92em;
+        }
+        .bowtie-details {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; padding: 0 14px 14px;
+        }
+        .bt-detail-card {
+            border-radius: 8px; padding: 10px 14px;
+            border: 1px solid #dde3ea; background: #f8f9fb;
+        }
+        .bt-detail-label {
+            font-size: 0.75em; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.06em; margin-bottom: 5px;
+        }
+        .bt-detail-prev .bt-detail-label { color: #6c3483; }
+        .bt-detail-rec  .bt-detail-label { color: #1a6090; }
+        .bt-detail-text { font-size: 0.84em; color: #3d4a5a; line-height: 1.5; }
+
         /* Tab panels */
         .risk-modal-body {
             overflow-y: auto;
@@ -5658,6 +5701,10 @@
                             <label>Vulnerability</label>
                             <textarea id="e_vulnerability" rows="3"></textarea>
                         </div>
+                        <div class="modal-field full-width">
+                            <label>Consequences <span style="font-weight:400;color:#7f8c8d;font-size:0.85em;">(what happens if this risk materialises)</span></label>
+                            <textarea id="e_consequences" rows="2" placeholder="Describe the expected consequences…"></textarea>
+                        </div>
                         <div class="modal-field">
                             <label>Risk Category <span class="req">*</span></label>
                             <select id="e_category" required>
@@ -5722,8 +5769,12 @@
                 <div class="risk-tab-panel" id="editModalPanel2">
                     <div class="modal-form-grid">
                         <div class="modal-field full-width">
-                            <label>Proposed Mitigation</label>
-                            <textarea id="e_mitigation" rows="2"></textarea>
+                            <label>Preventive Controls <span style="font-weight:400;color:#7f8c8d;font-size:0.85em;">(barriers that stop the risk materialising)</span></label>
+                            <textarea id="e_mitigation" rows="2" placeholder="Describe preventive controls…"></textarea>
+                        </div>
+                        <div class="modal-field full-width">
+                            <label>Recovery Controls <span style="font-weight:400;color:#7f8c8d;font-size:0.85em;">(actions to limit impact once the event occurs)</span></label>
+                            <textarea id="e_recoveryControls" rows="2" placeholder="Describe recovery controls…"></textarea>
                         </div>
                         <div class="modal-field">
                             <label>Mitigation Status</label>
@@ -6164,6 +6215,7 @@
                             <div class="view-dropdown-item" onclick="switchDashView('bprSummary')">📊 BPR Summary</div>
                             <div class="view-dropdown-item" onclick="switchDashView('radar')">📡 Radar</div>
                             <div class="view-dropdown-item" onclick="switchDashView('quadrant')">⊞ Quad Chart</div>
+                            <div class="view-dropdown-item" onclick="switchDashView('bowtie')"><svg width="14" height="12" viewBox="0 0 14 12" style="vertical-align:middle;margin-right:4px;display:inline-block"><polygon points="0,0 5.5,6 0,12" fill="currentColor"/><circle cx="7" cy="6" r="1.4" fill="currentColor"/><polygon points="14,0 8.5,6 14,12" fill="currentColor"/></svg>Bowtie</div>
                         </div>
                     </div>
                     <button class="rbtn rbtn-toggle" id="commentaryToggleBtn" onclick="toggleCommentary()">💬 Auto Comment <span class="toggle-status" id="commentaryStatus" style="margin-left:5px;font-size:10px;background:rgba(0,0,0,0.1);padding:1px 6px;border-radius:8px;">OFF</span></button>
@@ -6431,6 +6483,17 @@
                         </table>
                         <!-- Footer banner — blank placeholder -->
                         <div class="bpr-summary-footer" id="bprSummaryFooter"></div>
+                    </div>
+
+                    <!-- Bowtie View -->
+                    <div class="bowtie-section hidden" id="bowtieSec">
+                        <div class="bowtie-nav-bar" id="bowtieNavBar">
+                            <button class="bowtie-nav-btn" id="bowtiePrev" onclick="stepBowtie(-1)">◀ Prev</button>
+                            <span class="bowtie-counter" id="bowtieCounter">Risk — of —</span>
+                            <button class="bowtie-nav-btn" id="bowtieNext" onclick="stepBowtie(1)">Next ▶</button>
+                            <span class="bowtie-risk-id" id="bowtieRiskId"></span>
+                        </div>
+                        <div class="bowtie-svg-wrap" id="bowtieSvgWrap"></div>
                     </div>
 
                 </div><!-- /.dashboard-layout -->
@@ -7122,6 +7185,7 @@
                             <div class="view-dropdown-item" onclick="switchDashView('bprSummary')">📊 BPR Summary</div>
                             <div class="view-dropdown-item" onclick="switchDashView('radar')">📡 Radar</div>
                             <div class="view-dropdown-item view-dropdown-item-active" onclick="toggleViewDropdown('quadViewDrop')">⊞ Quad Chart</div>
+                            <div class="view-dropdown-item" onclick="switchDashView('bowtie')"><svg width="14" height="12" viewBox="0 0 14 12" style="vertical-align:middle;margin-right:4px;display:inline-block"><polygon points="0,0 5.5,6 0,12" fill="currentColor"/><circle cx="7" cy="6" r="1.4" fill="currentColor"/><polygon points="14,0 8.5,6 14,12" fill="currentColor"/></svg>Bowtie</div>
                         </div>
                     </div>
                     <button class="rbtn rbtn-purple" id="catFilterToggle" onclick="toggleCatPanel()">Show Categories</button>
@@ -13911,12 +13975,16 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             document.getElementById('e_impact').value       = risk.impact || '';
             document.getElementById('e_proximity').value    = parseInt(String(risk.proximity)) || '';
 
+            // Populate Tab 1 extras
+            document.getElementById('e_consequences').value = risk.consequences || '';
+
             // Populate Tab 2
-            document.getElementById('e_mitigation').value       = risk.mitigation || risk.proposedMitigation || '';
-            document.getElementById('e_mitigationStatus').value = risk.mitigationStatus || '';
-            document.getElementById('e_owner').value            = risk.owner || '';
-            document.getElementById('e_actionee').value         = risk.actioneeName || '';
-            document.getElementById('e_comments').value         = risk.comments || '';
+            document.getElementById('e_mitigation').value        = risk.mitigation || risk.proposedMitigation || '';
+            document.getElementById('e_recoveryControls').value  = risk.recoveryControls || '';
+            document.getElementById('e_mitigationStatus').value  = risk.mitigationStatus || '';
+            document.getElementById('e_owner').value             = risk.owner || '';
+            document.getElementById('e_actionee').value          = risk.actioneeName || '';
+            document.getElementById('e_comments').value          = risk.comments || '';
 
             const msg = document.getElementById('editModalMsg');
             if (msg) { msg.className = 'modal-msg'; msg.textContent = ''; }
@@ -14091,7 +14159,9 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                 proximity:        prox,
                 taraThreat:       document.getElementById('e_taraThreat').value.trim(),
                 vulnerability:    document.getElementById('e_vulnerability').value.trim(),
+                consequences:     document.getElementById('e_consequences').value.trim(),
                 mitigation:       document.getElementById('e_mitigation').value.trim(),
+                recoveryControls: document.getElementById('e_recoveryControls').value.trim(),
                 mitigationStatus: mitigationStatus,
                 owner:            document.getElementById('e_owner').value,
                 actioneeName:     document.getElementById('e_actionee').value.trim(),
@@ -14791,6 +14861,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             const trafficLightsSection = document.querySelector('.traffic-lights-section');
             const bprSummarySection    = document.getElementById('bprSummarySection');
             const helicopterSection    = document.getElementById('helicopterSection');
+            const bowtieSec            = document.getElementById('bowtieSec');
             if (!radarSection) return;
 
             // Hide all panels first
@@ -14799,6 +14870,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             if (trafficLightsSection) trafficLightsSection.classList.add('hidden');
             if (bprSummarySection)    bprSummarySection.classList.add('hidden');
             if (helicopterSection)    helicopterSection.classList.add('hidden');
+            if (bowtieSec)            bowtieSec.classList.add('hidden');
 
             if (view === 'helicopter') {
                 if (helicopterSection) helicopterSection.classList.remove('hidden');
@@ -14809,6 +14881,9 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                 if (bprSummarySection) bprSummarySection.classList.remove('hidden');
                 updateBPRSummaryView();
                 if (_commentaryVisible) refreshCommentary();
+            } else if (view === 'bowtie') {
+                if (bowtieSec) bowtieSec.classList.remove('hidden');
+                renderBowtieView();
             } else {
                 // 'summary' (default)
                 if (categoriesSection)    categoriesSection.classList.remove('hidden');
@@ -14816,6 +14891,234 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                 if (_commentaryVisible) refreshCommentary();
             }
         }
+
+        // ── Bowtie View ──────────────────────────────────────────────────────────
+        let _bowtieRisks = [];
+        let _bowtieIdx   = 0;
+
+        function _getScanQualifyingRisks() {
+            const c = NEXUS_CONFIG;
+            const impMin  = c.scanFlagImpactMin    ?? 5;
+            const proxMax = c.scanFlagProximityMax ?? 2;
+            return (risks || []).filter(function(r) {
+                if (c.scanFlagRed          && r.rag === 'red')                             return true;
+                if (c.scanFlagSAReview     && r.proximity === 5)                           return true;
+                if (proxMax >= 0           && r.proximity <= proxMax)                      return true;
+                if (impMin  <= 5           && r.impact >= impMin)                          return true;
+                if (c.scanFlagNoMitigation && (r.mitigationStatus || '').includes('None')) return true;
+                return false;
+            });
+        }
+
+        function renderBowtieView() {
+            _bowtieRisks = _getScanQualifyingRisks();
+            _bowtieIdx   = Math.min(_bowtieIdx, Math.max(_bowtieRisks.length - 1, 0));
+            _renderBowtieCard();
+        }
+
+        function stepBowtie(dir) {
+            _bowtieIdx = Math.max(0, Math.min(_bowtieRisks.length - 1, _bowtieIdx + dir));
+            _renderBowtieCard();
+        }
+
+        function _renderBowtieCard() {
+            const wrap    = document.getElementById('bowtieSvgWrap');
+            const counter = document.getElementById('bowtieCounter');
+            const idEl    = document.getElementById('bowtieRiskId');
+            const prevBtn = document.getElementById('bowtiePrev');
+            const nextBtn = document.getElementById('bowtieNext');
+            if (!wrap) return;
+
+            if (!_bowtieRisks.length) {
+                wrap.innerHTML = '<div class="bowtie-empty">No qualifying risks found. Adjust scan criteria in Settings or ensure risks are synced.</div>';
+                if (counter) counter.textContent = 'No qualifying risks';
+                if (idEl)    idEl.textContent    = '';
+                if (prevBtn) prevBtn.disabled    = true;
+                if (nextBtn) nextBtn.disabled    = true;
+                return;
+            }
+
+            const risk = _bowtieRisks[_bowtieIdx];
+            const n    = _bowtieRisks.length;
+            const i    = _bowtieIdx + 1;
+
+            if (counter) counter.textContent = 'Risk ' + i + ' of ' + n;
+            if (prevBtn) prevBtn.disabled = (_bowtieIdx === 0);
+            if (nextBtn) nextBtn.disabled = (_bowtieIdx === n - 1);
+
+            // Risk ID / date header
+            const sid = (function() {
+                const s = String(risk.id || '');
+                const m = s.match(/^(.*)-(\d{8})$/);
+                if (m) {
+                    const y=m[2].slice(0,4),mo=m[2].slice(4,6),d=m[2].slice(6,8);
+                    const fmt = NEXUS_CONFIG.dateFormat || 'DD/MM/YYYY';
+                    return m[1] + '  \u2022  ' + (fmt.startsWith('MM') ? mo+'/'+d+'/'+y : d+'/'+mo+'/'+y);
+                }
+                return s;
+            })();
+            if (idEl) idEl.textContent = sid;
+
+            // ── Helpers ──────────────────────────────────────────────────────
+            function esc(t) { return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+            function splitBullets(text) {
+                const lines = String(text||'').split(/\n+/).map(function(l){return l.trim();}).filter(function(l){return l.length>0;});
+                return lines.length ? lines : ['\u2014'];
+            }
+
+            function wrapWords(text, maxChars) {
+                const words = String(text||'').trim().split(/\s+/);
+                const lines = []; let cur = '';
+                for (var wi=0; wi<words.length; wi++) {
+                    const w = words[wi];
+                    if (cur.length && (cur+' '+w).length > maxChars) { lines.push(cur); cur = w; }
+                    else { cur = cur ? cur+' '+w : w; }
+                }
+                if (cur) lines.push(cur);
+                return lines.length ? lines : ['\u2014'];
+            }
+
+            // Build SVG <text> bullet items; returns a string of SVG elements
+            function svgBullets(items, x, startY, lineH, maxChars, fill, maxItems, fontSize) {
+                var out = ''; var y = startY;
+                var fs = fontSize || 11;
+                var lim = Math.min(items.length, maxItems || 999);
+                for (var ci=0; ci<lim; ci++) {
+                    var wrapped = wrapWords(items[ci], maxChars);
+                    out += '<text x="'+x+'" y="'+y+'" font-size="'+fs+'" fill="'+fill+'" font-family="system-ui,sans-serif">\u2022 '+esc(wrapped[0])+'</text>';
+                    y += lineH;
+                    if (wrapped.length > 1) {
+                        out += '<text x="'+(x+10)+'" y="'+y+'" font-size="'+fs+'" fill="'+fill+'" font-family="system-ui,sans-serif" opacity="0.88">'+esc(wrapped[1])+'</text>';
+                        y += lineH;
+                    }
+                }
+                return out;
+            }
+
+            // ── Data ─────────────────────────────────────────────────────────
+            var threatBullets = splitBullets(risk.taraThreat || risk['TARA Threat'] || '');
+            var vulnBullets   = splitBullets(risk.vulnerability || '');
+            var prevBullets   = splitBullets(risk.mitigation || risk.proposedMitigation || '');
+            var recBullets    = splitBullets(risk.recoveryControls || '');
+            var conseqBullets = splitBullets(risk.consequences || '');
+            var descWords     = wrapWords(risk.description || '\u2014', 20);
+
+            var ragColor = risk.rag==='red'?'#c0392b':risk.rag==='amber'?'#e67e22':'#27ae60';
+            var ragLabel = (risk.rag||'unknown').toUpperCase();
+            var score    = risk.riskScore!=null ? String(risk.riskScore) : '\u2014';
+
+            // ── Layout ───────────────────────────────────────────────────────
+            var W=1100, H=420;
+            var PURPLE='#7852a8', TEAL='#177a8a', DARK='#1a2240';
+            var LBW=265, RBW=265;
+            var RBX=W-RBW;              // 835
+            var ARM_W=180;              // each arm width
+            var CC_X=LBW+ARM_W;        // 445
+            var CC_W=210, CC_H=260;
+            var CC_Y=(H-CC_H)/2;        // 80
+            var ARM_OPEN=45;
+            var MID_Y=H/2;              // 210
+
+            // Arm polygon point strings
+            // Left arm's wide edge extends 8px into the box to close the rounded-corner gap
+            var LA_LX = LBW-8;   // 257
+            var RA_RX = RBX+8;   // 843
+            var LA_PTS=LA_LX+',0 '+LA_LX+','+H+' '+CC_X+','+(MID_Y+ARM_OPEN)+' '+CC_X+','+(MID_Y-ARM_OPEN);
+            var RA_PTS=(CC_X+CC_W)+','+(MID_Y-ARM_OPEN)+' '+(CC_X+CC_W)+','+(MID_Y+ARM_OPEN)+' '+RA_RX+','+H+' '+RA_RX+',0';
+
+            // Diagonal label geometry
+            // Left arm actual top edge: (LA_LX,0) -> (CC_X, MID_Y-ARM_OPEN) = (257,0) -> (445,165)
+            var leftAngle  = Math.atan2(MID_Y-ARM_OPEN, CC_X-LA_LX) * 180/Math.PI;  // ~41.2
+            // Offset label ~28px perpendicular into arm body (perp inward unit: (-0.660, 0.751))
+            var leftMX     = Math.round((LA_LX+CC_X)/2 - 0.660*28);   // ~333
+            var leftMY     = Math.round((MID_Y-ARM_OPEN)/2 + 0.751*28); // ~104
+            // Right arm actual top edge: (CC_X+CC_W, MID_Y-ARM_OPEN) -> (RA_RX,0) = (655,165) -> (843,0)
+            var rightAngle = Math.atan2(-(MID_Y-ARM_OPEN), RA_RX-(CC_X+CC_W)) * 180/Math.PI; // ~-41.2
+            // Mirror offset: perp inward unit: (+0.660, +0.751)
+            var rightMX    = Math.round((CC_X+CC_W+RA_RX)/2 + 0.660*28); // ~767
+            var rightMY    = Math.round((MID_Y-ARM_OPEN)/2 + 0.751*28);  // ~104
+
+            // ── Content strings ──────────────────────────────────────────────
+            // Left box: threats + vulnerabilities
+            var lbPad = 14;
+            var lbSvg = '<text x="'+lbPad+'" y="50" font-size="9" font-weight="700" letter-spacing="0.8" fill="#d8c4f4" font-family="system-ui,sans-serif">TARA THREAT</text>';
+            lbSvg += svgBullets(threatBullets, lbPad, 66, 19, 17, '#f0eaf8', 4);
+            var afterThreatY = 66 + Math.min(threatBullets.length, 4) * 19;
+            var showVuln = !(vulnBullets.length===1 && vulnBullets[0]==='\u2014');
+            if (showVuln) {
+                lbSvg += '<text x="'+lbPad+'" y="'+(afterThreatY+16)+'" font-size="9" font-weight="700" letter-spacing="0.8" fill="#d8c4f4" font-family="system-ui,sans-serif">VULNERABILITY</text>';
+                lbSvg += svgBullets(vulnBullets, lbPad, afterThreatY+33, 19, 17, '#f0eaf8', 4);
+            }
+
+            // Left arm: preventive controls (placed in lower body of arm)
+            var laSvg = svgBullets(prevBullets, LBW+16, 180, 22, 14, '#ede0ff', 5, 10);
+
+            // Center card: description lines
+            var ccSvg = '';
+            var dLines = descWords.slice(0,5);
+            var dStartY = CC_Y + 52;
+            for (var di=0; di<dLines.length; di++) {
+                ccSvg += '<text x="'+(CC_X+CC_W/2)+'" y="'+(dStartY+di*16)+'" text-anchor="middle" font-size="11" fill="#c0d4f0" font-family="system-ui,sans-serif">'+esc(dLines[di])+'</text>';
+            }
+
+            // Right arm: recovery controls
+            var raSvg = svgBullets(recBullets, CC_X+CC_W+16, 180, 22, 14, '#c8f0f4', 5, 10);
+
+            // Right box: consequences
+            var rbSvg = svgBullets(conseqBullets, RBX+lbPad, 52, 20, 17, '#cff0f5', 8);
+
+            // ── SVG ──────────────────────────────────────────────────────────
+            var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;font-family:system-ui,sans-serif;min-width:700px">'
+                + '<defs>'
+                +   '<clipPath id="btLBox"><rect x="1" y="36" width="'+(LBW-2)+'" height="'+(H-38)+'"/></clipPath>'
+                +   '<clipPath id="btLArm"><polygon points="'+LA_PTS+'"/></clipPath>'
+                +   '<clipPath id="btCC"><rect x="'+(CC_X+2)+'" y="'+(CC_Y+32)+'" width="'+(CC_W-4)+'" height="'+(CC_H-70)+'"/></clipPath>'
+                +   '<clipPath id="btRArm"><polygon points="'+RA_PTS+'"/></clipPath>'
+                +   '<clipPath id="btRBox"><rect x="'+(RBX+2)+'" y="36" width="'+(RBW-2)+'" height="'+(H-38)+'"/></clipPath>'
+                + '</defs>'
+
+                // Background
+                + '<rect width="'+W+'" height="'+H+'" fill="#f4f5f9" rx="14"/>'
+
+                // Left box base
+                + '<rect x="0" y="0" width="'+LBW+'" height="'+H+'" rx="12" fill="'+PURPLE+'"/>'
+                + '<text x="'+(LBW/2)+'" y="23" text-anchor="middle" font-size="9" font-weight="700" letter-spacing="1.2" fill="#e0cffc" font-family="system-ui,sans-serif">THREATS &amp; CAUSES</text>'
+                + '<line x1="12" y1="33" x2="'+(LBW-12)+'" y2="33" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>'
+                + '<g clip-path="url(#btLBox)">'+lbSvg+'</g>'
+
+                // Left arm (same purple — seamlessly joins left box)
+                + '<polygon points="'+LA_PTS+'" fill="'+PURPLE+'"/>'
+                + '<text transform="translate('+leftMX.toFixed(1)+','+leftMY.toFixed(1)+') rotate('+leftAngle.toFixed(1)+')" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="700" letter-spacing="2" fill="rgba(255,255,255,0.88)" font-family="system-ui,sans-serif">PREVENTIVE CONTROLS</text>'
+                + '<g clip-path="url(#btLArm)">'+laSvg+'</g>'
+
+                // Center card
+                + '<rect x="'+CC_X+'" y="'+CC_Y+'" width="'+CC_W+'" height="'+CC_H+'" rx="10" fill="'+DARK+'" stroke="'+ragColor+'" stroke-width="2.5"/>'
+                + '<rect x="'+CC_X+'" y="'+CC_Y+'" width="'+CC_W+'" height="30" rx="10" fill="'+ragColor+'"/>'
+                + '<rect x="'+CC_X+'" y="'+(CC_Y+20)+'" width="'+CC_W+'" height="10" fill="'+ragColor+'"/>'
+                + '<text x="'+(CC_X+CC_W/2)+'" y="'+(CC_Y+20)+'" text-anchor="middle" font-size="8" font-weight="700" letter-spacing="2" fill="#fff" font-family="system-ui,sans-serif">TOP EVENT</text>'
+                + '<g clip-path="url(#btCC)">'+ccSvg+'</g>'
+                + '<text x="'+(CC_X+CC_W/2)+'" y="'+(CC_Y+CC_H-47)+'" text-anchor="middle" font-size="38" font-weight="800" fill="#fff" font-family="system-ui,sans-serif">'+esc(score)+'</text>'
+                + '<text x="'+(CC_X+CC_W/2)+'" y="'+(CC_Y+CC_H-28)+'" text-anchor="middle" font-size="8" letter-spacing="1" fill="#7a9abb" font-family="system-ui,sans-serif">RISK SCORE</text>'
+                + '<rect x="'+(CC_X+CC_W/2-32)+'" y="'+(CC_Y+CC_H-20)+'" width="64" height="20" rx="5" fill="'+ragColor+'"/>'
+                + '<text x="'+(CC_X+CC_W/2)+'" y="'+(CC_Y+CC_H-6)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="system-ui,sans-serif">'+esc(ragLabel)+'</text>'
+
+                // Right arm (teal — seamlessly joins right box)
+                + '<polygon points="'+RA_PTS+'" fill="'+TEAL+'"/>'
+                + '<text transform="translate('+rightMX.toFixed(1)+','+rightMY.toFixed(1)+') rotate('+rightAngle.toFixed(1)+')" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="700" letter-spacing="2" fill="rgba(255,255,255,0.88)" font-family="system-ui,sans-serif">RECOVERY CONTROLS</text>'
+                + '<g clip-path="url(#btRArm)">'+raSvg+'</g>'
+
+                // Right box (drawn after arm so it covers arm right edge cleanly)
+                + '<rect x="'+RBX+'" y="0" width="'+RBW+'" height="'+H+'" rx="12" fill="'+TEAL+'"/>'
+                + '<text x="'+(RBX+RBW/2)+'" y="23" text-anchor="middle" font-size="9" font-weight="700" letter-spacing="1.2" fill="#c0ecf4" font-family="system-ui,sans-serif">CONSEQUENCES</text>'
+                + '<line x1="'+(RBX+12)+'" y1="33" x2="'+(RBX+RBW-12)+'" y2="33" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>'
+                + '<g clip-path="url(#btRBox)">'+rbSvg+'</g>'
+
+                + '</svg>';
+
+            wrap.innerHTML = svg;
+        }
+        // ── End Bowtie View ───────────────────────────────────────────────────────
 
         // ── BPR Summary view helpers ──
 
