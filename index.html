@@ -5492,6 +5492,87 @@
             0%, 100% { filter: drop-shadow(0 0 28px rgba(245,158,11,0.5))  drop-shadow(0 0 60px rgba(245,158,11,0.25)); }
             50%       { filter: drop-shadow(0 0 42px rgba(245,158,11,0.78)) drop-shadow(0 0 85px rgba(245,158,11,0.4)); }
         }
+        /* ===== NEXUS ACCESS MODAL ===== */
+        .nexus-access-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            background: rgba(4,12,24,0.82); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center;
+        }
+        .nexus-access-overlay.open { display: flex; }
+        .nexus-access-modal {
+            background: linear-gradient(160deg, #0d1b2e 0%, #0a1520 100%);
+            border: 1px solid rgba(0,212,200,0.28);
+            border-radius: 20px; padding: 38px 36px 30px;
+            width: 340px; max-width: 92vw;
+            box-shadow: 0 28px 72px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.06);
+            animation: accessIn 0.28s cubic-bezier(.22,.68,0,1.2);
+        }
+        @keyframes accessIn {
+            from { opacity: 0; transform: scale(0.9) translateY(16px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .nexus-access-wordmark {
+            font-size: 24px; font-weight: 900; letter-spacing: 4px;
+            color: #fff; text-align: center; margin-bottom: 3px;
+        }
+        .nexus-access-wordmark .nx-x { color: #00d4c8; }
+        .nexus-access-subtitle {
+            text-align: center; color: rgba(255,255,255,0.38);
+            font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+            margin-bottom: 28px;
+        }
+        .nexus-access-divider {
+            border: none; border-top: 1px solid rgba(255,255,255,0.08);
+            margin: 0 0 22px;
+        }
+        .nexus-access-label {
+            font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 1.2px;
+            text-transform: uppercase; margin-bottom: 10px; text-align: center;
+        }
+        .nexus-access-input {
+            width: 100%; box-sizing: border-box;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 12px; padding: 14px 16px;
+            color: #fff; font-size: 26px; letter-spacing: 8px;
+            text-align: center; outline: none;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .nexus-access-input::placeholder { letter-spacing: 4px; font-size: 20px; color: rgba(255,255,255,0.15); }
+        .nexus-access-input:focus { border-color: rgba(0,212,200,0.55); background: rgba(0,212,200,0.04); }
+        .nexus-access-input.na-error {
+            border-color: #e74c3c;
+            animation: accessShake 0.38s ease;
+        }
+        @keyframes accessShake {
+            0%,100% { transform: translateX(0); }
+            18%     { transform: translateX(-7px); }
+            36%     { transform: translateX(7px); }
+            54%     { transform: translateX(-5px); }
+            72%     { transform: translateX(5px); }
+        }
+        .nexus-access-error {
+            color: #e74c3c; font-size: 11px; text-align: center;
+            margin-top: 9px; min-height: 15px; letter-spacing: 0.3px;
+        }
+        .nexus-access-welcome {
+            text-align: center; color: #00d4c8; font-size: 14px;
+            font-weight: 600; margin-top: 10px; display: none; letter-spacing: 0.5px;
+        }
+        .nexus-access-btn {
+            width: 100%; margin-top: 20px;
+            background: linear-gradient(135deg, #00d4c8 0%, #009e98 100%);
+            border: none; border-radius: 12px; padding: 14px;
+            color: #05121e; font-size: 13px; font-weight: 800;
+            letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
+            transition: opacity 0.18s, transform 0.15s;
+        }
+        .nexus-access-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+        .nexus-access-hint {
+            text-align: center; color: rgba(255,255,255,0.16);
+            font-size: 10px; margin-top: 14px; letter-spacing: 0.5px;
+        }
+        /* ===== END NEXUS ACCESS MODAL ===== */
     </style>
 </head>
 <body>
@@ -5944,7 +6025,25 @@
             <div class="nexus-landing-divider"></div>
             <div class="nexus-landing-tagline">When Governance Matters</div>
             <button class="nexus-landing-btn" id="nexusExploreBtn"
-                onclick="enterApp()" title="Explore Nexus">Explore Nexus</button>
+                onclick="enterApp()" title="Log In">Log In</button>
+        </div>
+    </div>
+
+    <!-- ═══════════ ACCESS CODE MODAL ═══════════ -->
+    <div class="nexus-access-overlay" id="nexusAccessOverlay">
+        <div class="nexus-access-modal">
+            <div class="nexus-access-wordmark">NE<span class="nx-x">X</span>US</div>
+            <div class="nexus-access-subtitle">Access Verification</div>
+            <hr class="nexus-access-divider"/>
+            <div class="nexus-access-label">Enter your 6-digit access code</div>
+            <input type="password" inputmode="numeric" class="nexus-access-input"
+                   id="nexusAccessInput" maxlength="6" placeholder="••••••"
+                   oninput="this.value=this.value.replace(/\D/g,'')"
+                   onkeydown="if(event.key==='Enter')submitAccessCode()"/>
+            <div class="nexus-access-error" id="nexusAccessError"></div>
+            <div class="nexus-access-welcome" id="nexusAccessWelcome"></div>
+            <button class="nexus-access-btn" onclick="submitAccessCode()">Verify &amp; Enter</button>
+            <div class="nexus-access-hint">Code changes daily &nbsp;·&nbsp; Contact your administrator</div>
         </div>
     </div>
 
@@ -6027,13 +6126,14 @@
             </div>
             <div class="app-topbar-title">
                 <h1>Active Infrastructure Governance OS</h1>
-                <p>Version 0.074</p>
+                <p>Version 0.080</p>
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;margin-right:4px;gap:2px;">
                 <span id="activeOrgBadge" style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:500;letter-spacing:0.3px;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;display:none;"></span>
             </div>
-            <button id="loginBtn" title="Login / Account" style="background:none;border:none;color:white;cursor:pointer;padding:8px;border-radius:6px;display:flex;align-items:center;gap:8px;font-size:13px;font-family:inherit;transition:background 0.2s;width:90px;justify-content:flex-end;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='none'">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+            <button id="loginBtn" title="Login / Account" onclick="_showAccessModal()" style="background:none;border:none;color:white;cursor:pointer;padding:8px;border-radius:6px;display:flex;align-items:center;gap:6px;font-size:12px;font-family:inherit;transition:background 0.2s;justify-content:flex-end;white-space:nowrap;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='none'">
+                <span id="loginBtnLabel" style="opacity:0.7;font-size:11px;letter-spacing:0.3px;"></span>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
             </button>
         </div>
 
@@ -6085,7 +6185,7 @@
                 <div class="home-page" id="homePage">
                     <div class="home-welcome">
                         <h2>Welcome to Nexus</h2>
-                        <p>Version 0.074</p>
+                        <p>Version 0.080</p>
                     </div>
                     <div style="width:100%;max-width:540px;">
                     <div class="home-ai-box" id="homeAiBox">
@@ -6192,7 +6292,7 @@
                     <div class="container">
                         <div class="header">
                             <h1>Active Infrastructure Governance OS</h1>
-                            <p>Version 0.074</p>
+                            <p>Version 0.080</p>
                         </div>
                         <div class="content">
             <!-- Dashboard Tab -->
@@ -9832,6 +9932,13 @@
                 'vulnerability': 'vulnerability',
                 'proposed mitigation': 'mitigation',
                 'mitigation': 'mitigation',
+                'preventive controls': 'mitigation',
+                'p-controls': 'mitigation',
+                'p controls': 'mitigation',
+                'consequences': 'consequences',
+                'recovery controls': 'recoveryControls',
+                'r-controls': 'recoveryControls',
+                'r controls': 'recoveryControls',
                 'mitigation status': 'mitigationStatus',
                 'risk owner': 'owner',
                 'owner': 'owner',
@@ -11117,8 +11224,16 @@
             }
         }
 
-        // Start landing canvas on load
-        window.addEventListener('DOMContentLoaded', () => initNexusCanvas('nexusBgCanvas'));
+        // Start landing canvas on load; auto-skip landing page if session is still valid today
+        window.addEventListener('DOMContentLoaded', () => {
+            initNexusCanvas('nexusBgCanvas');
+            const existingUser = _checkSession();
+            if (existingUser) {
+                _updateLoginBadge(existingUser);
+                // Brief pause so the landing canvas fires up, then transition
+                setTimeout(_doEnterApp, 300);
+            }
+        });
 
         // ── Overview panel helpers ──
         let _currentPanel = null;
@@ -11199,32 +11314,125 @@
             }
         }
 
-        // ── From landing page: show overview instead of app directly ──
+        // ── Access control ────────────────────────────────────────────────────
+        const _NEXUS_USERS       = { '1167': 'Sam', '5564': 'Alston', '9090': 'Guest' };
+        const _NEXUS_SESSION_KEY = 'nexusAccessSession';
+
+        function _todayKey() {
+            const d = new Date();
+            return d.getFullYear() + '-' +
+                   String(d.getMonth()+1).padStart(2,'0') + '-' +
+                   String(d.getDate()).padStart(2,'0');
+        }
+        function _todayDD() { return String(new Date().getDate()).padStart(2,'0'); }
+
+        function _validateCode(code) {
+            if (!/^\d{6}$/.test(String(code))) return null;
+            const dd   = code.slice(0, 2);
+            const nnnn = code.slice(2);
+            if (dd !== _todayDD()) return null;
+            return _NEXUS_USERS[nnnn] || null;
+        }
+
+        function _checkSession() {
+            try {
+                const s = JSON.parse(localStorage.getItem(_NEXUS_SESSION_KEY) || '{}');
+                return (s.date === _todayKey() && s.userName) ? s.userName : null;
+            } catch(e) { return null; }
+        }
+
+        function _saveSession(userName) {
+            localStorage.setItem(_NEXUS_SESSION_KEY, JSON.stringify({ date: _todayKey(), userName }));
+            _updateLoginBadge(userName);
+        }
+
+        function _updateLoginBadge(userName) {
+            const lbl = document.getElementById('loginBtnLabel');
+            if (!lbl) return;
+            if (userName) {
+                lbl.textContent = userName;
+                lbl.style.opacity = '0.75';
+            } else {
+                lbl.textContent = '';
+            }
+        }
+
+        // Open the access code modal
+        function _showAccessModal() {
+            const overlay = document.getElementById('nexusAccessOverlay');
+            if (!overlay) return;
+            overlay.classList.add('open');
+            const inp = document.getElementById('nexusAccessInput');
+            if (inp) { inp.value = ''; inp.classList.remove('na-error'); setTimeout(() => inp.focus(), 120); }
+            const err = document.getElementById('nexusAccessError');
+            if (err) err.textContent = '';
+            const wel = document.getElementById('nexusAccessWelcome');
+            if (wel) { wel.textContent = ''; wel.style.display = 'none'; }
+        }
+
+        // Called by the Verify button (and Enter key)
+        function submitAccessCode() {
+            const inp = document.getElementById('nexusAccessInput');
+            const errEl = document.getElementById('nexusAccessError');
+            const welEl = document.getElementById('nexusAccessWelcome');
+            if (!inp) return;
+            const code = inp.value.trim();
+            const userName = _validateCode(code);
+            if (!userName) {
+                if (errEl) errEl.textContent = 'Invalid code — please try again.';
+                inp.classList.remove('na-error');
+                void inp.offsetWidth;          // restart animation
+                inp.classList.add('na-error');
+                inp.value = '';
+                setTimeout(() => inp.focus(), 60);
+                return;
+            }
+            // Valid — persist session and proceed
+            _saveSession(userName);
+            if (errEl) errEl.textContent = '';
+            inp.style.display = 'none';
+            if (welEl) { welEl.textContent = 'Welcome, ' + userName + ' \u2713'; welEl.style.display = 'block'; }
+            document.querySelector('#nexusAccessOverlay .nexus-access-btn').style.display = 'none';
+            setTimeout(() => {
+                document.getElementById('nexusAccessOverlay').classList.remove('open');
+                inp.style.display = '';
+                document.querySelector('#nexusAccessOverlay .nexus-access-btn').style.display = '';
+                _doEnterApp();
+            }, 1000);
+        }
+
+        // ── From landing page: show access modal if not yet authenticated ──
         function enterApp() {
+            const existingUser = _checkSession();
+            if (existingUser) {
+                // Already logged in today — go straight through
+                _doEnterApp();
+            } else {
+                _showAccessModal();
+            }
+        }
+
+        // The actual landing→overview transition (runs after successful login)
+        function _doEnterApp() {
             const landing = document.getElementById('nexusLanding');
-            const ov = document.getElementById('nexusOverview');
-
-            // Hide the AI input (homePage) immediately so it can't show
-            // through the fading landing page before the overview appears.
+            const ov      = document.getElementById('nexusOverview');
             document.getElementById('homePage').style.display = 'none';
-
-            // Fade landing out
             landing.style.transition = 'opacity 0.5s ease';
-            landing.style.opacity = '0';
+            landing.style.opacity    = '0';
             setTimeout(() => {
                 landing.classList.add('hidden');
                 landing.style.cssText = '';
-                // Show overview with direct style control (avoids MutationObserver race)
-                ov.style.display = 'flex';
-                ov.style.opacity = '0';
+                ov.style.display    = 'flex';
+                ov.style.opacity    = '0';
                 ov.style.transition = '';
                 setTimeout(() => {
                     ov.style.transition = 'opacity 0.5s ease';
-                    ov.style.opacity = '1';
+                    ov.style.opacity    = '1';
                     initNexusCanvas('nexusOverviewCanvas');
                 }, 30);
             }, 500);
         }
+        // ── End access control ────────────────────────────────────────────────
         // ==================== END LANDING PAGE ====================
 
 
@@ -14980,20 +15188,37 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             }
 
             // Build SVG <text> bullet items; returns a string of SVG elements
-            function svgBullets(items, x, startY, lineH, maxChars, fill, maxItems, fontSize) {
+            // maxLinesPerItem caps continuation lines per bullet (undefined = unlimited)
+            // textAnchor: 'start' (default) or 'end' — use 'end' for right-aligned mirrored arms
+            function svgBullets(items, x, startY, lineH, maxChars, fill, maxItems, fontSize, maxLinesPerItem, textAnchor) {
                 var out = ''; var y = startY;
                 var fs = fontSize || 11;
                 var lim = Math.min(items.length, maxItems || 999);
+                var lineLim = maxLinesPerItem || 999;
+                var ta = textAnchor || 'start';
+                var taAttr = ta === 'end' ? ' text-anchor="end"' : '';
+                var contX = ta === 'end' ? x - 10 : x + 10;
                 for (var ci=0; ci<lim; ci++) {
                     var wrapped = wrapWords(items[ci], maxChars);
-                    out += '<text x="'+x+'" y="'+y+'" font-size="'+fs+'" fill="'+fill+'" font-family="system-ui,sans-serif">\u2022 '+esc(wrapped[0])+'</text>';
+                    out += '<text x="'+x+'" y="'+y+'" font-size="'+fs+'" fill="'+fill+'"'+taAttr+' font-family="system-ui,sans-serif">\u2022 '+esc(wrapped[0])+'</text>';
                     y += lineH;
-                    if (wrapped.length > 1) {
-                        out += '<text x="'+(x+10)+'" y="'+y+'" font-size="'+fs+'" fill="'+fill+'" font-family="system-ui,sans-serif" opacity="0.88">'+esc(wrapped[1])+'</text>';
+                    for (var wi=1; wi<Math.min(wrapped.length, lineLim); wi++) {
+                        out += '<text x="'+contX+'" y="'+y+'" font-size="'+fs+'" fill="'+fill+'"'+taAttr+' font-family="system-ui,sans-serif" opacity="0.88">'+esc(wrapped[wi])+'</text>';
                         y += lineH;
                     }
                 }
                 return out;
+            }
+
+            // Calculate height consumed by svgBullets (for stacking sections)
+            function bulletsH(items, lineH, maxChars, maxItems, maxLinesPerItem) {
+                var h = 0;
+                var lim = Math.min(items.length, maxItems || 999);
+                var lineLim = maxLinesPerItem || 999;
+                for (var bi=0; bi<lim; bi++) {
+                    h += Math.min(wrapWords(items[bi], maxChars).length, lineLim) * lineH;
+                }
+                return h;
             }
 
             // ── Data ─────────────────────────────────────────────────────────
@@ -15030,29 +15255,31 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             // Diagonal label geometry
             // Left arm actual top edge: (LA_LX,0) -> (CC_X, MID_Y-ARM_OPEN) = (257,0) -> (445,165)
             var leftAngle  = Math.atan2(MID_Y-ARM_OPEN, CC_X-LA_LX) * 180/Math.PI;  // ~41.2
-            // Offset label ~28px perpendicular into arm body (perp inward unit: (-0.660, 0.751))
-            var leftMX     = Math.round((LA_LX+CC_X)/2 - 0.660*28);   // ~333
-            var leftMY     = Math.round((MID_Y-ARM_OPEN)/2 + 0.751*28); // ~104
+            // Place label 20% from the wide (left) end of the top edge, 10px inward
+            // — neatly inside the coloured arm, near the top-outer corner
+            var leftMX     = Math.round(LA_LX + 0.20*(CC_X-LA_LX) - 0.660*10);   // ~288
+            var leftMY     = Math.round(0 + 0.20*(MID_Y-ARM_OPEN) + 0.751*10);    // ~41
             // Right arm actual top edge: (CC_X+CC_W, MID_Y-ARM_OPEN) -> (RA_RX,0) = (655,165) -> (843,0)
             var rightAngle = Math.atan2(-(MID_Y-ARM_OPEN), RA_RX-(CC_X+CC_W)) * 180/Math.PI; // ~-41.2
-            // Mirror offset: perp inward unit: (+0.660, +0.751)
-            var rightMX    = Math.round((CC_X+CC_W+RA_RX)/2 + 0.660*28); // ~767
-            var rightMY    = Math.round((MID_Y-ARM_OPEN)/2 + 0.751*28);  // ~104
+            // Mirror: 25% from wide (right) end, 10px inward
+            // rightMX kept ≤802 so final char clears the right box (starts at x=835)
+            var rightMX    = Math.round(RA_RX + 0.25*(CC_X+CC_W-RA_RX) + 0.660*10); // ~803
+            var rightMY    = Math.round(0 + 0.25*(MID_Y-ARM_OPEN) + 0.751*10);       // ~49
 
             // ── Content strings ──────────────────────────────────────────────
-            // Left box: threats + vulnerabilities
+            // Left box: threats + vulnerabilities (cap at 2 continuation lines per bullet)
             var lbPad = 14;
             var lbSvg = '<text x="'+lbPad+'" y="50" font-size="9" font-weight="700" letter-spacing="0.8" fill="#d8c4f4" font-family="system-ui,sans-serif">TARA THREAT</text>';
-            lbSvg += svgBullets(threatBullets, lbPad, 66, 19, 17, '#f0eaf8', 4);
-            var afterThreatY = 66 + Math.min(threatBullets.length, 4) * 19;
+            lbSvg += svgBullets(threatBullets, lbPad, 66, 16, 24, '#f0eaf8', 3, undefined, 2);
+            var afterThreatY = 66 + bulletsH(threatBullets, 16, 24, 3, 2);
             var showVuln = !(vulnBullets.length===1 && vulnBullets[0]==='\u2014');
             if (showVuln) {
-                lbSvg += '<text x="'+lbPad+'" y="'+(afterThreatY+16)+'" font-size="9" font-weight="700" letter-spacing="0.8" fill="#d8c4f4" font-family="system-ui,sans-serif">VULNERABILITY</text>';
-                lbSvg += svgBullets(vulnBullets, lbPad, afterThreatY+33, 19, 17, '#f0eaf8', 4);
+                lbSvg += '<text x="'+lbPad+'" y="'+(afterThreatY+14)+'" font-size="9" font-weight="700" letter-spacing="0.8" fill="#d8c4f4" font-family="system-ui,sans-serif">VULNERABILITY</text>';
+                lbSvg += svgBullets(vulnBullets, lbPad, afterThreatY+29, 16, 24, '#f0eaf8', 3, undefined, 2);
             }
 
-            // Left arm: preventive controls (placed in lower body of arm)
-            var laSvg = svgBullets(prevBullets, LBW+16, 180, 22, 14, '#ede0ff', 5, 10);
+            // Left arm: preventive controls — wider lines (+1.5cm ≈ +10 chars)
+            var laSvg = svgBullets(prevBullets, 259, 155, 13, 32, '#ede0ff', 3, 9);
 
             // Center card: description lines
             var ccSvg = '';
@@ -15062,11 +15289,12 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                 ccSvg += '<text x="'+(CC_X+CC_W/2)+'" y="'+(dStartY+di*16)+'" text-anchor="middle" font-size="11" fill="#c0d4f0" font-family="system-ui,sans-serif">'+esc(dLines[di])+'</text>';
             }
 
-            // Right arm: recovery controls
-            var raSvg = svgBullets(recBullets, CC_X+CC_W+16, 180, 22, 14, '#c8f0f4', 5, 10);
+            // Right arm: recovery controls — startY aligned to P Controls (155), x unchanged
+            // Right arm: recovery controls — left-aligned at x=686 (mirrors P Controls at x=259)
+            var raSvg = svgBullets(recBullets, CC_X+CC_W+31, 155, 13, 27, '#c8f0f4', 3, 9);
 
-            // Right box: consequences
-            var rbSvg = svgBullets(conseqBullets, RBX+lbPad, 52, 20, 17, '#cff0f5', 8);
+            // Right box: consequences — shifted right by ~60 SVG units (≈1.5cm)
+            var rbSvg = svgBullets(conseqBullets, RBX+lbPad+60, 52, 15, 26, '#cff0f5', 10);
 
             // ── SVG ──────────────────────────────────────────────────────────
             var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;font-family:system-ui,sans-serif;min-width:700px">'
@@ -15089,7 +15317,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
 
                 // Left arm (same purple — seamlessly joins left box)
                 + '<polygon points="'+LA_PTS+'" fill="'+PURPLE+'"/>'
-                + '<text transform="translate('+leftMX.toFixed(1)+','+leftMY.toFixed(1)+') rotate('+leftAngle.toFixed(1)+')" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="700" letter-spacing="2" fill="rgba(255,255,255,0.88)" font-family="system-ui,sans-serif">PREVENTIVE CONTROLS</text>'
+                + '<text transform="translate('+leftMX.toFixed(1)+','+leftMY.toFixed(1)+') rotate('+leftAngle.toFixed(1)+')" text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="700" letter-spacing="0.5" fill="rgba(255,255,255,0.88)" font-family="system-ui,sans-serif">PREVENTIVE CONTROLS</text>'
                 + '<g clip-path="url(#btLArm)">'+laSvg+'</g>'
 
                 // Center card
@@ -15105,7 +15333,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
 
                 // Right arm (teal — seamlessly joins right box)
                 + '<polygon points="'+RA_PTS+'" fill="'+TEAL+'"/>'
-                + '<text transform="translate('+rightMX.toFixed(1)+','+rightMY.toFixed(1)+') rotate('+rightAngle.toFixed(1)+')" text-anchor="middle" dominant-baseline="middle" font-size="10" font-weight="700" letter-spacing="2" fill="rgba(255,255,255,0.88)" font-family="system-ui,sans-serif">RECOVERY CONTROLS</text>'
+                + '<text transform="translate('+rightMX.toFixed(1)+','+rightMY.toFixed(1)+') rotate('+rightAngle.toFixed(1)+')" text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="700" letter-spacing="0.5" fill="rgba(255,255,255,0.88)" font-family="system-ui,sans-serif">RECOVERY CONTROLS</text>'
                 + '<g clip-path="url(#btRArm)">'+raSvg+'</g>'
 
                 // Right box (drawn after arm so it covers arm right edge cleanly)
