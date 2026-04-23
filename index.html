@@ -2731,9 +2731,9 @@
         .risk-modal {
             background: white;
             border-radius: 14px;
-            width: 540px;
+            width: 675px;
             max-width: 95vw;
-            height: 620px;
+            height: 775px;
             max-height: 95vh;
             display: flex;
             flex-direction: column;
@@ -4346,7 +4346,7 @@
         .risk-table td:nth-child(8), .risk-table th:nth-child(8) { width:4%; text-align:center; }
         /* Col 9: Risk Score */
         .risk-table td:nth-child(9), .risk-table th:nth-child(9) { width:5%; text-align:center; }
-        /* Col 10: TARA Threat */
+        /* Col 10: Threat */
         .risk-table td:nth-child(10), .risk-table th:nth-child(10) { width:7%; }
         /* Col 11: Vulnerability */
         .risk-table td:nth-child(11), .risk-table th:nth-child(11) { width:7%; }
@@ -5615,12 +5615,12 @@
                             <textarea id="m_description" required placeholder="Describe the risk clearly and concisely…" rows="3"></textarea>
                         </div>
                         <div class="modal-field">
-                            <label>TARA Threat</label>
-                            <textarea id="m_taraThreat" placeholder="Threat description…" rows="3"></textarea>
+                            <label>Threat</label>
+                            <textarea id="m_taraThreat" placeholder="Threat description…" rows="5"></textarea>
                         </div>
                         <div class="modal-field">
                             <label>Vulnerability</label>
-                            <textarea id="m_vulnerability" placeholder="Vulnerability detail…" rows="3"></textarea>
+                            <textarea id="m_vulnerability" placeholder="Vulnerability detail…" rows="5"></textarea>
                         </div>
                         <div class="modal-field">
                             <label>Risk Category <span class="req">*</span></label>
@@ -5687,7 +5687,7 @@
                     <div class="modal-form-grid">
                         <div class="modal-field full-width">
                             <label>Proposed Mitigation</label>
-                            <textarea id="m_mitigation" placeholder="Describe mitigation actions…" rows="2"></textarea>
+                            <textarea id="m_mitigation" placeholder="Describe mitigation actions…" rows="3"></textarea>
                         </div>
                         <div class="modal-field">
                             <label>Mitigation Status</label>
@@ -5781,16 +5781,16 @@
                             <textarea id="e_description" required rows="3"></textarea>
                         </div>
                         <div class="modal-field">
-                            <label>TARA Threat</label>
-                            <textarea id="e_taraThreat" rows="3"></textarea>
+                            <label>Threat</label>
+                            <textarea id="e_taraThreat" rows="5"></textarea>
                         </div>
                         <div class="modal-field">
                             <label>Vulnerability</label>
-                            <textarea id="e_vulnerability" rows="3"></textarea>
+                            <textarea id="e_vulnerability" rows="5"></textarea>
                         </div>
                         <div class="modal-field full-width">
                             <label>Consequences <span style="font-weight:400;color:#7f8c8d;font-size:0.85em;">(what happens if this risk materialises)</span></label>
-                            <textarea id="e_consequences" rows="2" placeholder="Describe the expected consequences…"></textarea>
+                            <textarea id="e_consequences" rows="3" placeholder="Describe the expected consequences…"></textarea>
                         </div>
                         <div class="modal-field">
                             <label>Risk Category <span class="req">*</span></label>
@@ -5857,11 +5857,11 @@
                     <div class="modal-form-grid">
                         <div class="modal-field full-width">
                             <label>Preventive Controls <span style="font-weight:400;color:#7f8c8d;font-size:0.85em;">(barriers that stop the risk materialising)</span></label>
-                            <textarea id="e_mitigation" rows="2" placeholder="Describe preventive controls…"></textarea>
+                            <textarea id="e_mitigation" rows="3" placeholder="Describe preventive controls…"></textarea>
                         </div>
                         <div class="modal-field full-width">
                             <label>Recovery Controls <span style="font-weight:400;color:#7f8c8d;font-size:0.85em;">(actions to limit impact once the event occurs)</span></label>
-                            <textarea id="e_recoveryControls" rows="2" placeholder="Describe recovery controls…"></textarea>
+                            <textarea id="e_recoveryControls" rows="3" placeholder="Describe recovery controls…"></textarea>
                         </div>
                         <div class="modal-field">
                             <label>Mitigation Status</label>
@@ -6703,8 +6703,8 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="taraThreat">TARA Threat</label>
-                            <input type="text" id="taraThreat" placeholder="Enter TARA threat details...">
+                            <label for="taraThreat">Threat</label>
+                            <input type="text" id="taraThreat" placeholder="Enter threat details...">
                         </div>
                         <div class="form-group">
                             <label for="vulnerability">Vulnerability</label>
@@ -6819,7 +6819,7 @@
                                 <th>Proximity</th>
                                 <th>RAG</th>
                                 <th>Risk Score</th>
-                                <th>TARA Threat</th>
+                                <th>Threat</th>
                                 <th>Vulnerability</th>
                                 <th>Proposed Mitigation</th>
                                 <th>Mitigation Status</th>
@@ -8889,7 +8889,7 @@
                     'Likelihood': risk.likelihood,
                     'Impact': risk.impact,
                     'Proximity': risk.proximity || '',
-                    'TARA Threat': risk.taraThreat || '',
+                    'Threat': risk.taraThreat || '',
                     'Vulnerability': risk.vulnerability || '',
                     'Proposed Mitigation': risk.mitigation || '',
                     'Mitigation Status': risk.mitigationStatus || '',
@@ -12908,7 +12908,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                     <td>${getProximityText(risk.proximity)}</td>
                     <td><span class="risk-badge ${risk.rag}" title="${risk.rag.toUpperCase()}"></span></td>
                     <td><strong>${riskScore}</strong></td>
-                    <td>${tc(risk.taraThreat || risk['TARA Threat'] || '', 30)}</td>
+                    <td>${tc(risk.taraThreat || risk['Threat'] || '', 30)}</td>
                     <td>${tc(risk.vulnerability || '', 30)}</td>
                     <td>${tc(risk.mitigation || risk.proposedMitigation || '', 30)}</td>
                     <td>${tc(stripMitigationNumber(risk.mitigationStatus), 20)}</td>
@@ -13017,7 +13017,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                     return [
                         shortId,
                         r.description, r.category, r.owner,
-                        r.taraThreat || r['TARA Threat'],
+                        r.taraThreat || r['Threat'],
                         r.vulnerability, r.mitigation || r.proposedMitigation,
                         r.strategicPriority, r.mitigationStatus
                     ].some(f => f && String(f).toLowerCase().includes(searchTerm));
@@ -14177,7 +14177,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
 
             // Populate Tab 1
             document.getElementById('e_description').value  = risk.description || '';
-            document.getElementById('e_taraThreat').value   = risk.taraThreat || risk['TARA Threat'] || '';
+            document.getElementById('e_taraThreat').value   = risk.taraThreat || risk['Threat'] || '';
             document.getElementById('e_vulnerability').value= risk.vulnerability || '';
             document.getElementById('e_category').value     = risk.category || '';
             document.getElementById('e_strategic').value    = risk.strategicPriority || '';
@@ -15263,7 +15263,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             }
 
             // ── Data ─────────────────────────────────────────────────────────
-            var threatBullets = splitBullets(risk.taraThreat || risk['TARA Threat'] || '');
+            var threatBullets = splitBullets(risk.taraThreat || risk['Threat'] || '');
             var vulnBullets   = splitBullets(risk.vulnerability || '');
             var prevBullets   = splitBullets(risk.mitigation || risk.proposedMitigation || '');
             var recBullets    = splitBullets(risk.recoveryControls || '');
@@ -15310,7 +15310,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             // ── Content strings ──────────────────────────────────────────────
             // Left box: threats + vulnerabilities (cap at 2 continuation lines per bullet)
             var lbPad = 14;
-            var lbSvg = '<text x="'+lbPad+'" y="50" font-size="9" font-weight="700" letter-spacing="0.8" fill="#d8c4f4" font-family="system-ui,sans-serif">TARA THREAT</text>';
+            var lbSvg = '<text x="'+lbPad+'" y="50" font-size="9" font-weight="700" letter-spacing="0.8" fill="#d8c4f4" font-family="system-ui,sans-serif">THREAT</text>';
             lbSvg += svgBullets(threatBullets, lbPad, 66, 16, 24, '#f0eaf8', 3, undefined, 2);
             var afterThreatY = 66 + bulletsH(threatBullets, 16, 24, 3, 2);
             var showVuln = !(vulnBullets.length===1 && vulnBullets[0]==='\u2014');
