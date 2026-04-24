@@ -2878,7 +2878,32 @@
         }
         .bowtie-nav-btn:disabled { opacity: 0.35; cursor: default; }
         .bowtie-nav-btn:not(:disabled):hover { background: #0a2a50; }
-        .bowtie-svg-wrap { padding: 10px 14px 6px; overflow-x: auto; }
+        .bowtie-svg-wrap { padding: 10px 14px 6px; overflow: hidden; position: relative; }
+
+        /* Bowtie transition — Slide */
+        @keyframes bowtieEnterRight {
+            from { transform: translateX(100vw); }
+            to   { transform: translateX(0); }
+        }
+        @keyframes bowtieEnterLeft {
+            from { transform: translateX(-100vw); }
+            to   { transform: translateX(0); }
+        }
+        .bowtie-slide-in-right {
+            animation: bowtieEnterRight 0.80s cubic-bezier(0, 0, 0.2, 1) both;
+        }
+        .bowtie-slide-in-left {
+            animation: bowtieEnterLeft  0.80s cubic-bezier(0, 0, 0.2, 1) both;
+        }
+
+        /* Bowtie transition — Appear (pure fade) */
+        @keyframes bowtieAppear {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        .bowtie-appear {
+            animation: bowtieAppear 0.55s ease both;
+        }
         .bowtie-empty {
             padding: 50px 20px; text-align: center;
             color: #7f8c8d; font-style: italic; font-size: 0.92em;
@@ -4673,10 +4698,10 @@
             overflow: hidden;
         }
 
-        .quadrant-bg.reduce { top: 0; left: 0; background: rgba(255, 235, 156, 0.4); color: rgba(180, 140, 0, 0.22); }
-        .quadrant-bg.avoid { top: 0; right: 0; background: rgba(255, 199, 206, 0.4); color: rgba(210, 60, 80, 0.22); }
-        .quadrant-bg.accept { bottom: 0; left: 0; background: rgba(198, 235, 156, 0.4); color: rgba(60, 160, 60, 0.22); }
-        .quadrant-bg.transfer { bottom: 0; right: 0; background: rgba(255, 235, 156, 0.4); color: rgba(180, 140, 0, 0.22); }
+        .quadrant-bg.reduce { top: 0; left: 0; background: rgba(255, 235, 156, 0.4); color: rgba(180, 140, 0, 0.12); }
+        .quadrant-bg.avoid { top: 0; right: 0; background: rgba(255, 199, 206, 0.4); color: rgba(210, 60, 80, 0.12); }
+        .quadrant-bg.accept { bottom: 0; left: 0; background: rgba(198, 235, 156, 0.4); color: rgba(60, 160, 60, 0.12); }
+        .quadrant-bg.transfer { bottom: 0; right: 0; background: rgba(255, 235, 156, 0.4); color: rgba(180, 140, 0, 0.12); }
 
         .grid-line {
             position: absolute;
@@ -7712,9 +7737,10 @@
             scanHealthUnstable:     40,
             scanHealthWeak:         79,
             // 5. Display
-            riskPageSize:     20,
-            peoplePageSize:   20,
-            dateFormat:       'DD/MM/YYYY',
+            riskPageSize:       20,
+            peoplePageSize:     20,
+            dateFormat:         'DD/MM/YYYY',
+            bowtieTransition:   'slide',
             // 6. Tenant Organisations (auto-populated from People data)
             tenantOrgs:       [],
             activeTenantOrg:  '',
@@ -15164,7 +15190,10 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             _renderBowtieCard();
         }
 
+        var _bowtieSlideDir = 0; // -1 = prev (slide in from left), +1 = next (slide in from right)
+
         function stepBowtie(dir) {
+            _bowtieSlideDir = dir;
             _bowtieIdx = Math.max(0, Math.min(_bowtieRisks.length - 1, _bowtieIdx + dir));
             _renderBowtieCard();
         }
@@ -15386,6 +15415,26 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                 + '</svg>';
 
             wrap.innerHTML = svg;
+
+            // Apply transition animation if triggered by Prev/Next
+            if (_bowtieSlideDir !== 0) {
+                var svgEl = wrap.querySelector('svg');
+                if (svgEl) {
+                    var mode = (NEXUS_CONFIG.bowtieTransition || 'slide');
+                    var cls;
+                    if (mode === 'appear') {
+                        cls = 'bowtie-appear';
+                    } else {
+                        // Slide: Next (+1) enters from right, Prev (-1) enters from left
+                        cls = _bowtieSlideDir > 0 ? 'bowtie-slide-in-right' : 'bowtie-slide-in-left';
+                    }
+                    svgEl.classList.add(cls);
+                    svgEl.addEventListener('animationend', function() {
+                        svgEl.classList.remove(cls);
+                    }, { once: true });
+                }
+                _bowtieSlideDir = 0;
+            }
         }
         // ── End Bowtie View ───────────────────────────────────────────────────────
 
@@ -15945,9 +15994,10 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             document.getElementById('cfg_scanHealthUnstable').value   = cfg.scanHealthUnstable   ?? 40;
             document.getElementById('cfg_scanHealthWeak').value       = cfg.scanHealthWeak       ?? 79;
             // Section 5: Display
-            document.getElementById('cfg_dateFormat').value    = cfg.dateFormat || 'DD/MM/YYYY';
-            document.getElementById('cfg_peoplePageSize').value = cfg.peoplePageSize;
-            document.getElementById('cfg_riskPageSize').value  = cfg.riskPageSize;
+            document.getElementById('cfg_dateFormat').value         = cfg.dateFormat || 'DD/MM/YYYY';
+            document.getElementById('cfg_peoplePageSize').value      = cfg.peoplePageSize;
+            document.getElementById('cfg_riskPageSize').value        = cfg.riskPageSize;
+            document.getElementById('cfg_bowtieTransition').value    = cfg.bowtieTransition || 'slide';
             // Tenant Organisations (part of Section 1)
             const tenantEl = document.getElementById('cfg_tenantOrgs');
             if (tenantEl) tenantEl.value = (cfg.tenantOrgs || []).join('\n');
@@ -16021,7 +16071,8 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             if (!isNaN(_shw) && _shw > 0) cfg.scanHealthWeak        = _shw;
 
             // Section 5: Display
-            cfg.dateFormat = document.getElementById('cfg_dateFormat').value || 'DD/MM/YYYY';
+            cfg.dateFormat         = document.getElementById('cfg_dateFormat').value || 'DD/MM/YYYY';
+            cfg.bowtieTransition   = document.getElementById('cfg_bowtieTransition').value || 'slide';
             const pps = parseInt(document.getElementById('cfg_peoplePageSize').value, 10);
             if (!isNaN(pps) && pps > 0) cfg.peoplePageSize = pps;
             const rps = parseInt(document.getElementById('cfg_riskPageSize').value, 10);
@@ -16536,6 +16587,13 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                         <div class="cfg-field">
                             <label class="cfg-label">Risk Register — Rows per Page</label>
                             <input type="number" id="cfg_riskPageSize" class="cfg-input" min="5" max="200" style="width:80px">
+                        </div>
+                        <div class="cfg-field">
+                            <label class="cfg-label">Bowtie Transition</label>
+                            <select id="cfg_bowtieTransition" class="cfg-input" style="width:100%">
+                                <option value="slide">Slide</option>
+                                <option value="appear">Appear</option>
+                            </select>
                         </div>
                     </div>
                 </div>
