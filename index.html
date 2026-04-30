@@ -3172,6 +3172,15 @@
             overflow: hidden;
         }
 
+        /* When the section's traffic-light dropdown is open, allow it to escape
+           the section's overflow:hidden so it isn't clipped (especially when the
+           section is collapsed). Promote stacking so it sits above siblings. */
+        .bpr-section:has(.section-traffic-light-dropdown.show) {
+            overflow: visible;
+            position: relative;
+            z-index: 100;
+        }
+
         .bpr-section-header {
             display: flex;
             justify-content: space-between;
@@ -6157,7 +6166,7 @@
             </div>
             <div class="app-topbar-title">
                 <h1>Active Infrastructure Governance OS</h1>
-                <p>Version 0.081</p>
+                <p>Version 0.082</p>
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;margin-right:4px;gap:2px;">
                 <span id="activeOrgBadge" style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:500;letter-spacing:0.3px;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;display:none;"></span>
@@ -6216,7 +6225,7 @@
                 <div class="home-page" id="homePage">
                     <div class="home-welcome">
                         <h2>Welcome to Nexus</h2>
-                        <p>Version 0.081</p>
+                        <p>Version 0.082</p>
                     </div>
                     <div style="width:100%;max-width:540px;">
                     <div class="home-ai-box" id="homeAiBox">
@@ -6323,7 +6332,7 @@
                     <div class="container">
                         <div class="header">
                             <h1>Active Infrastructure Governance OS</h1>
-                            <p>Version 0.081</p>
+                            <p>Version 0.082</p>
                         </div>
                         <div class="content">
             <!-- Dashboard Tab -->
@@ -10516,12 +10525,14 @@
                     return sum + wd[section].filter(function(r) { return r && (r.issues || r.actions); }).length;
                 }, 0);
                 document.getElementById(section + '-count').textContent = total;
+                if (typeof _applySectionTrafficLight === 'function') _applySectionTrafficLight(section);
                 return; // BF button visibility not relevant in show-all mode
             }
             const weekData = businessPlanData.weeks[currentWeek];
             const filledRows = weekData[section].filter(_bprRowIsFilled).length;
             document.getElementById(`${section}-count`).textContent = filledRows;
             updateBFBtnVisibility(section);
+            if (typeof _applySectionTrafficLight === 'function') _applySectionTrafficLight(section);
         }
 
         var _bprAllExpanded = false;
@@ -12730,19 +12741,56 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             localStorage.setItem(storageKey, status);
         }
 
+        // Compute average RAG status for a section based on its row contents.
+        // Returns 'red' | 'amber' | 'green' | 'null' (white = no scored items).
+        function _calcSectionTrafficLightStatus(section) {
+            if (typeof businessPlanData === 'undefined' || !businessPlanData.weeks) return 'null';
+
+            const ragMap = { red: 1, amber: 2, green: 3 };
+            const ragValues = [];
+
+            if (window._showAllActive) {
+                Object.keys(businessPlanData.weeks).forEach(function(wk) {
+                    const wd = businessPlanData.weeks[wk];
+                    if (wd && wd[section]) {
+                        wd[section].forEach(function(r) {
+                            if (r && r.rag && Object.prototype.hasOwnProperty.call(ragMap, r.rag)) {
+                                ragValues.push(ragMap[r.rag]);
+                            }
+                        });
+                    }
+                });
+            } else {
+                const weekData = businessPlanData.weeks[currentWeek];
+                if (!weekData || !weekData[section]) return 'null';
+                weekData[section].forEach(function(r) {
+                    if (r && r.rag && Object.prototype.hasOwnProperty.call(ragMap, r.rag)) {
+                        ragValues.push(ragMap[r.rag]);
+                    }
+                });
+            }
+
+            if (ragValues.length === 0) return 'null';
+            const avg = ragValues.reduce(function(s, v) { return s + v; }, 0) / ragValues.length;
+            if (avg < 1.5) return 'red';
+            if (avg < 2.5) return 'amber';
+            return 'green';
+        }
+
+        // Apply auto-calculated section traffic light to the DOM.
+        function _applySectionTrafficLight(section) {
+            const status = _calcSectionTrafficLightStatus(section);
+            const display = document.querySelector('.section-traffic-light-display[data-section="' + section + '"]');
+            if (display) {
+                display.classList.remove('red', 'amber', 'green', 'null');
+                display.classList.add(status);
+            }
+        }
+
         function loadSectionTrafficLights() {
-            // Load saved traffic light states for the current week
-            const weekNumber = document.getElementById('weekNumber').textContent;
+            // Auto-calculate traffic lights from item RAGs (replaces stored manual override).
             const sections = ['customer', 'investor', 'finance', 'technology', 'operations'];
-            
-            sections.forEach(section => {
-                const storageKey = `bpr_section_traffic_${section}_${weekNumber}`;
-                const savedStatus = localStorage.getItem(storageKey);
-                
-                if (savedStatus) {
-                    setSectionTrafficLight(section, savedStatus);
-                }
-            });
+            sections.forEach(function(section) { _applySectionTrafficLight(section); });
         }
 
         function updateRadarChart() {
