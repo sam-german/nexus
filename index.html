@@ -5067,6 +5067,9 @@
         .legend-symbol.mitigation-fullymitigated { background: #FFFFFF; color: #333; }
         .legend-symbol.mitigation-eliminated { background: #34495e; color: white; }
         .legend-symbol.overlap-adjusted { background: #f39c12; color: #333; }
+        /* Overlap-adjusted symbol uses an inline SVG triangle — drop the
+           default rectangular border/radius/background of .legend-symbol. */
+        .legend-symbol.overlap-adjusted { border: none; border-radius: 0; background: transparent; }
 
         .proximity-bar {
             width: 40px;
@@ -7464,7 +7467,7 @@
                                 <h4>QUADRANT POSITIONING</h4>
                                 <div class="legend-items">
                                     <div class="legend-item">
-                                        <span class="legend-symbol overlap-adjusted" style="background:transparent;padding:0;overflow:visible;"><svg width="22" height="20" viewBox="0 0 22 20" xmlns="http://www.w3.org/2000/svg" style="display:block;"><polygon points="11,1 21,19 1,19" fill="#f39c12" stroke="#d68910" stroke-width="1.5" stroke-linejoin="round"/><text x="11" y="15.5" text-anchor="middle" font-size="10" font-weight="900" fill="#333" font-family="sans-serif">!</text></svg></span>
+                                        <span class="legend-symbol overlap-adjusted" style="background:transparent;padding:0;overflow:visible;"><svg width="22" height="20" viewBox="0 0 22 20" xmlns="http://www.w3.org/2000/svg" style="display:block;"><polygon points="11,1 21,19 1,19" fill="#f39c12" stroke="#7f8c8d" stroke-width="1.5" stroke-linejoin="round"/><text x="11" y="15.5" text-anchor="middle" font-size="10" font-weight="900" fill="#333" font-family="sans-serif">!</text></svg></span>
                                         <span>= Overlapping data point</span>
                                     </div>
                                 </div>
@@ -8022,6 +8025,19 @@
                 strategicPriority: 'Technology',
                 rag: 'amber'
             }
+        ];
+
+        // IDs of the 7 pre-loaded sample risks. These are dropped from the
+        // `risks` array whenever real data is imported from the Google Drive
+        // source so the display reflects only the imported register.
+        const SAMPLE_RISK_IDS = [
+            'CSD0047-PJ1YHZ',
+            'CSD0048-PF2NLZ',
+            'OPX0001-ABC123',
+            'FIN0001-DEF456',
+            'STR0001-GHI789',
+            'REV0001-SAR123',
+            'REV0002-SAR456'
         ];
 
         // Load risks from localStorage if available
@@ -9945,7 +9961,16 @@
         function processImportedRiskData(jsonData, silent) {
             let addedCount = 0;
             let updatedCount = 0;
-            
+
+            // Drop the pre-loaded sample risks so the imported register from
+            // Google Drive is the source of truth. Any user-added or previously
+            // imported risks are preserved.
+            const _beforeCount = risks.length;
+            risks = risks.filter(function(r) { return r && !SAMPLE_RISK_IDS.includes(r.id); });
+            if (risks.length !== _beforeCount) {
+                console.log('[sync] Removed ' + (_beforeCount - risks.length) + ' pre-loaded sample risk(s) before import.');
+            }
+
             // Define flexible header mappings
             const headerMappings = {
                 'risk id': 'id',
@@ -13308,7 +13333,7 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                 const tri = document.createElementNS('http://www.w3.org/2000/svg','polygon');
                 tri.setAttribute('points','11,1 21,19 1,19');
                 tri.setAttribute('fill','#f39c12');
-                tri.setAttribute('stroke','#d68910'); tri.setAttribute('stroke-width','1.5');
+                tri.setAttribute('stroke','#7f8c8d'); tri.setAttribute('stroke-width','1.5');
                 tri.setAttribute('stroke-linejoin','round');
                 svg.appendChild(tri);
                 const t = document.createElementNS('http://www.w3.org/2000/svg','text');
