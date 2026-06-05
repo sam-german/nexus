@@ -9108,35 +9108,73 @@
             }
             const fileId = NEXUS_CONFIG.googleSheetId || '15UflLIpFCKHQBbGBNiLBDcYEZUtPn2Qn';
             const exportUrl = 'https://docs.google.com/spreadsheets/d/' + fileId + '/export?format=xlsx&cachebust=' + Date.now();
+
+            // Named proxy list — names show up in error messages so you can tell
+            // which service is misbehaving when sync fails.
             const proxies = [
-                function(u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
-                function(u) { return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); },
-                function(u) { return 'https://corsproxy.io/?' + encodeURIComponent(u); },
-                function(u) { return 'https://thingproxy.freeboard.io/fetch/' + u; }
+                { name: 'allorigins', url: function(u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); } },
+                { name: 'codetabs',   url: function(u) { return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); } },
+                { name: 'corsproxy',  url: function(u) { return 'https://corsproxy.io/?' + encodeURIComponent(u); } },
+                { name: 'thingproxy', url: function(u) { return 'https://thingproxy.freeboard.io/fetch/' + u; } }
             ];
+
+            const MAX_ATTEMPTS_PER_PROXY = 2;
+            const BACKOFF_MS = 1500;   // wait between retries on the same proxy
+            const TIMEOUT_MS = 20000;
+
             let arrayBuffer = null;
-            let proxyErrors = [];
-            for (let i = 0; i < proxies.length; i++) {
-                if (statusCallback) statusCallback('Connecting... (attempt ' + (i+1) + '/' + proxies.length + ')');
-                try {
-                    const timeoutPromise = new Promise(function(_, reject) {
-                        setTimeout(function() { reject(new Error('Request timed out')); }, 20000);
-                    });
-                    const r = await Promise.race([fetch(proxies[i](exportUrl)), timeoutPromise]);
-                    if (!r.ok) { proxyErrors.push('Proxy ' + (i+1) + ': HTTP ' + r.status); continue; }
-                    arrayBuffer = await r.arrayBuffer();
-                    const header = new Uint8Array(arrayBuffer.slice(0, 2));
-                    if (header[0] !== 0x50 || header[1] !== 0x4B) {
-                        proxyErrors.push('Proxy ' + (i+1) + ': Not a valid xlsx file');
-                        arrayBuffer = null;
-                        continue;
+            let winner = null;
+            const attemptLog = []; // human-readable per-attempt outcomes
+
+            outer: for (let i = 0; i < proxies.length; i++) {
+                const p = proxies[i];
+                for (let attempt = 1; attempt <= MAX_ATTEMPTS_PER_PROXY; attempt++) {
+                    if (attempt > 1) {
+                        if (statusCallback) statusCallback('Retrying ' + p.name + ' in ' + (BACKOFF_MS/1000) + 's...');
+                        await new Promise(function(r){ setTimeout(r, BACKOFF_MS); });
                     }
-                    break;
-                } catch(e) {
-                    proxyErrors.push('Proxy ' + (i+1) + ': ' + e.message);
+                    if (statusCallback) statusCallback('Connecting via ' + p.name + ' (try ' + attempt + '/' + MAX_ATTEMPTS_PER_PROXY + ')...');
+                    try {
+                        const timeoutPromise = new Promise(function(_, reject) {
+                            setTimeout(function() { reject(new Error('timeout after ' + (TIMEOUT_MS/1000) + 's')); }, TIMEOUT_MS);
+                        });
+                        const r = await Promise.race([fetch(p.url(exportUrl)), timeoutPromise]);
+                        if (!r.ok) {
+                            attemptLog.push(p.name + ' #' + attempt + ': HTTP ' + r.status + ' ' + (r.statusText || ''));
+                            continue;
+                        }
+                        const buf = await r.arrayBuffer();
+                        const header = new Uint8Array(buf.slice(0, 2));
+                        // XLSX = zip = starts with PK (0x50 0x4B). Anything else is
+                        // typically an HTML error/sign-in page from Google or the proxy.
+                        if (header[0] !== 0x50 || header[1] !== 0x4B) {
+                            attemptLog.push(p.name + ' #' + attempt + ': not an xlsx (' + buf.byteLength + ' bytes — likely sign-in or error HTML)');
+                            continue;
+                        }
+                        arrayBuffer = buf;
+                        winner = p.name + ' on attempt ' + attempt;
+                        break outer;
+                    } catch(e) {
+                        attemptLog.push(p.name + ' #' + attempt + ': ' + (e && e.message ? e.message : String(e)));
+                    }
                 }
             }
-            if (!arrayBuffer) throw new Error('All proxies failed:\n' + proxyErrors.join('\n'));
+
+            if (!arrayBuffer) {
+                console.error('[sync] All proxies failed after ' + attemptLog.length + ' attempts:\n  - ' + attemptLog.join('\n  - '));
+                // Concise in-app summary; details available in DevTools console
+                const httpHits = attemptLog.filter(function(l){ return /HTTP \d/.test(l); }).length;
+                const xlsxMiss = attemptLog.filter(function(l){ return /not an xlsx/.test(l); }).length;
+                const timeouts = attemptLog.filter(function(l){ return /timeout/.test(l); }).length;
+                const parts = [];
+                if (timeouts) parts.push(timeouts + ' timeout' + (timeouts>1?'s':''));
+                if (httpHits) parts.push(httpHits + ' HTTP error' + (httpHits>1?'s':''));
+                if (xlsxMiss) parts.push(xlsxMiss + ' sign-in/HTML response' + (xlsxMiss>1?'s':''));
+                const breakdown = parts.length ? ' (' + parts.join(', ') + ')' : '';
+                throw new Error('All ' + proxies.length + ' CORS proxies failed' + breakdown + ' — see DevTools console for per-attempt details');
+            }
+
+            console.log('[sync] Workbook fetched via ' + winner);
             _cachedWorkbook = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array', cellDates: true });
             _cacheTimestamp = Date.now();
             return _cachedWorkbook;
