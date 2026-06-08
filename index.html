@@ -7737,6 +7737,11 @@
             // 3. Data & Sync
             googleSheetId:    '15UflLIpFCKHQBbGBNiLBDcYEZUtPn2Qn',
             cacheTtlMinutes:  5,
+            // Optional: your own CORS proxy (e.g. Cloudflare Worker).
+            // When set, it's tried FIRST before the public fallbacks. Must accept
+            // the upstream URL after a '?url=' query param, e.g.
+            //   https://my-worker.example.workers.dev/?url=<encoded sheet url>
+            corsProxyUrl:     '',
             // 4. AI & Automation
             aiModel:          'claude-sonnet-4-20250514',
             priorWeeksCount:  6,
@@ -9110,13 +9115,28 @@
             const exportUrl = 'https://docs.google.com/spreadsheets/d/' + fileId + '/export?format=xlsx&cachebust=' + Date.now();
 
             // Named proxy list — names show up in error messages so you can tell
-            // which service is misbehaving when sync fails.
-            const proxies = [
+            // which service is misbehaving when sync fails. If the user has
+            // configured their own CORS proxy (e.g. a Cloudflare Worker), try it
+            // first because it's far more reliable than the public services.
+            const proxies = [];
+            if (NEXUS_CONFIG.corsProxyUrl && NEXUS_CONFIG.corsProxyUrl.trim()) {
+                const customBase = NEXUS_CONFIG.corsProxyUrl.trim();
+                proxies.push({
+                    name: 'custom',
+                    url: function(u) {
+                        // Accept either a base ending in ?url= already, or a plain origin.
+                        return customBase.indexOf('?') >= 0
+                            ? customBase + encodeURIComponent(u)
+                            : customBase + (customBase.endsWith('/') ? '' : '/') + '?url=' + encodeURIComponent(u);
+                    }
+                });
+            }
+            proxies.push(
                 { name: 'allorigins', url: function(u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); } },
                 { name: 'codetabs',   url: function(u) { return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); } },
                 { name: 'corsproxy',  url: function(u) { return 'https://corsproxy.io/?' + encodeURIComponent(u); } },
-                { name: 'thingproxy', url: function(u) { return 'https://thingproxy.freeboard.io/fetch/' + u; } }
-            ];
+                { name: 'corslol',    url: function(u) { return 'https://api.cors.lol/?url=' + encodeURIComponent(u); } }
+            );
 
             const MAX_ATTEMPTS_PER_PROXY = 2;
             const BACKOFF_MS = 1500;   // wait between retries on the same proxy
@@ -16132,6 +16152,8 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             // Section 3: Data & Sync
             document.getElementById('cfg_sheetId').value = cfg.googleSheetId;
             document.getElementById('cfg_cacheTtl').value = cfg.cacheTtlMinutes;
+            const _corsProxyEl = document.getElementById('cfg_corsProxyUrl');
+            if (_corsProxyEl) _corsProxyEl.value = cfg.corsProxyUrl || '';
             // Section 4: AI & Automation
             document.getElementById('cfg_aiModel').value = cfg.aiModel;
             document.getElementById('cfg_priorWeeks').value = cfg.priorWeeksCount;
@@ -16202,6 +16224,10 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
             if (sid) cfg.googleSheetId = sid;
             const ttl = parseInt(document.getElementById('cfg_cacheTtl').value, 10);
             if (!isNaN(ttl) && ttl > 0) cfg.cacheTtlMinutes = ttl;
+            const _proxyEl = document.getElementById('cfg_corsProxyUrl');
+            cfg.corsProxyUrl = _proxyEl ? _proxyEl.value.trim() : '';
+            // Bust any cached workbook so the new proxy is used on next sync.
+            _cachedWorkbook = null;
 
             // Section 4: AI & Automation
             cfg.aiModel = document.getElementById('cfg_aiModel').value;
@@ -16585,6 +16611,11 @@ Respond ONLY with a valid JSON object — no markdown, no preamble, no explanati
                             <label class="cfg-label">Sync Cache Duration (minutes)</label>
                             <input type="number" id="cfg_cacheTtl" class="cfg-input" min="1" max="120" style="width:90px">
                             <div class="cfg-hint">How long to reuse a fetched workbook before re-downloading.</div>
+                        </div>
+                        <div class="cfg-field">
+                            <label class="cfg-label">Custom CORS Proxy URL (optional)</label>
+                            <input type="text" id="cfg_corsProxyUrl" class="cfg-input" placeholder="https://your-worker.workers.dev/">
+                            <div class="cfg-hint">Tried first before the public fallbacks. Paste your Cloudflare Worker URL (the worker should accept <code>?url=&lt;encoded&gt;</code>). Leave blank to use public proxies only.</div>
                         </div>
                     </div>
                 </div>
