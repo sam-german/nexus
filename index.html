@@ -6169,7 +6169,7 @@
             </div>
             <div class="app-topbar-title">
                 <h1>Active Infrastructure Governance OS</h1>
-                <p>Version 0.086</p>
+                <p>Version 0.087</p>
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;margin-right:4px;gap:2px;">
                 <span id="activeOrgBadge" style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:500;letter-spacing:0.3px;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;display:none;"></span>
@@ -6228,7 +6228,7 @@
                 <div class="home-page" id="homePage">
                     <div class="home-welcome">
                         <h2>Welcome to Nexus</h2>
-                        <p>Version 0.086</p>
+                        <p>Version 0.087</p>
                     </div>
                     <div style="width:100%;max-width:540px;">
                     <div class="home-ai-box" id="homeAiBox">
@@ -6335,7 +6335,7 @@
                     <div class="container">
                         <div class="header">
                             <h1>Active Infrastructure Governance OS</h1>
-                            <p>Version 0.086</p>
+                            <p>Version 0.087</p>
                         </div>
                         <div class="content">
             <!-- Dashboard Tab -->
@@ -8313,7 +8313,13 @@
          * Get current ISO week in format "YYYY-Www" (e.g., "2025-W37")
          */
         function getCurrentISOWeek() {
-            const date = new Date();
+            // Anchor the calculation to the user's LOCAL calendar day rather
+            // than the raw UTC instant. Without this, users in positive-UTC
+            // timezones (e.g. UK BST) between local midnight and midnight UTC
+            // get the previous week's number because the UTC clock is still on
+            // the prior day.
+            const now = new Date();
+            const date = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
             const dayNum = date.getUTCDay() || 7; // Make Sunday = 7
             date.setUTCDate(date.getUTCDate() + 4 - dayNum); // Thursday in current week
             const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
