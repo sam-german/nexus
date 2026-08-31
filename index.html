@@ -6169,7 +6169,7 @@
             </div>
             <div class="app-topbar-title">
                 <h1>Active Infrastructure Governance OS</h1>
-                <p>Version 0.087</p>
+                <p>Version 0.088</p>
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;margin-right:4px;gap:2px;">
                 <span id="activeOrgBadge" style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:500;letter-spacing:0.3px;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;display:none;"></span>
@@ -6228,7 +6228,7 @@
                 <div class="home-page" id="homePage">
                     <div class="home-welcome">
                         <h2>Welcome to Nexus</h2>
-                        <p>Version 0.087</p>
+                        <p>Version 0.088</p>
                     </div>
                     <div style="width:100%;max-width:540px;">
                     <div class="home-ai-box" id="homeAiBox">
@@ -6335,7 +6335,7 @@
                     <div class="container">
                         <div class="header">
                             <h1>Active Infrastructure Governance OS</h1>
-                            <p>Version 0.087</p>
+                            <p>Version 0.088</p>
                         </div>
                         <div class="content">
             <!-- Dashboard Tab -->
@@ -7770,11 +7770,25 @@
             roles:            []
         };
 
-        // Load config from localStorage, filling any missing keys from defaults
+        // Fields for which an empty stored value should be treated as "unset"
+        // and reverted to the current default. Useful when we later choose to
+        // pre-populate a field that shipped blank in a prior version, so
+        // returning users auto-heal instead of being stuck with the empty value.
+        const _NEXUS_AUTOHEAL_EMPTY_FIELDS = ['corsProxyUrl'];
+
+        // Load config from localStorage, filling any missing keys from defaults.
+        // Empty strings on auto-heal fields are treated as missing, so pre-
+        // populated defaults introduced in later versions take effect.
         function _loadNexusConfig() {
             try {
                 const stored = JSON.parse(localStorage.getItem('nexusConfig') || '{}');
-                return Object.assign({}, NEXUS_CONFIG_DEFAULTS, stored);
+                const merged = Object.assign({}, NEXUS_CONFIG_DEFAULTS, stored);
+                _NEXUS_AUTOHEAL_EMPTY_FIELDS.forEach(function(k) {
+                    if (typeof merged[k] === 'string' && !merged[k].trim()) {
+                        merged[k] = NEXUS_CONFIG_DEFAULTS[k];
+                    }
+                });
+                return merged;
             } catch(e) { return Object.assign({}, NEXUS_CONFIG_DEFAULTS); }
         }
         let NEXUS_CONFIG = _loadNexusConfig();
